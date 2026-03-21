@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text, Animated } from "react-native";
-import TrackPlayer, { State, usePlaybackState } from "react-native-track-player";
+import { Audio } from "expo-av";
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -9,51 +9,55 @@ interface AudioPlayerProps {
 }
 
 export function AudioPlayer({ audioUrl, onEnd, autoPlay = false }: AudioPlayerProps) {
-  const [loaded, setLoaded] = useState(false);
+  const [status, setStatus] = useState<"loading" | "playing" | "done">("loading");
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const playbackState = usePlaybackState();
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const pulsationRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    let animation: Animated.CompositeAnimation;
+    let mounted = true;
 
-    async function load() {
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        id: "quest-audio",
-        url: audioUrl,
-        title: "Listening Challenge",
-        artist: "LinguaQuest",
-      });
-      setLoaded(true);
-      if (autoPlay) {
-        await TrackPlayer.play();
-      }
+    async function loadAndPlay() {
+      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: audioUrl },
+        { shouldPlay: autoPlay },
+        (playbackStatus) => {
+          if (!mounted) return;
+          if (playbackStatus.isLoaded) {
+            if (playbackStatus.isPlaying) {
+              setStatus("playing");
+            }
+            if (playbackStatus.didJustFinish) {
+              setStatus("done");
+              onEnd();
+            }
+          }
+        }
+      );
+      soundRef.current = sound;
+      if (mounted) setStatus(autoPlay ? "playing" : "loading");
     }
-    load();
 
-    // Pulse animation while playing
-    animation = Animated.loop(
+    loadAndPlay();
+
+    // Pulse animation
+    pulsationRef.current = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.15, duration: 600, useNativeDriver: true }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
       ])
     );
-    animation.start();
+    pulsationRef.current.start();
 
     return () => {
-      animation.stop();
-      TrackPlayer.reset();
+      mounted = false;
+      pulsationRef.current?.stop();
+      soundRef.current?.unloadAsync();
     };
   }, [audioUrl]);
 
-  // Detect when audio ends
-  useEffect(() => {
-    if (playbackState.state === State.Ended) {
-      onEnd();
-    }
-  }, [playbackState.state]);
-
-  const isPlaying = playbackState.state === State.Playing;
+  const isPlaying = status === "playing";
 
   return (
     <View className="items-center py-8">
@@ -61,10 +65,16 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false }: AudioPlayerPr
         style={{ transform: [{ scale: isPlaying ? pulseAnim : 1 }] }}
         className="w-24 h-24 rounded-full bg-ocean-light border-4 border-gold items-center justify-center"
       >
-        <Text className="text-5xl">{isPlaying ? "👂" : loaded ? "✓" : "⏳"}</Text>
+        <Text className="text-5xl">
+          {status === "loading" ? "⏳" : status === "playing" ? "👂" : "✓"}
+        </Text>
       </Animated.View>
       <Text className="text-parchment-dark text-sm mt-4">
-        {isPlaying ? "Listening..." : loaded ? "Audio complete" : "Loading audio..."}
+        {status === "loading"
+          ? "Loading audio..."
+          : status === "playing"
+          ? "Listening..."
+          : "Audio complete"}
       </Text>
       <Text className="text-coral text-xs mt-2">No pause. No replay.</Text>
     </View>

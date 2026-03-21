@@ -35,8 +35,7 @@
           "image": "./assets/images/splash.png",
           "imageWidth": 200
         }
-      ],
-      "react-native-track-player"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
