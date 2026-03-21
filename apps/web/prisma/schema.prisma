@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   String   @id @default(cuid())
+  username             String   @unique
+  email                String   @unique
+  passwordHash         String
+  role                 UserRole @default(STUDENT)
+  characterModeEnabled Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  progress         Progress[]
+  badges           Badge[]
+  hostedRooms      MultiplayerRoom[] @relation("HostedRooms")
+  roomMemberships  RoomPlayer[]
+  votes            VoteRecord[]
+
+  @@index([username])
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+model Island {
+  id               String  @id @default(cuid())
+  number           Int     @unique
+  name             String
+  skillFocus       String
+  description      String
+  isLocked         Boolean @default(true)
+  npcName          String?
+  npcDialogueIntro String?
+  npcDialogueSuccess String?
+  npcDialogueFail  String?
+  shardItemName    String?
+  shardDescription String?
+
+  pins Pin[]
+
+  @@index([number])
+}
+
+model Pin {
+  id        String  @id @default(cuid())
+  islandId  String
+  number    Int
+  type      PinType
+  sortOrder Int
+
+  island     Island      @relation(fields: [islandId], references: [id])
+  challenges Challenge[]
+  progress   Progress[]
+
+  @@unique([islandId, number])
+  @@index([islandId])
+}
+
+enum PinType {
+  CHALLENGE
+  CHECKPOINT
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  pinId       String
+  audioUrl    String
+  question    String
+  choices     Json     // [{ label: "A"|"B"|"C"|"D", text: string }]
+  answer      String   // "A" | "B" | "C" | "D"
+  explanation String
+  hint        String
+  sortOrder   Int      @default(0)
+
+  pin Pin @relation(fields: [pinId], references: [id])
+
+  @@index([pinId])
+}
+
+model Progress {
+  id          String    @id @default(cuid())
+  userId      String
+  pinId       String
+  isCompleted Boolean   @default(false)
+  accuracy    Int       @default(0) // 0-100
+  hintsUsed   Int       @default(0)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  pin  Pin  @relation(fields: [pinId], references: [id])
+
+  @@unique([userId, pinId])
+  @@index([userId])
+}
+
+model Badge {
+  id        String    @id @default(cuid())
+  userId    String
+  badgeType String
+  earnedAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+}
+
+model MultiplayerRoom {
+  id           String     @id @default(cuid())
+  code         String     @unique
+  hostId       String
+  status       RoomStatus @default(WAITING)
+  roundCount   Int        @default(5)
+  currentRound Int        @default(0)
+  shipHealth   Json       // { hull: 25, mast: 25, sails: 25, anchor: 25, rudder: 25 }
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  host    User         @relation("HostedRooms", fields: [hostId], references: [id])
+  players RoomPlayer[]
+  rounds  RoundResult[]
+  votes   VoteRecord[]
+
+  @@index([code])
+  @@index([status])
+}
+
+enum RoomStatus {
+  WAITING
+  ACTIVE
+  FINISHED
+}
+
+model RoomPlayer {
+  id       String   @id @default(cuid())
+  roomId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+  user User            @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, userId])
+}
+
+model VoteRecord {
+  id            String   @id @default(cuid())
+  roomId        String
+  round         Int
+  questionIndex Int
+  userId        String
+  chosenAnswer  String
+  submittedAt   DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+  user User            @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, round, questionIndex, userId])
+}
+
+model RoundResult {
+  id          String   @id @default(cuid())
+  roomId      String
+  round       Int
+  crewAnswer  String
+  correctAnswer String
+  isCorrect   Boolean
+  healthDelta Int      // +25 or -25
+  partTarget  String   // hull | mast | sails | anchor | rudder
+  createdAt   DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+
+  @@unique([roomId, round])
+}
