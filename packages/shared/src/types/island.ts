@@ -11,8 +11,21 @@ export interface Island {
   npcDialogueIntro?: string;
   npcDialogueSuccess?: string;
   npcDialogueFail?: string;
+  npcAudioIntro?: string;
+  npcAudioSuccess?: string;
+  npcAudioFail?: string;
+  ingayAudioUrl?: string;
   shardItemName?: string;
   shardDescription?: string;
+}
+
+export interface PinIslandContext {
+  number: number;
+  name: string;
+  skillFocus: string;
+  npcDialogueIntro?: string;
+  npcDialogueSuccess?: string;
+  npcDialogueFail?: string;
 }
 
 export interface Pin {
@@ -21,6 +34,7 @@ export interface Pin {
   number: number;
   type: PinType;
   sortOrder: number;
+  island?: PinIslandContext;
 }
 
 export interface Choice {
@@ -40,5 +54,5 @@ export interface Challenge {
 }
 
 export interface IslandWithPins extends Island {
-  pins: (Pin & { challenges: Challenge[] })[];
+  pins: (Pin & { challenges: Challenge[]; isCompleted: boolean })[];
 }

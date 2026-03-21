@@ -40,12 +40,16 @@ model Island {
   skillFocus       String
   description      String
   isLocked         Boolean @default(true)
-  npcName          String?
-  npcDialogueIntro String?
+  npcName           String?
+  npcDialogueIntro  String?
   npcDialogueSuccess String?
-  npcDialogueFail  String?
-  shardItemName    String?
-  shardDescription String?
+  npcDialogueFail   String?
+  npcAudioIntro     String?  // Captain Salita intro voice clip URL
+  npcAudioSuccess   String?  // Captain Salita success voice clip URL
+  npcAudioFail      String?  // Captain Salita fail voice clip URL
+  ingayAudioUrl     String?  // Ingay warning voice clip URL
+  shardItemName     String?
+  shardDescription  String?
 
   pins Pin[]
 
@@ -76,6 +80,7 @@ model Challenge {
   id          String   @id @default(cuid())
   pinId       String
   audioUrl    String
+  audioScript String?  // Full text of the listening passage — used for voice recording / TTS
   question    String
   choices     Json     // [{ label: "A"|"B"|"C"|"D", text: string }]
   answer      String   // "A" | "B" | "C" | "D"

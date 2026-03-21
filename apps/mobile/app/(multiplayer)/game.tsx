@@ -1,41 +1,39 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
 import Pusher from "pusher-js";
 import { useMultiplayerStore } from "@/stores/multiplayer";
+import { useAuthStore } from "@/stores/auth";
 import { apiClient } from "@/lib/api";
 import { AudioPlayer } from "@/components/audio/AudioPlayer";
 import { ShipHealthDisplay } from "@/components/map/ShipHealthDisplay";
-import {
-  RoundStartEvent,
-  VoteUpdateEvent,
-  RoundResultEvent,
-  ShipPart,
-} from "@linguaquest/shared";
+import { RoundStartEvent, VoteUpdateEvent, RoundResultEvent, ShipPart } from "@linguaquest/shared";
 
 const PUSHER_KEY = process.env.EXPO_PUBLIC_PUSHER_KEY ?? "";
 const PUSHER_CLUSTER = process.env.EXPO_PUBLIC_PUSHER_CLUSTER ?? "ap1";
 
-type GamePhase = "waiting" | "repair-vote" | "listening" | "voting" | "result";
+type GamePhase = "waiting" | "listening" | "voting" | "result" | "ended";
 
 export default function GameScreen() {
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const { roomId, code } = useLocalSearchParams<{ roomId: string; code: string }>();
+  const { user } = useAuthStore();
   const {
-    room,
-    currentQuestion,
-    setCurrentQuestion,
-    setCrewVoteCounts,
-    setLastResult,
-    lastResult,
-    setVote,
-    hasVoted,
-    myVote,
-    setRoom,
+    room, currentQuestion,
+    setCurrentQuestion, setCrewVoteCounts, setLastResult,
+    lastResult, setVote, hasVoted, myVote, setRoom,
   } = useMultiplayerStore();
 
   const [phase, setPhase] = useState<GamePhase>("waiting");
   const [timeLeft, setTimeLeft] = useState(45);
+  const [isLastRound, setIsLastRound] = useState(false);
+  const [voteError, setVoteError] = useState("");
+  const [startingRound, setStartingRound] = useState(false);
+  const [endCountdown, setEndCountdown] = useState<number | null>(null);
+  const endCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const isHost = room?.hostId === user?.id || !room; // allow control before first room update
 
   useEffect(() => {
     const pusher =
@@ -44,9 +42,7 @@ export default function GameScreen() {
 
     const channel = pusher.subscribe(`room-${roomId}`);
 
-    channel.bind("room:updated", (data: any) => {
-      setRoom(data);
-    });
+    channel.bind("room:updated", (data: any) => setRoom(data));
 
     channel.bind("round:start", (data: RoundStartEvent) => {
       setCurrentQuestion({
@@ -55,13 +51,14 @@ export default function GameScreen() {
         audioUrl: data.audioUrl,
       });
       setPhase("listening");
+      setIsLastRound(false);
     });
 
     channel.bind("vote:update", (data: VoteUpdateEvent) => {
       setCrewVoteCounts({ [data.userId]: data.hasVoted ? 1 : 0 });
     });
 
-    channel.bind("round:result", (data: RoundResultEvent) => {
+    channel.bind("round:result", (data: RoundResultEvent & { isLastRound?: boolean }) => {
       clearTimer();
       setLastResult({
         isCorrect: data.isCorrect,
@@ -70,24 +67,46 @@ export default function GameScreen() {
         newShipHealth: data.newShipHealth,
         partTarget: data.partTarget,
       });
+      setIsLastRound(data.isLastRound ?? false);
       setPhase("result");
+    });
+
+    channel.bind("game:end", () => {
+      // Show countdown before navigating to results
+      setEndCountdown(4);
+      endCountdownRef.current = setInterval(() => {
+        setEndCountdown((n) => {
+          if (n === null || n <= 1) {
+            clearInterval(endCountdownRef.current!);
+            endCountdownRef.current = null;
+            setPhase("ended");
+            return null;
+          }
+          return n - 1;
+        });
+      }, 1000);
     });
 
     return () => {
       clearTimer();
+      if (endCountdownRef.current) clearInterval(endCountdownRef.current);
       channel.unbind_all();
+      pusher.unsubscribe(`room-${roomId}`);
     };
-  }, [roomId]);
+  }, [roomId, setCrewVoteCounts, setCurrentQuestion, setLastResult, setRoom]);
 
-  // 45-second countdown timer
+  // Auto-navigate to results when game ends
+  useEffect(() => {
+    if (phase === "ended") {
+      router.replace("/(multiplayer)/results");
+    }
+  }, [phase]);
+
   function startTimer() {
     setTimeLeft(45);
     timerRef.current = setInterval(() => {
       setTimeLeft((t) => {
-        if (t <= 1) {
-          clearTimer();
-          return 0;
-        }
+        if (t <= 1) { clearTimer(); return 0; }
         return t - 1;
       });
     }, 1000);
@@ -107,62 +126,92 @@ export default function GameScreen() {
 
   async function handleVote(choice: string) {
     if (hasVoted) return;
+    setVoteError("");
     setVote(choice);
-    await apiClient.submitVote(roomId, choice);
+    try {
+      await apiClient.submitVote(roomId, choice);
+    } catch {
+      setVote(null);
+      setVoteError("Vote failed — tap again to retry.");
+    }
+  }
+
+  async function handleStartRound() {
+    if (!isHost || startingRound) return;
+    setStartingRound(true);
+    try {
+      await apiClient.startRound(roomId);
+    } finally {
+      setStartingRound(false);
+    }
   }
 
   const shipHealth = room?.shipHealth ?? {
-    hull: 25,
-    mast: 25,
-    sails: 25,
-    anchor: 25,
-    rudder: 25,
+    hull: 25, mast: 25, sails: 25, anchor: 25, rudder: 25,
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-ocean-deep"
-      contentContainerClassName="px-6 pt-14 pb-8"
-    >
-      {/* Ship health */}
-      <ShipHealthDisplay health={shipHealth} />
+    <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+    <ScrollView contentContainerClassName="px-6 pt-4 pb-8">
 
-      {/* Round info */}
-      <View className="flex-row justify-between items-center my-4">
+      {/* Room code display */}
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="text-parchment-dark text-sm">Room: <Text className="text-gold font-bold tracking-widest">{code}</Text></Text>
         <Text className="text-parchment-dark text-sm">
-          Round {room?.currentRound ?? 1} / {room?.roundCount ?? 5}
+          Round {room?.currentRound ?? 0}/{room?.roundCount ?? 5}
         </Text>
-        {phase === "voting" && (
-          <View
-            className={`px-4 py-1 rounded-full ${timeLeft <= 10 ? "bg-coral" : "bg-ocean-light"}`}
-          >
-            <Text className="text-white font-bold">{timeLeft}s</Text>
-          </View>
-        )}
       </View>
 
-      {/* Game phases */}
-      {phase === "waiting" && (
-        <View className="items-center mt-12">
-          <Text className="text-4xl mb-4">⚓</Text>
-          <Text className="text-gold text-xl font-bold">Waiting for game to start...</Text>
-          <Text className="text-parchment-dark text-sm mt-2">
-            {room?.players?.length ?? 0} / {room?.roundCount ?? 5} players in crew
-          </Text>
+      {/* Ship health */}
+      <ShipHealthDisplay health={shipHealth} highlightPart={lastResult?.partTarget as ShipPart | undefined} />
+
+      {/* Timer */}
+      {phase === "voting" && (
+        <View className="flex-row justify-end mt-3">
+          <View className={`px-4 py-1 rounded-full ${timeLeft <= 10 ? "bg-coral" : "bg-ocean-light"}`}>
+            <Text className="text-white font-bold">{timeLeft}s</Text>
+          </View>
         </View>
       )}
 
-      {phase === "listening" && currentQuestion && (
-        <AudioPlayer
-          audioUrl={currentQuestion.audioUrl}
-          onEnd={handleAudioEnd}
-          autoPlay
-        />
+      {/* ── Waiting phase ─────────────────────────────────────── */}
+      {phase === "waiting" && (
+        <View className="items-center mt-12">
+          <Text className="text-5xl mb-4">⚓</Text>
+          <Text className="text-gold text-xl font-bold mb-2">Waiting for crew...</Text>
+          <Text className="text-parchment-dark text-sm mb-8">
+            {room?.players?.length ?? 1} sailor{(room?.players?.length ?? 1) !== 1 ? "s" : ""} aboard
+          </Text>
+          {isHost && (
+            <TouchableOpacity
+              onPress={handleStartRound}
+              disabled={startingRound}
+              className="bg-gold rounded-xl px-10 py-4 items-center w-full"
+            >
+              {startingRound
+                ? <ActivityIndicator color="#1a1a2e" />
+                : <Text className="text-ocean-deep font-bold text-lg">Start Round 1</Text>
+              }
+            </TouchableOpacity>
+          )}
+          {!isHost && (
+            <Text className="text-parchment-dark text-sm italic">Waiting for captain to start...</Text>
+          )}
+        </View>
       )}
 
+      {/* ── Listening phase ───────────────────────────────────── */}
+      {phase === "listening" && currentQuestion && (
+        <View className="mt-6">
+          <Text className="text-parchment-dark text-xs text-center mb-4">Listen carefully. Audio plays once.</Text>
+          <AudioPlayer audioUrl={currentQuestion.audioUrl} onEnd={handleAudioEnd} autoPlay />
+        </View>
+      )}
+
+      {/* ── Voting / Result phase ─────────────────────────────── */}
       {(phase === "voting" || phase === "result") && currentQuestion && (
-        <View>
-          <Text className="text-parchment text-base font-semibold mb-6 leading-7">
+        <View className="mt-4">
+          <Text className="text-parchment text-base font-semibold mb-5 leading-7">
             {currentQuestion.text}
           </Text>
 
@@ -175,7 +224,7 @@ export default function GameScreen() {
               let bg = "bg-ocean-mid border-ocean-light";
               if (phase === "result") {
                 if (isCorrect) bg = "bg-green-900 border-green-500";
-                else if (isCrewAnswer) bg = "bg-red-900 border-red-500";
+                else if (isCrewAnswer && !isCorrect) bg = "bg-red-900 border-red-500";
               } else if (isMyVote) {
                 bg = "bg-ocean-light border-gold";
               }
@@ -204,25 +253,61 @@ export default function GameScreen() {
               Discuss with your crew and tap your answer.
             </Text>
           )}
+          {voteError ? (
+            <Text className="text-coral text-xs text-center mt-2">{voteError}</Text>
+          ) : null}
 
+          {/* Result feedback */}
           {phase === "result" && lastResult && (
-            <View
-              className={`mt-6 rounded-xl p-4 ${
-                lastResult.isCorrect ? "bg-green-900/50" : "bg-red-900/50"
-              }`}
-            >
-              <Text className="text-white font-bold text-lg mb-1">
-                {lastResult.isCorrect
-                  ? `✓ Correct! +25% ${lastResult.partTarget}`
-                  : `✗ Wrong! -25% ${lastResult.partTarget}`}
-              </Text>
-              <Text className="text-parchment-dark text-sm">
-                Crew voted: {lastResult.crewAnswer} | Correct: {lastResult.correctAnswer}
-              </Text>
+            <View>
+              <View className={`mt-5 rounded-xl p-4 ${lastResult.isCorrect ? "bg-green-900/50" : "bg-red-900/50"}`}>
+                <Text className="text-white font-bold text-base mb-1">
+                  {lastResult.isCorrect
+                    ? `✓ Correct! ${lastResult.partTarget} repaired +25%`
+                    : `✗ Wrong! ${lastResult.partTarget} damaged -25%`}
+                </Text>
+                <Text className="text-parchment-dark text-sm">
+                  Crew voted: {lastResult.crewAnswer} · Correct: {lastResult.correctAnswer}
+                </Text>
+              </View>
+
+              {/* Next round button (host only) */}
+              {isHost && (
+                <TouchableOpacity
+                  onPress={isLastRound
+                    ? () => router.replace("/(multiplayer)/results")
+                    : handleStartRound
+                  }
+                  disabled={startingRound}
+                  className="mt-4 bg-gold rounded-xl py-4 items-center"
+                >
+                  {startingRound
+                    ? <ActivityIndicator color="#1a1a2e" />
+                    : <Text className="text-ocean-deep font-bold text-base">
+                        {isLastRound ? "See Results ⭐" : "Next Round →"}
+                      </Text>
+                  }
+                </TouchableOpacity>
+              )}
+              {!isHost && (
+                <Text className="text-parchment-dark text-xs text-center mt-4 italic">
+                  {isLastRound ? "Waiting for final results..." : "Waiting for captain to start next round..."}
+                </Text>
+              )}
+
+              {/* Game-end countdown */}
+              {endCountdown !== null && (
+                <View className="mt-4 bg-ocean-mid rounded-xl p-3 items-center border border-gold/30">
+                  <Text className="text-parchment-dark text-xs">
+                    Heading to results in <Text className="text-gold font-bold">{endCountdown}</Text>...
+                  </Text>
+                </View>
+              )}
             </View>
           )}
         </View>
       )}
     </ScrollView>
+    </SafeAreaView>
   );
 }

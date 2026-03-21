@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { useMultiplayerStore } from "@/stores/multiplayer";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 const SHIP_PARTS = ["hull", "mast", "sails", "anchor", "rudder"] as const;
 
@@ -14,18 +17,26 @@ export default function ResultsScreen() {
 
   const crewWon = fullyRepaired >= 3;
 
+  const emojiScale = useSharedValue(0);
+  useEffect(() => {
+    emojiScale.value = withSpring(1, { damping: 8, stiffness: 120 });
+  }, [emojiScale]);
+  const emojiStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: emojiScale.value }],
+  }));
+
   function handleDone() {
     reset();
     router.replace("/(main)/dashboard");
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-ocean-deep"
-      contentContainerClassName="px-6 pt-14 pb-8 items-center"
-    >
+    <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+    <ScrollView contentContainerClassName="px-6 pt-8 pb-8 items-center">
       {/* Outcome */}
-      <Text className="text-7xl mb-4">{crewWon ? "🏆" : "💀"}</Text>
+      <Animated.Text style={emojiStyle} className="text-7xl mb-4">
+        {crewWon ? "🏆" : "💀"}
+      </Animated.Text>
       <Text className="text-gold text-3xl font-bold text-center mb-2">
         {crewWon ? "Ship Saved!" : "Ship Sunk!"}
       </Text>
@@ -66,7 +77,7 @@ export default function ResultsScreen() {
 
       {/* Round summary */}
       {room?.currentRound && (
-        <View className="w-full bg-ocean-mid rounded-2xl p-5 border border-ocean-light mb-8">
+        <View className="w-full bg-ocean-mid rounded-2xl p-5 border border-ocean-light mb-4">
           <Text className="text-gold font-bold text-sm mb-2">SESSION SUMMARY</Text>
           <Text className="text-parchment text-sm">
             Rounds completed: {room.currentRound - 1}/{room.roundCount}
@@ -77,6 +88,10 @@ export default function ResultsScreen() {
         </View>
       )}
 
+      <Text className="text-parchment-dark text-xs text-center mb-8">
+        Repair 3 or more ship parts to win.
+      </Text>
+
       <TouchableOpacity
         onPress={handleDone}
         className="w-full bg-gold rounded-xl py-4 items-center"
@@ -84,5 +99,6 @@ export default function ResultsScreen() {
         <Text className="text-ocean-deep font-bold text-lg">Return to Dashboard</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }

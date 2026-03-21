@@ -29,8 +29,7 @@ export default function LoginScreen() {
     try {
       const data = await apiClient.login({ username, password });
       await setAuth(data.token, data.user);
-      // New users go to tutorial, returning users to dashboard
-      router.replace(data.user.createdAt ? "/(main)/dashboard" : "/(auth)/tutorial");
+      router.replace("/(main)/dashboard");
     } catch (e: any) {
       setError(e.message ?? "Login failed. Please try again.");
     } finally {

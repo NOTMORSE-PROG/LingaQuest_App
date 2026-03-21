@@ -12,7 +12,19 @@ export async function GET(
   const { id } = await params;
   const pin = await prisma.pin.findUnique({
     where: { id },
-    include: { challenges: { orderBy: { sortOrder: "asc" } } },
+    include: {
+      challenges: { orderBy: { sortOrder: "asc" } },
+      island: {
+        select: {
+          number: true,
+          name: true,
+          skillFocus: true,
+          npcDialogueIntro: true,
+          npcDialogueSuccess: true,
+          npcDialogueFail: true,
+        },
+      },
+    },
   });
 
   if (!pin) {

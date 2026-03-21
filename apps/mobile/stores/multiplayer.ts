@@ -23,7 +23,7 @@ interface MultiplayerStore {
   setRoom: (room: MultiplayerRoom) => void;
   setCurrentQuestion: (q: MultiplayerStore["currentQuestion"]) => void;
   setTimeRemaining: (t: number) => void;
-  setVote: (vote: string) => void;
+  setVote: (vote: string | null) => void;
   setCrewVoteCounts: (counts: Record<string, number>) => void;
   setLastResult: (result: MultiplayerStore["lastResult"]) => void;
   reset: () => void;
@@ -42,7 +42,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
   setCurrentQuestion: (currentQuestion) =>
     set({ currentQuestion, hasVoted: false, myVote: null, crewVoteCounts: {} }),
   setTimeRemaining: (timeRemaining) => set({ timeRemaining }),
-  setVote: (vote) => set({ hasVoted: true, myVote: vote }),
+  setVote: (vote) => set({ hasVoted: vote !== null, myVote: vote }),
   setCrewVoteCounts: (crewVoteCounts) => set({ crewVoteCounts }),
   setLastResult: (lastResult) => set({ lastResult }),
   reset: () =>

@@ -5,8 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { apiClient } from "@/lib/api";
@@ -93,7 +93,8 @@ export default function LobbyScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ocean-deep px-8 pt-14">
+    <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+    <View className="flex-1 px-8 pt-4">
       <TouchableOpacity onPress={() => router.back()} className="mb-8">
         <Text className="text-gold text-base">← Back</Text>
       </TouchableOpacity>
@@ -154,8 +155,9 @@ export default function LobbyScreen() {
             placeholder="ROOM CODE"
             placeholderTextColor="#6b7280"
             value={roomCode}
-            onChangeText={setRoomCode}
+            onChangeText={(t) => setRoomCode(t.toUpperCase())}
             autoCapitalize="characters"
+            autoCorrect={false}
             maxLength={6}
           />
           {error ? <Text className="text-coral mb-4 text-center">{error}</Text> : null}
@@ -173,5 +175,6 @@ export default function LobbyScreen() {
         </View>
       )}
     </View>
+    </SafeAreaView>
   );
 }

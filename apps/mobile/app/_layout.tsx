@@ -26,7 +26,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
     setup();
-  }, []);
+  }, [initialize]);
 
   return (
     <GestureHandlerRootView className="flex-1">

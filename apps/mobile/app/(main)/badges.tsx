@@ -1,4 +1,5 @@
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
@@ -45,8 +46,8 @@ export default function BadgesScreen() {
   const allBadges = Object.entries(BADGE_META) as [BadgeType, typeof BADGE_META[BadgeType]][];
 
   return (
-    <View className="flex-1 bg-ocean-deep">
-      <Text className="text-gold text-3xl font-bold px-6 pt-14 mb-2">Badges</Text>
+    <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+      <Text className="text-gold text-3xl font-bold px-6 pt-4 mb-2">Badges</Text>
       <Text className="text-parchment-dark text-sm px-6 mb-6">
         {earnedTypes.size}/{allBadges.length} earned
       </Text>
@@ -67,6 +68,7 @@ export default function BadgesScreen() {
                   : "bg-ocean-mid border-ocean-light opacity-40"
               }`}
             >
+              {!earned && <Text className="text-lg mb-1">🔒</Text>}
               <Text className="text-4xl mb-2">{meta.emoji}</Text>
               <Text className="text-gold font-bold text-center text-sm">{meta.label}</Text>
               <Text className="text-parchment-dark text-xs text-center mt-1">{meta.desc}</Text>
@@ -74,6 +76,6 @@ export default function BadgesScreen() {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }

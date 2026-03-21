@@ -15,7 +15,10 @@ export async function GET(
     include: {
       pins: {
         orderBy: { sortOrder: "asc" },
-        include: { challenges: { orderBy: { sortOrder: "asc" } } },
+        include: {
+          challenges: { orderBy: { sortOrder: "asc" } },
+          progress: { where: { userId: auth.userId } },
+        },
       },
     },
   });
@@ -24,5 +27,14 @@ export async function GET(
     return NextResponse.json({ error: "Island not found." }, { status: 404 });
   }
 
-  return NextResponse.json(island);
+  const islandWithProgress = {
+    ...island,
+    pins: island.pins.map((pin) => ({
+      ...pin,
+      isCompleted: pin.progress[0]?.isCompleted ?? false,
+      progress: undefined,
+    })),
+  };
+
+  return NextResponse.json(islandWithProgress);
 }

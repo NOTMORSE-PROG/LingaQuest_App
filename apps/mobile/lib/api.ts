@@ -23,7 +23,14 @@ async function request<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status}`);
+    const STATUS_MESSAGES: Record<number, string> = {
+      401: "Session expired. Please log in again.",
+      403: "You don't have permission to do that.",
+      404: "Content not found.",
+      409: "Action not available right now.",
+      500: "Server error. Please try again.",
+    };
+    throw new Error(body.error ?? STATUS_MESSAGES[res.status] ?? `Something went wrong (${res.status}).`);
   }
 
   return res.json();
@@ -65,5 +72,11 @@ export const apiClient = {
     request("/multiplayer/vote", {
       method: "POST",
       body: JSON.stringify({ roomId, answer }),
+    }),
+
+  startRound: (roomId: string) =>
+    request("/multiplayer/start-round", {
+      method: "POST",
+      body: JSON.stringify({ roomId }),
     }),
 };

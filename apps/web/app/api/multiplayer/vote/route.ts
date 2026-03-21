@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "roomId and answer are required." }, { status: 400 });
   }
 
+  if (!["A", "B", "C", "D"].includes(answer)) {
+    return NextResponse.json({ error: "answer must be A, B, C, or D." }, { status: 400 });
+  }
+
   const room = await prisma.multiplayerRoom.findUnique({
     where: { id: roomId },
     include: { players: true, rounds: { orderBy: { round: "desc" }, take: 1 } },
@@ -85,14 +89,21 @@ async function resolveRound(
 
   // Get the correct answer from the current challenge
   // (In production, track which challenge is active per round/question)
-  const latestRoundResult = room.rounds[0];
-  const partTarget: ShipPart =
-    (latestRoundResult?.partTarget as ShipPart) ??
-    getMostDamagedPart(room.shipHealth as ShipHealth);
+  const partTarget: ShipPart = getMostDamagedPart(room.shipHealth as ShipHealth);
 
-  // Fetch current challenge for this round (simplified — needs challenge tracking)
-  // For now using a placeholder; real implementation queries active challenge
-  const correctAnswer = "B"; // TODO: replace with actual challenge answer lookup
+  // Fetch correct answer using the same deterministic challenge pool as start-round
+  const challengePool = await prisma.challenge.findMany({
+    orderBy: [
+      { pin: { island: { number: "asc" } } },
+      { pin: { number: "asc" } },
+      { sortOrder: "asc" },
+    ],
+    select: { id: true, answer: true },
+  });
+  const challenge = challengePool.length > 0
+    ? challengePool[(round - 1) % challengePool.length]
+    : null;
+  const correctAnswer = (challenge?.answer as string) ?? "B";
   const isCorrect = crewAnswer === correctAnswer;
   const healthDelta = isCorrect ? 25 : -25;
 
@@ -121,11 +132,13 @@ async function resolveRound(
       where: { id: roomId },
       data: {
         shipHealth: newHealth as object,
-        status: isShipSunk(newHealth) ? "FINISHED" : "ACTIVE",
+        status: isShipSunk(newHealth) || round >= room.roundCount ? "FINISHED" : "ACTIVE",
         currentRound: round + 1,
       },
     }),
   ]);
+
+  const gameOver = isShipSunk(newHealth) || round >= room.roundCount;
 
   await pusher.trigger(roomChannel(roomId), "round:result", {
     crewAnswer,
@@ -134,5 +147,13 @@ async function resolveRound(
     healthDelta,
     partTarget,
     newShipHealth: newHealth,
+    isLastRound: gameOver,
   });
+
+  // Broadcast game end so all clients navigate to results
+  if (gameOver) {
+    await pusher.trigger(roomChannel(roomId), "game:end", {
+      shipHealth: newHealth,
+    });
+  }
 }
