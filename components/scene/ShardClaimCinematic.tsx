@@ -105,7 +105,7 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
   const RING_SIZE = 90;
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+    <View style={[StyleSheet.absoluteFillObject, { zIndex: 10 }]} pointerEvents="box-none">
       {/* Dark overlay */}
       <Animated.View style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.93)" }, bgStyle]} />
 

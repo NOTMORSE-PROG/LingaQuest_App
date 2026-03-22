@@ -21,7 +21,21 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-type Phase = "intro" | "listening" | "answering" | "result" | "claimShard" | "pinComplete";
+const LABELS = ["A", "B", "C", "D"] as const;
+
+// Shuffle choices and reassign labels A→D in display order.
+// Also updates `answer` so it still points to the correct choice.
+function shuffleChallenge(c: Challenge): Challenge {
+  const correctChoice = c.choices.find((ch) => ch.label === c.answer);
+  const shuffled = shuffle(c.choices); // same object refs, new array
+  // Find the correct choice's new position by reference before relabeling
+  const shuffledIdx = correctChoice ? shuffled.indexOf(correctChoice) : -1;
+  const relabeled = shuffled.map((ch, i) => ({ ...ch, label: LABELS[i] }));
+  const newAnswer = shuffledIdx >= 0 ? LABELS[shuffledIdx] : c.answer;
+  return { ...c, choices: relabeled, answer: newAnswer };
+}
+
+type Phase = "intro" | "listening" | "answering" | "result" | "submitting" | "claimShard" | "pinComplete";
 
 export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
@@ -34,7 +48,6 @@ export default function QuestScreen() {
   const [challengeIndex, setChallengeIndex] = useState(0);
   const [selected, setSelected] = useState<"A" | "B" | "C" | "D" | null>(null);
   const [showHint, setShowHint] = useState(false);
-  const [hintsUsed, setHintsUsed] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [countdown, setCountdown] = useState(0);
   const [pinScore, setPinScore] = useState(0);
@@ -43,34 +56,58 @@ export default function QuestScreen() {
   // Track if pin was already completed when loaded — used to skip shard cinematic on retry
   const wasAlreadyCompleted = useRef(false);
 
+  // Reset all per-pin state when navigating to a different pin.
+  // The (main) layout uses a Tabs navigator which REUSES this component instance across
+  // router.replace() calls — useState initialises only once on mount, so stale values
+  // (especially isResultMode=true) would bleed into the next pin without this reset.
+  const prevPinIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (prevPinIdRef.current === undefined) {
+      prevPinIdRef.current = pinId;
+      return; // initial mount — useState already set correctly
+    }
+    if (prevPinIdRef.current === pinId) return;
+    prevPinIdRef.current = pinId;
+
+    setIsResultMode(mode === "result");
+    setPhase("intro");
+    setChallengeIndex(0);
+    setSelected(null);
+    setCorrectCount(0);
+    setPinScore(0);
+    setShowHint(false);
+    setSubmitError(null);
+    wasAlreadyCompleted.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pinId]);
+
   const { data: pin, isLoading, isError: isPinError, refetch: refetchPin } = useQuery({
     queryKey: ["pin", pinId],
     queryFn: () => apiClient.getPin(pinId),
   });
 
   const submitMutation = useMutation({
-    mutationFn: (data: { pinId: string; hintsUsed: number; accuracy: number }) =>
+    mutationFn: (data: { pinId: string; accuracy: number }) =>
       apiClient.submitProgress(data),
     onSuccess: () => {
       setSubmitError(null);
       queryClient.invalidateQueries({ queryKey: ["progress"] });
       queryClient.invalidateQueries({ queryKey: ["island"] });
       queryClient.invalidateQueries({ queryKey: ["islands"] });
+      setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
     },
     onError: (err: unknown) => {
       setSubmitError(
         err instanceof Error ? err.message : "Progress could not be saved. Please retry."
       );
+      setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
     },
   });
 
   // Shuffle challenges and choices once per pin load
   useEffect(() => {
     if (!pin?.challenges?.length) return;
-    const shuffled = shuffle(pin.challenges).map((c) => ({
-      ...c,
-      choices: shuffle(c.choices),
-    }));
+    const shuffled = shuffle(pin.challenges).map(shuffleChallenge);
     setShuffledChallenges(shuffled);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pin?.id]); // intentional: only re-shuffle when pin changes, not on every challenges reference update
@@ -103,9 +140,16 @@ export default function QuestScreen() {
     return () => clearInterval(interval);
   }, [phase]);
 
+  // Auto-show hint after 30s of no answer
+  useEffect(() => {
+    if (phase !== "answering" || selected !== null || showHint) return;
+    const timer = setTimeout(() => setShowHint(true), 30000);
+    return () => clearTimeout(timer);
+  }, [phase, selected, showHint]);
+
   function confirmExit() {
     const dest = `/(main)/island/${pin?.islandId}` as const;
-    if (phase === "intro" || phase === "pinComplete" || phase === "claimShard") {
+    if (phase === "intro" || phase === "submitting" || phase === "pinComplete" || phase === "claimShard") {
       router.replace(dest);
       return;
     }
@@ -283,19 +327,21 @@ export default function QuestScreen() {
 
   function handleNext() {
     if (isLastChallenge) {
-      // correctCount lags one render behind setState — compute inline
-      const finalCorrect = correctCount + (selected === current.answer ? 1 : 0);
-      const accuracy = Math.round((finalCorrect / challenges.length) * 100);
+      // With React 18 batching, correctCount is already committed by the time
+      // the user presses Continue (4+ seconds after handleAnswer).
+      const accuracy = Math.round((correctCount / challenges.length) * 100);
       setPinScore(accuracy);
       // Submit immediately so progress is saved even if user exits during cinematic
-      submitMutation.mutate({ pinId, hintsUsed, accuracy });
+      submitMutation.mutate({ pinId, accuracy });
       // Shard cinematic only fires on the LAST pin of the island (sortOrder 5),
       // and only on first-ever completion — not on retries
       const isLastPin = pin?.sortOrder === 5;
       if (isLastPin && !wasAlreadyCompleted.current) {
+        // Cinematic plays while submit happens in background
         setPhase("claimShard");
       } else {
-        setPhase("pinComplete");
+        // Show loading until submit resolves, then onSuccess transitions to pinComplete
+        setPhase("submitting");
       }
     } else {
       setChallengeIndex((i) => i + 1);
@@ -309,10 +355,6 @@ export default function QuestScreen() {
     setPhase("pinComplete");
   }
 
-  function handleHint() {
-    setShowHint(true);
-    setHintsUsed((h) => h + 1);
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" style={questBg} edges={["top"]}>
@@ -351,7 +393,7 @@ export default function QuestScreen() {
         </View>
       )}
 
-      {/* Island Banner */}
+      {/* Island + Pin Banner */}
       {islandName ? (
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
           <View style={{
@@ -366,6 +408,20 @@ export default function QuestScreen() {
               Island {islandNum} · {islandName}
             </Text>
           </View>
+          {pin?.number != null && (
+            <View style={{
+              backgroundColor: "rgba(255,255,255,0.07)",
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.15)",
+            }}>
+              <Text style={{ color: "#e5e7eb", fontSize: 11, fontWeight: "700" }}>
+                Pin {pin.number}
+              </Text>
+            </View>
+          )}
           {islandSkill ? (
             <Text style={{ color: "#6b7280", fontSize: 10 }}>{islandSkill}</Text>
           ) : null}
@@ -472,6 +528,16 @@ export default function QuestScreen() {
         </View>
       )}
 
+      {/* ========== SUBMITTING ========== */}
+      {phase === "submitting" && (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#f5c518" size="large" />
+          <Text className="text-parchment-dark text-xs mt-4 tracking-widest uppercase">
+            Saving progress…
+          </Text>
+        </View>
+      )}
+
       {/* ========== PIN COMPLETE ========== */}
       {phase === "pinComplete" && (
         <View className="mt-8 items-center px-2">
@@ -502,7 +568,7 @@ export default function QuestScreen() {
             <View className="w-full bg-red-900/50 border border-red-500 rounded-xl p-4 mb-4">
               <Text className="text-red-300 text-sm text-center mb-3">{submitError}</Text>
               <TouchableOpacity
-                onPress={() => submitMutation.mutate({ pinId, hintsUsed, accuracy: pinScore })}
+                onPress={() => submitMutation.mutate({ pinId, accuracy: pinScore })}
                 className="bg-red-700 rounded-lg py-2 items-center"
               >
                 <Text className="text-white font-bold text-sm">Retry Submission</Text>
@@ -518,13 +584,12 @@ export default function QuestScreen() {
               setChallengeIndex(0);
               setSelected(null);
               setCorrectCount(0);
-              setHintsUsed(0);
               setPinScore(0);
               setShowHint(false);
               setSubmitError(null);
               if (pin?.challenges?.length) {
                 setShuffledChallenges(
-                  shuffle(pin.challenges).map((c) => ({ ...c, choices: shuffle(c.choices) }))
+                  shuffle(pin.challenges).map(shuffleChallenge)
                 );
               }
             }}
@@ -538,7 +603,7 @@ export default function QuestScreen() {
             <Text style={{ color: "#f5c518", fontWeight: "700", fontSize: 16 }}>↺ Try Again</Text>
           </TouchableOpacity>
 
-          {/* Next Quest — only shown if there is a next pin */}
+          {/* Next Quest — shown whenever there is a next pin (pass or fail) */}
           {nextPinId && (
             <TouchableOpacity
               onPress={() => router.replace(`/(main)/quest/${nextPinId}`)}
@@ -613,12 +678,7 @@ export default function QuestScreen() {
             })}
           </View>
 
-          {/* Hint */}
-          {phase === "answering" && !showHint && (
-            <TouchableOpacity onPress={handleHint} className="mt-5 items-center">
-              <Text className="text-gold/60 text-sm">💡 Need a hint?</Text>
-            </TouchableOpacity>
-          )}
+          {/* Hint — auto-appears after 30s of no answer */}
           {showHint && (
             <View className="mt-4 bg-gold/10 rounded-xl p-4 border border-gold/30">
               <Text className="text-gold text-sm">💡 {current.hint}</Text>

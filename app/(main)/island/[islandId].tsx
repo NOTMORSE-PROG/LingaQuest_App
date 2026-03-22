@@ -11,7 +11,6 @@ import Animated, {
   useSharedValue, useAnimatedStyle, cancelAnimation,
   withRepeat, withSequence, withTiming, Easing,
 } from "react-native-reanimated";
-import * as SecureStore from "expo-secure-store";
 import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { IngayWarning } from "@/components/characters/IngayWarning";
@@ -632,22 +631,19 @@ export default function IslandScreen() {
   const { islandId } = useLocalSearchParams<{ islandId: string }>();
   const { user } = useAuthStore();
   const characterMode = user?.characterModeEnabled ?? false;
-  const [phase, setPhase] = useState<"ingay" | "captain" | "map">(
-    characterMode ? "ingay" : "map"
-  );
+  const [phase, setPhase] = useState<"ingay" | "captain" | "map">("map");
 
-  // Skip Ingay if already seen for this island (only show once per island)
-  useEffect(() => {
-    if (!characterMode) return;
-    SecureStore.getItemAsync(`ingay_seen_${islandId}`).then((val) => {
-      if (val === "1") setPhase("captain");
-    });
-  }, [islandId, characterMode]);
   const { data: island, isLoading } = useQuery({
     queryKey: ["island", islandId],
     queryFn: () => apiClient.getIsland(islandId),
     refetchOnMount: true,
   });
+
+  // Set initial phase based on DB ingaySeen — runs once after island loads
+  useEffect(() => {
+    if (!island || !characterMode) return;
+    setPhase((island as any).ingaySeen ? "captain" : "ingay");
+  }, [island?.id, characterMode]);
 
   if (isLoading || !island) {
     return (
@@ -666,7 +662,7 @@ export default function IslandScreen() {
         islandName={island.name}
         skillFocus={island.skillFocus}
         onDismiss={() => {
-          SecureStore.setItemAsync(`ingay_seen_${islandId}`, "1");
+          apiClient.markIngaySeen(islandId).catch(() => {});
           setPhase("captain");
         }}
         audioUrl={island.ingayAudioUrl}
@@ -703,7 +699,7 @@ export default function IslandScreen() {
   const pins = island.pins ?? [];
   const pinStates = pins.map((pin: any, idx: number) => {
     const isCompleted = pin.isCompleted ?? false;
-    const isUnlocked = idx === 0 || (pins[idx - 1]?.isCompleted ?? false);
+    const isUnlocked = idx === 0 || ((pins[idx - 1]?.isCompleted ?? false) && (pins[idx - 1]?.accuracy ?? 0) >= 100);
     const isCurrent = isUnlocked && !isCompleted;
     return { ...pin, isCompleted, isUnlocked, isCurrent };
   });

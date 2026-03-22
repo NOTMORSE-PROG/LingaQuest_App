@@ -4,7 +4,6 @@ export interface Progress {
   pinId: string;
   isCompleted: boolean;
   accuracy: number;
-  hintsUsed: number;
   completedAt?: string;
 }
 

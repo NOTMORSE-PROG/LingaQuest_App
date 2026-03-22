@@ -300,7 +300,7 @@ export function CaptainSalita({ state, dialogue, audioUrl, size = 180 }: Props) 
               fontSize: 13,
               lineHeight: 20,
               fontStyle: "italic",
-            }} numberOfLines={4} ellipsizeMode="tail">
+            }}>
               "{dialogue}"
             </Text>
           </View>

@@ -180,9 +180,14 @@ export default function OnboardingScreen() {
                 )}
               </View>
 
-              <Text className="text-parchment-dark text-xs text-center mt-2">
-                Letters, numbers, spaces, and underscores · 3–20 characters
-              </Text>
+              <View className="flex-row justify-between mt-2 px-1">
+                <Text className="text-parchment-dark text-xs">
+                  Letters, numbers, spaces, and underscores · 3–20 characters
+                </Text>
+                <Text style={{ fontSize: 11, color: username.length >= 18 ? "#ef4444" : "#6b7280" }}>
+                  {username.length}/20
+                </Text>
+              </View>
 
               {usernameError ? (
                 <Text className="text-coral mt-1 text-sm text-center">{usernameError}</Text>
@@ -194,7 +199,7 @@ export default function OnboardingScreen() {
               <TouchableOpacity
                 onPress={handleSaveUsername}
                 disabled={savingUsername || checkingUsername || usernameAvailable === false}
-                className={`mt-6 w-full rounded-xl py-4 items-center ${usernameAvailable === false ? "bg-ocean-light" : "bg-gold"}`}
+                className={`mt-6 w-full rounded-xl py-4 items-center bg-gold ${savingUsername || checkingUsername || usernameAvailable === false ? "opacity-50" : ""}`}
               >
                 {savingUsername ? (
                   <ActivityIndicator color="#1a1a2e" />
@@ -207,20 +212,23 @@ export default function OnboardingScreen() {
 
           {/* ── STEP 2: Meet the Crew ── */}
           {step === 2 && (
-            <View className="w-full items-center relative">
-              <DagatCharacter state="celebrating" size={180} />
-              <Text className="text-gold text-2xl font-bold text-center mt-6 mb-4">
+            <View className="w-full items-center">
+              {/* Characters side by side */}
+              <View className="flex-row items-end justify-center gap-6 mb-2">
+                <DagatCharacter state="celebrating" size={150} />
+                <View className="opacity-85 mb-2">
+                  <CaptainSalita state="pointing" size={100} />
+                </View>
+              </View>
+              <Text className="text-gold text-2xl font-bold text-center mt-4 mb-4">
                 You are Dagat.
               </Text>
               <Text className="text-parchment text-base text-center leading-7 mb-8">
                 A brave pirate apprentice. Captain Salita needs your ears — her voice was stolen by Ingay, the spirit of noise. Sail the Listening Sea. Recover the 7 shards.
               </Text>
-              <View className="absolute bottom-0 right-0 opacity-80">
-                <CaptainSalita state="pointing" size={100} />
-              </View>
-              <View className="flex-row w-full mt-4">
-                <TouchableOpacity onPress={skipToEnd} className="flex-1 py-4 items-center">
-                  <Text className="text-parchment text-base underline opacity-70">Skip</Text>
+              <View className="flex-row w-full">
+                <TouchableOpacity onPress={skipToEnd} className="flex-1 py-4 items-center rounded-xl border border-parchment-dark">
+                  <Text className="text-parchment text-base font-semibold">Skip</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setStep(3)}
@@ -243,8 +251,8 @@ export default function OnboardingScreen() {
                 No pause. No replay. That's the challenge.{"\n\n"}Trust what you heard. A sharp ear is built through pressure — not comfort.
               </Text>
               <View className="flex-row w-full">
-                <TouchableOpacity onPress={skipToEnd} className="flex-1 py-4 items-center">
-                  <Text className="text-parchment text-base underline opacity-70">Skip</Text>
+                <TouchableOpacity onPress={skipToEnd} className="flex-1 py-4 items-center rounded-xl border border-parchment-dark">
+                  <Text className="text-parchment text-base font-semibold">Skip</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setStep(4)}

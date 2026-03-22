@@ -102,10 +102,11 @@ export const apiClient = {
   getIslands: () => request<IslandWithPins[]>("/islands"),
   getIsland: (id: string) => request<IslandWithPins>(`/islands/${id}`),
   getPin: (id: string) => request<IslandWithPins["pins"][number]>(`/islands/pins/${id}`),
+  markIngaySeen: (islandId: string) => request<{ ok: boolean }>(`/islands/${islandId}/seen-ingay`, { method: "POST" }),
 
   // Progress
   getProgress: () => request<IslandProgress[]>("/progress"),
-  submitProgress: (data: { pinId: string; hintsUsed: number; accuracy: number }) =>
+  submitProgress: (data: { pinId: string; accuracy: number }) =>
     request("/progress", { method: "POST", body: JSON.stringify(data) }),
 
   // Badges
