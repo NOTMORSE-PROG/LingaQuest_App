@@ -54,6 +54,9 @@ backend/prisma/migrations/*.sql
 .vscode/settings.json
 .idea/
 
+# Scripts (local only)
+scripts/
+
 # Workflows (temporarily excluded)
 .github/workflows/build-apk.yml
 
