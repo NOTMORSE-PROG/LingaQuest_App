@@ -775,8 +775,8 @@ export default function IslandScreen() {
         </View>
       </View>
 
-      {/* Cumulative accuracy bar — shown when at least 1 pin completed */}
-      {cumulativeAccuracy !== null && (() => {
+      {/* Cumulative accuracy bar — shown only after all pins completed */}
+      {allPinsCompleted && cumulativeAccuracy !== null && (() => {
         const fillColor = islandPassed ? "#4ade80" : cumulativeAccuracy >= 50 ? "#f5c518" : "#f87171";
         return (
           <View style={{ paddingHorizontal: 20, paddingBottom: 12 }}>

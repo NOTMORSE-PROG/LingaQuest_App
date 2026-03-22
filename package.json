@@ -32,7 +32,7 @@
     "expo-status-bar": "~3.0.0",
     "nativewind": "^4.0.1",
     "pusher-js": "^8.4.0",
-    "react": "^19.2.4",
+    "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.0",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.1.0",
     "eslint": "^8.57.0",
     "eslint-config-expo": "^8.0.0",
     "tailwindcss": "^3.4.0",

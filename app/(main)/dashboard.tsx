@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, useWindowDimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, useWindowDimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
@@ -137,7 +137,7 @@ function PirateShip() {
 export default function DashboardScreen() {
   const { user } = useAuthStore();
 
-  const { data: islands, isError: isIslandsError } = useQuery({
+  const { data: islands, isLoading: islandsLoading, isError: isIslandsError } = useQuery({
     queryKey: ["islands"],
     queryFn: () => apiClient.getIslands(),
     refetchOnMount: true,
@@ -206,64 +206,74 @@ export default function DashboardScreen() {
         </View>
       )}
 
-      {/* Stats row */}
-      <View className="flex-row mx-6 gap-3 mb-4">
-        <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
-          <Text className="text-gold text-3xl font-bold">{completedIslands}</Text>
-          <Text className="text-parchment-dark text-xs mt-1 text-center">Islands{"\n"}Conquered</Text>
+      {/* Stats + island card — skeleton while loading */}
+      {islandsLoading ? (
+        <View className="items-center py-8 mb-4">
+          <ActivityIndicator color="#f5c518" size="large" />
+          <Text className="text-parchment-dark text-xs mt-3 tracking-widest uppercase">Charting the seas…</Text>
         </View>
-        <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
-          <Text className="text-gold text-3xl font-bold">{earnedBadges}</Text>
-          <Text className="text-parchment-dark text-xs mt-1 text-center">Badges{"\n"}Earned</Text>
-        </View>
-        <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
-          <Text className="text-gold text-3xl font-bold">{totalIslands}</Text>
-          <Text className="text-parchment-dark text-xs mt-1 text-center">Islands{"\n"}Total</Text>
-        </View>
-      </View>
-
-      {/* Overall progress bar */}
-      <View className="mx-6 mb-5">
-        <View className="flex-row justify-between mb-2">
-          <Text className="text-parchment text-xs font-semibold">VOYAGE PROGRESS</Text>
-          <Text className="text-gold text-xs font-bold">{completedIslands}/{totalIslands}</Text>
-        </View>
-        <View className="h-3 bg-ocean-mid rounded-full overflow-hidden border border-ocean-light">
-          <View
-            className="h-full bg-gold rounded-full"
-            style={{ width: `${(completedIslands / totalIslands) * 100}%` }}
-          />
-        </View>
-      </View>
-
-      {/* Current island card */}
-      {currentIsland ? (
-        <TouchableOpacity
-          onPress={() => router.push(`/(main)/island/${currentIsland.id}`)}
-          className="mx-6 mb-4 bg-ocean-light rounded-2xl p-4 border border-gold/30"
-          activeOpacity={0.8}
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <Text className="text-gold text-xs font-bold mb-1">CURRENT ISLAND</Text>
-              <Text className="text-parchment font-bold text-base">{currentIsland.name}</Text>
-              <Text className="text-parchment-dark text-xs mt-0.5">{currentIsland.skillFocus}</Text>
+      ) : (
+        <>
+          {/* Stats row */}
+          <View className="flex-row mx-6 gap-3 mb-4">
+            <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
+              <Text className="text-gold text-3xl font-bold">{completedIslands}</Text>
+              <Text className="text-parchment-dark text-xs mt-1 text-center">Islands{"\n"}Conquered</Text>
             </View>
-            <View className="bg-gold/20 rounded-xl px-3 py-2 items-center ml-3">
-              <Text className="text-2xl">🏝️</Text>
-              <Text className="text-gold text-xs font-bold mt-1">#{currentIsland.number}</Text>
+            <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
+              <Text className="text-gold text-3xl font-bold">{earnedBadges}</Text>
+              <Text className="text-parchment-dark text-xs mt-1 text-center">Badges{"\n"}Earned</Text>
+            </View>
+            <View className="flex-1 bg-ocean-mid rounded-2xl p-4 border border-ocean-light items-center">
+              <Text className="text-gold text-3xl font-bold">{totalIslands}</Text>
+              <Text className="text-parchment-dark text-xs mt-1 text-center">Islands{"\n"}Total</Text>
             </View>
           </View>
-        </TouchableOpacity>
-      ) : islands && (islands as Island[]).length > 0 ? (
-        <View className="mx-6 mb-4 bg-ocean-light rounded-2xl p-5 border border-gold/50 items-center">
-          <Text className="text-5xl mb-2">🏆</Text>
-          <Text className="text-gold font-bold text-base">Voyage Complete!</Text>
-          <Text className="text-parchment-dark text-sm text-center mt-1">
-            You've conquered all {totalIslands} islands. True captain!
-          </Text>
-        </View>
-      ) : null}
+
+          {/* Overall progress bar */}
+          <View className="mx-6 mb-5">
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-parchment text-xs font-semibold">VOYAGE PROGRESS</Text>
+              <Text className="text-gold text-xs font-bold">{completedIslands}/{totalIslands}</Text>
+            </View>
+            <View className="h-3 bg-ocean-mid rounded-full overflow-hidden border border-ocean-light">
+              <View
+                className="h-full bg-gold rounded-full"
+                style={{ width: `${(completedIslands / totalIslands) * 100}%` }}
+              />
+            </View>
+          </View>
+
+          {/* Current island card */}
+          {currentIsland ? (
+            <TouchableOpacity
+              onPress={() => router.push(`/(main)/island/${currentIsland.id}`)}
+              className="mx-6 mb-4 bg-ocean-light rounded-2xl p-4 border border-gold/30"
+              activeOpacity={0.8}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1">
+                  <Text className="text-gold text-xs font-bold mb-1">CURRENT ISLAND</Text>
+                  <Text className="text-parchment font-bold text-base">{currentIsland.name}</Text>
+                  <Text className="text-parchment-dark text-xs mt-0.5">{currentIsland.skillFocus}</Text>
+                </View>
+                <View className="bg-gold/20 rounded-xl px-3 py-2 items-center ml-3">
+                  <Text className="text-2xl">🏝️</Text>
+                  <Text className="text-gold text-xs font-bold mt-1">#{currentIsland.number}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ) : (islands as Island[] | undefined)?.length ? (
+            <View className="mx-6 mb-4 bg-ocean-light rounded-2xl p-5 border border-gold/50 items-center">
+              <Text className="text-5xl mb-2">🏆</Text>
+              <Text className="text-gold font-bold text-base">Voyage Complete!</Text>
+              <Text className="text-parchment-dark text-sm text-center mt-1">
+                You've conquered all {totalIslands} islands. True captain!
+              </Text>
+            </View>
+          ) : null}
+        </>
+      )}
 
       {/* Action buttons */}
       <View className="mx-6 space-y-3">

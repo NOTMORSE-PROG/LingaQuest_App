@@ -176,6 +176,30 @@ export default function ProfileScreen() {
     // Navigation is handled by MainLayout's useEffect watching token/user
   }
 
+  function handleDeleteAccount() {
+    Alert.alert(
+      "Delete Account",
+      "This will permanently delete your account, all progress, badges, and data. This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await apiClient.deleteAccount();
+              await logout();
+              queryClient.clear();
+            } catch (e: unknown) {
+              const msg = e instanceof Error ? e.message : "Could not delete account. Please try again.";
+              Alert.alert("Error", msg);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
     <ScrollView className="flex-1" contentContainerStyle={{ padding: 24 }}>
@@ -364,9 +388,15 @@ export default function ProfileScreen() {
         </Text>
         <TouchableOpacity
           onPress={handleLogout}
-          className="bg-coral rounded-xl py-4 items-center"
+          className="bg-coral rounded-xl py-4 items-center mb-3"
         >
           <Text className="text-white font-bold text-base">Log Out</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleDeleteAccount}
+          className="border border-red-800 rounded-xl py-4 items-center"
+        >
+          <Text className="text-red-500 font-semibold text-base">Delete Account</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

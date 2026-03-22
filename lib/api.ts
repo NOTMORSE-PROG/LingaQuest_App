@@ -133,4 +133,7 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify({ roomId }),
     }),
+
+  // Account
+  deleteAccount: () => request<{ ok: boolean }>("/user/delete", { method: "DELETE" }),
 };
