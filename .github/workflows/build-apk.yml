@@ -81,18 +81,23 @@ jobs:
           APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" -type f | head -n 1)
           cp "$APK_PATH" ${{ steps.meta.outputs.apk_name }}
 
+      - name: Delete existing release and tag
+        run: gh release delete latest --cleanup-tag --yes || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ steps.meta.outputs.branch_slug }}-${{ steps.meta.outputs.short_sha }}
-          name: "LinguaQuest [${{ steps.meta.outputs.branch }}] ${{ steps.meta.outputs.short_sha }}"
+          tag_name: latest
+          name: "LinguaQuest — Latest Build"
           body: |
             **Branch:** `${{ steps.meta.outputs.branch }}`
             **Commit:** `${{ steps.meta.outputs.short_sha }}`
             **Message:** ${{ steps.meta.outputs.commit_msg }}
             **Built:** ${{ steps.meta.outputs.timestamp }}
           files: ${{ steps.meta.outputs.apk_name }}
-          prerelease: ${{ github.event.workflow_run.head_branch != 'master' }}
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
