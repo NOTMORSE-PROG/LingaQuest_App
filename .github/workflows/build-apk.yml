@@ -1,0 +1,89 @@
+name: Build Android APK
+
+on:
+  workflow_run:
+    workflows: ['Code Quality Checks']
+    types: [completed]
+
+jobs:
+  build-apk:
+    name: Build APK
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env.local
+        run: |
+          cat > .env.local << EOF
+          EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          EXPO_PUBLIC_PUSHER_KEY=${{ secrets.EXPO_PUBLIC_PUSHER_KEY }}
+          EXPO_PUBLIC_PUSHER_CLUSTER=${{ secrets.EXPO_PUBLIC_PUSHER_CLUSTER }}
+          EOF
+
+      - name: Set Android SDK path
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
+
+      - name: Build debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android && ./gradlew assembleDebug --no-daemon
+
+      - name: Extract git metadata
+        id: meta
+        run: |
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          BRANCH_SLUG=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
+          SHORT_SHA=$(echo "${{ github.event.workflow_run.head_sha }}" | cut -c1-7)
+          TIMESTAMP=$(date +%Y%m%d-%H%M)
+          COMMIT_MSG=$(git log -1 --format="%s" ${{ github.event.workflow_run.head_sha }})
+          APK_NAME="LinguaQuest-${BRANCH_SLUG}-${SHORT_SHA}-${TIMESTAMP}.apk"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "branch_slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Rename APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk ${{ steps.meta.outputs.apk_name }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ steps.meta.outputs.branch_slug }}-${{ steps.meta.outputs.short_sha }}
+          name: "LinguaQuest [${{ steps.meta.outputs.branch }}] ${{ steps.meta.outputs.short_sha }}"
+          body: |
+            **Branch:** `${{ steps.meta.outputs.branch }}`
+            **Commit:** `${{ steps.meta.outputs.short_sha }}`
+            **Message:** ${{ steps.meta.outputs.commit_msg }}
+            **Built:** ${{ steps.meta.outputs.timestamp }}
+          files: ${{ steps.meta.outputs.apk_name }}
+          prerelease: ${{ github.event.workflow_run.head_branch != 'master' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build summary
+        run: |
+          echo "## LinguaQuest APK Build" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK:** \`${{ steps.meta.outputs.apk_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ steps.meta.outputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ steps.meta.outputs.short_sha }}\`" >> $GITHUB_STEP_SUMMARY
