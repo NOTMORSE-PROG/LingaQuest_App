@@ -41,6 +41,11 @@ jobs:
       - name: Generate native Android code (Expo Prebuild)
         run: npx expo prebuild --platform android --clean
 
+      - name: Restore debug.keystore for Google Sign-In
+        run: |
+          printf '%s' "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > android/app/debug.keystore
+          echo "Restored debug.keystore — SHA-1: 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25"
+
       - name: Restore Gradle JVM memory settings
         run: |
           echo "" >> android/gradle.properties
