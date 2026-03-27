@@ -46,7 +46,7 @@ jobs:
       - name: Build debug APK
         run: |
           chmod +x android/gradlew
-          cd android && ./gradlew assembleDebug --no-daemon -PreactNativeArchitectures=arm64-v8a
+          cd android && ./gradlew assembleDebug --no-daemon -PreactNativeArchitectures=arm64-v8a -PbundleInDebug=true
 
       - name: Extract git metadata
         id: meta
