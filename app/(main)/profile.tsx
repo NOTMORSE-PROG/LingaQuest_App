@@ -15,6 +15,7 @@ import { GoogleSignin, statusCodes } from "@/lib/google-signin";
 import { useAuthStore } from "@/stores/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { MuteButton } from "@/components/audio/MuteButton";
 
 export default function ProfileScreen() {
   const { user, updateUser, logout } = useAuthStore();
@@ -202,6 +203,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+      <MuteButton />
     <ScrollView className="flex-1" contentContainerStyle={{ padding: 24 }}>
       {/* Header */}
       <View className="flex-row items-center mb-8 mt-4">

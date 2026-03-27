@@ -10,6 +10,8 @@ import { CaptainSalita } from "@/components/characters/CaptainSalita";
 import { QuestSceneOverlay } from "@/components/scene/QuestSceneOverlay";
 import { ShardClaimCinematic } from "@/components/scene/ShardClaimCinematic";
 import { useAuthStore } from "@/stores/auth";
+import { MuteButton } from "@/components/audio/MuteButton";
+import { useSoundEffect } from "@/hooks/useSoundEffect";
 import { Challenge } from "@/types";
 
 function shuffle<T>(arr: T[]): T[] {
@@ -43,6 +45,7 @@ export default function QuestScreen() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const characterMode = user?.characterModeEnabled ?? false;
+  const { playCorrect, playWrong } = useSoundEffect();
 
   const [phase, setPhase] = useState<Phase>("intro");
   const [challengeIndex, setChallengeIndex] = useState(0);
@@ -126,6 +129,14 @@ export default function QuestScreen() {
       setPhase("pinComplete");
     }
   }, [isResultMode, pin?.isCompleted, pin?.accuracy, pin?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Play correct/wrong SFX when result is revealed
+  useEffect(() => {
+    if (phase !== "result" || selected === null) return;
+    if (selected === current?.answer) playCorrect();
+    else playWrong();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // 4-second countdown when result is shown — forces student to read explanation
   useEffect(() => {
@@ -225,6 +236,8 @@ export default function QuestScreen() {
   const islandSkill = pin.island?.skillFocus ?? "";
   const npcIntro = pin.island?.npcDialogueIntro ?? "Listen carefully, young sailor. The audio plays once. Trust what you hear.";
   const npcFail = pin.island?.npcDialogueFail ?? "Even seasoned sailors mishear. The sea will test you again.";
+  const npcAudioFail = (pin.island as any)?.npcAudioFail ?? undefined;
+  const npcAudioSuccess = (pin.island as any)?.npcAudioSuccess ?? undefined;
   const pinSortOrder: number = pin.sortOrder;
   const questBg =
     islandNum === 1 ? { backgroundColor: "#0d1e35" } :
@@ -360,6 +373,7 @@ export default function QuestScreen() {
     <SafeAreaView className="flex-1 bg-ocean-deep" style={questBg} edges={["top"]}>
       {/* Per-island curse effect overlay */}
       <QuestSceneOverlay islandNumber={islandNum} />
+      {phase !== "listening" && <MuteButton />}
 
     <ScrollView
       contentContainerClassName="px-6 pt-4 pb-8"
@@ -693,11 +707,8 @@ export default function QuestScreen() {
                 <View className="items-center mb-4">
                   <CaptainSalita
                     state="talking"
-                    dialogue={
-                      isCorrect
-                        ? current.explanation
-                        : npcFail
-                    }
+                    dialogue={isCorrect ? current.explanation : npcFail}
+                    audioUrl={isCorrect ? (current.explanationAudioUrl ?? undefined) : npcAudioFail}
                     size={130}
                   />
                 </View>
@@ -740,6 +751,7 @@ export default function QuestScreen() {
         accentColor={accentColor}
         characterMode={characterMode}
         npcSuccess={pin.island?.npcDialogueSuccess ?? "The shard is yours, sailor. The sea remembers."}
+        npcAudioSuccess={npcAudioSuccess}
         onClaim={handleClaimShard}
       />
     )}

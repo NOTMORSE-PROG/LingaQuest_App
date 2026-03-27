@@ -40,10 +40,11 @@ interface Props {
   accentColor: string;
   characterMode: boolean;
   npcSuccess: string;
+  npcAudioSuccess?: string;
   onClaim: () => void;
 }
 
-export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npcSuccess, onClaim }: Props) {
+export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npcSuccess, npcAudioSuccess, onClaim }: Props) {
   const shardName = SHARD_NAMES[islandNum] ?? "Island Shard";
   const islandLabel = ISLAND_LABELS[islandNum] ?? "";
 
@@ -185,7 +186,7 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
             <DagatCharacter state="celebrating" size={90} />
           </View>
           <View style={{ position: "absolute", bottom: 16, right: 12 }} pointerEvents="none">
-            <CaptainSalita state="talking" dialogue={npcSuccess} size={90} />
+            <CaptainSalita state="talking" dialogue={npcSuccess} audioUrl={npcAudioSuccess} size={90} />
           </View>
         </>
       )}

@@ -15,6 +15,7 @@ export interface Island {
   npcAudioSuccess?: string;
   npcAudioFail?: string;
   ingayAudioUrl?: string;
+  bgMusicUrl?: string | null;
   shardItemName?: string;
   shardDescription?: string;
   cumulativeAccuracy?: number | null;
@@ -57,6 +58,7 @@ export interface Challenge {
   answer: "A" | "B" | "C" | "D";
   explanation: string;
   hint: string;
+  explanationAudioUrl?: string | null;
 }
 
 export interface IslandWithPins extends Island {

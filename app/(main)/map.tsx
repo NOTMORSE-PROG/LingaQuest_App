@@ -13,6 +13,7 @@ import Animated, {
 import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { Island, IslandProgress } from "@/types";
+import { MuteButton } from "@/components/audio/MuteButton";
 
 const NODE_R = 36;       // island circle radius
 const LPAD = 24;         // extra horizontal padding for labels
@@ -196,6 +197,8 @@ export default function MapScreen() {
   );
 
   return (
+    <View style={{ flex: 1 }}>
+      <MuteButton />
     <ScrollView className="flex-1 bg-ocean-deep" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View className="px-6 pt-14 pb-3">
@@ -320,16 +323,18 @@ export default function MapScreen() {
               isCompleted={isCompleted}
               isLocked={isLocked}
               isCurrent={isCurrent}
+              completionPercent={island.cumulativeAccuracy}
             />
           );
         })}
       </View>
     </ScrollView>
+    </View>
   );
 }
 
 function IslandNode({
-  island, idx, x, y, isCompleted, isLocked, isCurrent,
+  island, idx, x, y, isCompleted, isLocked, isCurrent, completionPercent,
 }: {
   island: Island;
   idx: number;
@@ -338,6 +343,7 @@ function IslandNode({
   isCompleted: boolean;
   isLocked: boolean;
   isCurrent: boolean;
+  completionPercent?: number | null;
 }) {
   const pulseScale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0);
@@ -492,6 +498,17 @@ function IslandNode({
           >
             {island.name}
           </Text>
+          {isCompleted && completionPercent != null && (
+            <Text style={{
+              color: "#f5c518",
+              fontSize: 8.5,
+              fontWeight: "700",
+              textAlign: "center",
+              marginTop: 1,
+            }}>
+              {Math.round(completionPercent)}%
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
     </View>

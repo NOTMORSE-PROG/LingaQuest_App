@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
+import { MuteButton } from "@/components/audio/MuteButton";
 import { Badge, BadgeType } from "@/types";
 
 const BADGE_META: Record<BadgeType, { label: string; emoji: string; desc: string }> = {
@@ -66,6 +67,7 @@ export default function BadgesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+      <MuteButton />
       <Text className="text-gold text-3xl font-bold px-6 pt-4 mb-2">Badges</Text>
       <Text className="text-parchment-dark text-sm px-6 mb-6">
         {earnedTypes.size}/{allBadges.length} earned

@@ -15,6 +15,8 @@ import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { IngayWarning } from "@/components/characters/IngayWarning";
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
+import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
+import { MuteButton } from "@/components/audio/MuteButton";
 
 const PIN_R = 32;
 
@@ -247,6 +249,7 @@ function EmberFloat({ x, delay, color, canvasHeight }: { x: number; delay: numbe
       -1, false
     );
     return () => { cancelAnimation(y); cancelAnimation(opacity); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay, opacity, y]);
 
   const style = useAnimatedStyle(() => ({
@@ -394,6 +397,7 @@ function ScrollDrift({ x, delay, rotation, canvasHeight }: { x: number; delay: n
       -1, false
     );
     return () => { cancelAnimation(y); cancelAnimation(opacity); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay, opacity, y]);
 
   const style = useAnimatedStyle(() => ({
@@ -643,6 +647,7 @@ export default function IslandScreen() {
   useEffect(() => {
     if (!island || !characterMode) return;
     setPhase((island as any).ingaySeen ? "captain" : "ingay");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, characterMode]);
 
   if (isLoading || !island) {
@@ -661,6 +666,7 @@ export default function IslandScreen() {
       <IngayWarning
         islandName={island.name}
         skillFocus={island.skillFocus}
+        dialogue={(island as any).ingayDialogue}
         onDismiss={() => {
           apiClient.markIngaySeen(islandId).catch(() => {});
           setPhase("captain");
@@ -699,7 +705,8 @@ export default function IslandScreen() {
   const pins = island.pins ?? [];
   const pinStates = pins.map((pin: any, idx: number) => {
     const isCompleted = pin.isCompleted ?? false;
-    const isUnlocked = idx === 0 || ((pins[idx - 1]?.isCompleted ?? false) && (pins[idx - 1]?.accuracy ?? 0) >= 100);
+    // Completed pins are always re-enterable; new pins require previous pin passed at 100%
+    const isUnlocked = idx === 0 || isCompleted || ((pins[idx - 1]?.isCompleted ?? false) && (pins[idx - 1]?.accuracy ?? 0) >= 100);
     const isCurrent = isUnlocked && !isCompleted;
     return { ...pin, isCompleted, isUnlocked, isCurrent };
   });
@@ -730,18 +737,20 @@ export default function IslandScreen() {
   };
 
   const handleBack = () => {
-    Alert.alert("Leave Island?", "Your progress is saved. Return to the map?", [
+    Alert.alert("Leave Island?", "Your progress is saved.", [
       { text: "Stay", style: "cancel" },
-      { text: "Back to Map", onPress: () => router.back() },
+      { text: "Go Back", onPress: () => router.replace("/(main)/map") },
     ]);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
+      <BackgroundMusic islandNumber={island.number} bgMusicUrl={island.bgMusicUrl} />
+      <MuteButton />
       {/* Header */}
       <View className="px-5 pt-2 pb-3">
         <TouchableOpacity onPress={handleBack}>
-          <Text className="text-gold text-sm mb-3">← Back to Map</Text>
+          <Text className="text-gold text-sm mb-3">← Back</Text>
         </TouchableOpacity>
         <View className="flex-row items-center justify-between">
           <View>

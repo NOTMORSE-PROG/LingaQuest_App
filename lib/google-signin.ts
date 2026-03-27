@@ -3,6 +3,7 @@ let _GoogleSignin: any;
 let _statusCodes: any;
 
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const mod = require("@react-native-google-signin/google-signin");
   _GoogleSignin = mod.GoogleSignin;
   _statusCodes = mod.statusCodes;

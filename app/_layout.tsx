@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { GoogleSignin } from "@/lib/google-signin";
 import { useAuthStore } from "@/stores/auth";
+import { useAudioStore } from "@/stores/audio";
 
 if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
   GoogleSignin.configure({ webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID });
@@ -26,17 +27,18 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const { initialize } = useAuthStore();
+  const { initialize: initAudio } = useAudioStore();
 
   useEffect(() => {
     async function setup() {
       try {
-        await initialize();
+        await Promise.all([initialize(), initAudio()]);
       } finally {
         SplashScreen.hideAsync();
       }
     }
     setup();
-  }, [initialize]);
+  }, [initialize, initAudio]);
 
   return (
     <GestureHandlerRootView className="flex-1">

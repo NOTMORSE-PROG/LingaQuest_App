@@ -16,11 +16,12 @@ import Animated, {
 interface Props {
   islandName: string;
   skillFocus: string;
+  dialogue?: string | null;
   onDismiss: () => void;
   audioUrl?: string;
 }
 
-export function IngayWarning({ islandName, skillFocus, onDismiss, audioUrl }: Props) {
+export function IngayWarning({ islandName, skillFocus, dialogue, onDismiss, audioUrl }: Props) {
   const soundRef = useRef<Audio.Sound | null>(null);
 
   useEffect(() => {
@@ -310,7 +311,7 @@ export function IngayWarning({ islandName, skillFocus, onDismiss, audioUrl }: Pr
           {skillFocus}
         </Text>
         <Text className="text-parchment/70 text-sm text-center leading-6 mb-8 italic">
-          "You think you can hear through the storm? Noise is my domain, little sailor. Good luck."
+          "{dialogue ?? "You think you can hear through the storm? Noise is my domain, little sailor. Good luck."}"
         </Text>
 
         <TouchableOpacity
