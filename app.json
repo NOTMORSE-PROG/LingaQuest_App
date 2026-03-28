@@ -18,8 +18,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.linguaquest.app",
-      "versionCode": 1,
-      "googleServicesFile": "./google-services.json"
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
