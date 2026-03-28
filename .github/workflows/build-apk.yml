@@ -1,6 +1,7 @@
 name: Build Android APK
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ['Code Quality Checks']
     types: [completed]
@@ -9,14 +10,14 @@ jobs:
   build-apk:
     name: Build APK
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: actions/setup-java@v4
         with:
@@ -63,11 +64,11 @@ jobs:
       - name: Extract git metadata
         id: meta
         run: |
-          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
           BRANCH_SLUG=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
-          SHORT_SHA=$(echo "${{ github.event.workflow_run.head_sha }}" | cut -c1-7)
+          SHORT_SHA=$(echo "${{ github.event.workflow_run.head_sha || github.sha }}" | cut -c1-7)
           TIMESTAMP=$(date +%Y%m%d-%H%M)
-          COMMIT_MSG=$(git log -1 --format="%s" ${{ github.event.workflow_run.head_sha }})
+          COMMIT_MSG=$(git log -1 --format="%s")
           APK_NAME="LinguaQuest-${BRANCH_SLUG}-${SHORT_SHA}-${TIMESTAMP}.apk"
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           echo "branch_slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
