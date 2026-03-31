@@ -16,6 +16,8 @@ export interface MultiplayerRoom {
   status: RoomStatus;
   roundCount: number;
   currentRound: number;
+  currentQuestion: number;
+  currentPartTarget: ShipPart | null;
   shipHealth: ShipHealth;
   players: RoomPlayer[];
 }
@@ -27,13 +29,34 @@ export interface RoomPlayer {
 }
 
 // Pusher event payloads
-export interface RoundStartEvent {
+
+export interface RepairVoteStartEvent {
   round: number;
-  audioUrl: string;
-  partToRepair: ShipPart;
+  totalRounds: number;
+  shipHealth: ShipHealth;
+}
+
+export interface RepairVoteUpdateEvent {
+  userId: string;
+  hasVoted: boolean;
+  totalVotes: number;
+  totalPlayers: number;
+}
+
+export interface RepairVoteResultEvent {
+  chosenPart: ShipPart;
+  shipHealth: ShipHealth;
+}
+
+export interface RoundQuestionEvent {
+  round: number;
   questionIndex: number;
+  totalQuestions: number;
+  audioUrl: string;
   question: string;
   choices: { label: string; text: string }[];
+  challengeId: string;
+  partToRepair: ShipPart;
 }
 
 export interface VoteUpdateEvent {
@@ -50,9 +73,13 @@ export interface RoundResultEvent {
   healthDelta: number;
   partTarget: ShipPart;
   newShipHealth: ShipHealth;
+  questionIndex: number;
+  isRoundOver: boolean;
+  newPartTarget?: ShipPart;
 }
 
-export interface RepairVoteEvent {
-  votes: Record<ShipPart, number>;
-  winner: ShipPart;
+export interface RoundEndEvent {
+  round: number;
+  totalRounds: number;
+  shipHealth: ShipHealth;
 }

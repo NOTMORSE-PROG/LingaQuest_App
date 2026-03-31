@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Audio } from "expo-av";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import type { AudioPlayer } from "expo-audio";
 import Svg, { Circle, Ellipse, Path, Rect, Defs, RadialGradient, Stop, Polygon } from "react-native-svg";
 import Animated, {
   useSharedValue,
@@ -22,7 +23,7 @@ interface Props {
 }
 
 export function IngayWarning({ islandName, skillFocus, dialogue, onDismiss, audioUrl }: Props) {
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const soundRef = useRef<AudioPlayer | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -30,11 +31,12 @@ export function IngayWarning({ islandName, skillFocus, dialogue, onDismiss, audi
     async function playAudio() {
       if (!audioUrl) return;
       try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
-        if (!mounted) { await sound.unloadAsync(); return; }
-        soundRef.current = sound;
-        await sound.playAsync();
+        await setAudioModeAsync({ playsInSilentMode: true });
+        if (!mounted) return;
+        const p = createAudioPlayer({ uri: audioUrl });
+        if (!mounted) { p.remove(); return; }
+        soundRef.current = p;
+        p.play();
       } catch {
         // Audio unavailable — animations continue without sound
       }
@@ -44,9 +46,11 @@ export function IngayWarning({ islandName, skillFocus, dialogue, onDismiss, audi
 
     return () => {
       mounted = false;
-      if (soundRef.current) {
-        soundRef.current.stopAsync().then(() => soundRef.current?.unloadAsync()).catch(() => {});
-        soundRef.current = null;
+      const p = soundRef.current;
+      soundRef.current = null;
+      if (p) {
+        p.pause();
+        p.remove();
       }
     };
   }, [audioUrl]);

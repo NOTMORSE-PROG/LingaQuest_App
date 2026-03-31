@@ -1,67 +1,91 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text, Animated } from "react-native";
-import { Audio } from "expo-av";
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from "expo-audio";
+
+function formatSec(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
 interface AudioPlayerProps {
   audioUrl: string;
   onEnd: () => void;
   autoPlay?: boolean;
+  rate?: number;
 }
 
-export function AudioPlayer({ audioUrl, onEnd, autoPlay = false }: AudioPlayerProps) {
-  const [status, setStatus] = useState<"loading" | "playing" | "done" | "error">("loading");
+export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0 }: AudioPlayerProps) {
+  const [uiStatus, setUiStatus] = useState<"loading" | "playing" | "done" | "error">("loading");
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const soundRef = useRef<Audio.Sound | null>(null);
   const pulsationRef = useRef<Animated.CompositeAnimation | null>(null);
+  // Prevent double-firing onEnd if didJustFinish fires more than once
+  const hasStartedRef = useRef(false);
+  const hasEndedRef = useRef(false);
 
   // BUG 2 FIX (callback-ref pattern): always holds the latest onEnd without it being a
-  // useEffect dependency. This prevents audio from restarting every time the parent re-renders
-  // with a new function reference.
+  // useEffect dependency. Prevents audio from restarting on parent re-renders.
   const onEndRef = useRef(onEnd);
   useEffect(() => {
     onEndRef.current = onEnd;
   });
 
+  // Configure audio mode once per mount
   useEffect(() => {
-    let mounted = true;
-    // BUG 8 FIX: store timer ID so it can be cleared in cleanup
-    let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  }, []);
 
-    async function loadAndPlay() {
-      try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: audioUrl },
-          { shouldPlay: autoPlay },
-          (playbackStatus) => {
-            if (!mounted) return;
-            if (playbackStatus.isLoaded) {
-              if (playbackStatus.isPlaying) {
-                setStatus("playing");
-              }
-              if (playbackStatus.didJustFinish) {
-                pulsationRef.current?.stop();
-                setStatus("done");
-                onEndRef.current(); // read latest callback via ref — no stale closure
-              }
-            }
-          }
-        );
-        soundRef.current = sound;
-        if (mounted) setStatus(autoPlay ? "playing" : "loading");
-      } catch {
-        if (!mounted) return;
-        setStatus("error");
+  const player = useAudioPlayer({ uri: audioUrl }, { updateInterval: 100 });
+  const status = useAudioPlayerStatus(player);
+
+  // When audio finishes loading, apply rate and start playback
+  useEffect(() => {
+    if (!status.isLoaded) return;
+    player.setPlaybackRate(rate, "high"); // pitch-corrected slow/fast mode
+    if (autoPlay) player.play();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status.isLoaded]);
+
+  // Apply rate changes dynamically (e.g. slow mode toggled — not currently used mid-listen)
+  useEffect(() => {
+    if (!status.isLoaded) return;
+    player.setPlaybackRate(rate, "high");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rate]);
+
+  // React to playback status changes
+  useEffect(() => {
+    if (status.playing && !hasStartedRef.current) {
+      hasStartedRef.current = true;
+      setUiStatus("playing");
+    }
+    if (status.didJustFinish && !hasEndedRef.current) {
+      hasEndedRef.current = true;
+      pulsationRef.current?.stop();
+      setUiStatus("done");
+      onEndRef.current();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status.playing, status.didJustFinish]);
+
+  // Error detection: if audio hasn't started within 10s, auto-advance.
+  // Uses refs (not state) to avoid stale closure — long clips still playing at 10s are unaffected.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasStartedRef.current && !hasEndedRef.current) {
+        setUiStatus("error");
         // Auto-advance after 2s so the quest isn't permanently blocked
-        autoAdvanceTimer = setTimeout(() => {
-          if (mounted) onEndRef.current();
+        setTimeout(() => {
+          if (!hasEndedRef.current) onEndRef.current();
         }, 2000);
       }
-    }
+    }, 10000);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    loadAndPlay();
-
-    // Pulse animation — stopped on "done" or "error" via pulsationRef.current?.stop()
+  // Pulse animation — stopped on "done" or "error" via pulsationRef.current?.stop()
+  useEffect(() => {
     pulsationRef.current = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.15, duration: 600, useNativeDriver: true }),
@@ -69,30 +93,24 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false }: AudioPlayerPr
       ])
     );
     pulsationRef.current.start();
-
     return () => {
-      mounted = false;
-      // BUG 8 FIX: clear the auto-advance timer so it doesn't fire after unmount
-      if (autoAdvanceTimer !== null) clearTimeout(autoAdvanceTimer);
       pulsationRef.current?.stop();
-      soundRef.current?.unloadAsync();
     };
-    // BUG 2 FIX: onEnd removed from deps — it is accessed via onEndRef instead
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioUrl, autoPlay, pulseAnim]);
+  }, [pulseAnim]);
 
-  const isPlaying = status === "playing";
+  const isPlaying = uiStatus === "playing";
+  const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
 
   const statusEmoji =
-    status === "loading" ? "⏳"
-    : status === "playing" ? "👂"
-    : status === "error" ? "❌"
+    uiStatus === "loading" ? "⏳"
+    : uiStatus === "playing" ? "👂"
+    : uiStatus === "error" ? "❌"
     : "✓";
 
   const statusText =
-    status === "loading" ? "Loading audio..."
-    : status === "playing" ? "Listening..."
-    : status === "error" ? "Audio unavailable — moving on..."
+    uiStatus === "loading" ? "Loading audio..."
+    : uiStatus === "playing" ? "Listening..."
+    : uiStatus === "error" ? "Audio unavailable — moving on..."
     : "Audio complete";
 
   return (
@@ -100,15 +118,31 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false }: AudioPlayerPr
       <Animated.View
         style={{ transform: [{ scale: isPlaying ? pulseAnim : 1 }] }}
         className={`w-24 h-24 rounded-full border-4 items-center justify-center ${
-          status === "error" ? "bg-red-900/50 border-coral" : "bg-ocean-light border-gold"
+          uiStatus === "error" ? "bg-red-900/50 border-coral" : "bg-ocean-light border-gold"
         }`}
       >
         <Text className="text-5xl">{statusEmoji}</Text>
       </Animated.View>
-      <Text className={`text-sm mt-4 ${status === "error" ? "text-coral" : "text-parchment-dark"}`}>
+      <Text className={`text-sm mt-4 ${uiStatus === "error" ? "text-coral" : "text-parchment-dark"}`}>
         {statusText}
       </Text>
-      {status !== "error" && (
+      {(uiStatus === "playing" || uiStatus === "done") && status.duration > 0 && (
+        <View style={{ width: "80%", marginTop: 14 }}>
+          <View style={{ height: 6, backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 3, overflow: "hidden" }}>
+            <View style={{
+              height: "100%",
+              width: `${Math.round(progress * 100)}%`,
+              backgroundColor: "#f5c518",
+              borderRadius: 3,
+            }} />
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
+            <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{formatSec(status.currentTime)}</Text>
+            <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{formatSec(status.duration)}</Text>
+          </View>
+        </View>
+      )}
+      {uiStatus !== "error" && (
         <Text className="text-parchment-dark/50 text-xs mt-2">No pause. No replay.</Text>
       )}
     </View>

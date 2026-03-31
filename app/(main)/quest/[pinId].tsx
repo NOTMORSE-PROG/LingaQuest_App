@@ -56,6 +56,7 @@ export default function QuestScreen() {
   const [pinScore, setPinScore] = useState(0);
   const [shuffledChallenges, setShuffledChallenges] = useState<Challenge[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [slowMode, setSlowMode] = useState(false);
   // Track if pin was already completed when loaded — used to skip shard cinematic on retry
   const wasAlreadyCompleted = useRef(false);
 
@@ -80,6 +81,7 @@ export default function QuestScreen() {
     setPinScore(0);
     setShowHint(false);
     setSubmitError(null);
+    setSlowMode(false);
     wasAlreadyCompleted.current = false;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pinId]);
@@ -158,6 +160,20 @@ export default function QuestScreen() {
     return () => clearTimeout(timer);
   }, [phase, selected, showHint]);
 
+  function resetToIntro() {
+    setPhase("intro");
+    setChallengeIndex(0);
+    setSelected(null);
+    setCorrectCount(0);
+    setPinScore(0);
+    setShowHint(false);
+    setSubmitError(null);
+    setSlowMode(false);
+    if (pin?.challenges?.length) {
+      setShuffledChallenges(shuffle(pin.challenges).map(shuffleChallenge));
+    }
+  }
+
   function confirmExit() {
     const dest = `/(main)/island/${pin?.islandId}` as const;
     if (phase === "intro" || phase === "submitting" || phase === "pinComplete" || phase === "claimShard") {
@@ -169,7 +185,12 @@ export default function QuestScreen() {
       "Your progress will be lost to the sea.",
       [
         { text: "Stay", style: "cancel" },
-        { text: "Exit", style: "destructive", onPress: () => router.replace(dest) },
+        {
+          text: "Exit", style: "destructive", onPress: () => {
+            resetToIntro(); // ensure re-entry starts from the beginning
+            router.replace(dest);
+          }
+        },
       ]
     );
   }
@@ -305,7 +326,331 @@ export default function QuestScreen() {
     5: "The Echo Shard pulsed — the greatest of them all. It echoed with the sound of every island she had conquered. Dagat placed it with the other six. Six shards. One crystal. Captain Salita stepped forward. He opened his mouth. And for the first time in one hundred years, he spoke.",
   };
 
-  const ISLAND_CARD_LABEL: Record<number, string> = {
+  const ISLAND_STRATEGY: Record<number, string> = {
+    1: "Listen for unfamiliar words and use the surrounding sentence to figure out their meaning.",
+    2: "The speaker will talk fast. Don't try to catch every word — focus on the overall message and key nouns.",
+    3: "Ask yourself: what is the speaker's main point? Details support it, but the main idea is what keeps coming back.",
+    4: "Pay attention to how the speaker sounds, not just what they say. Tone, pauses, and word choice reveal emotion.",
+    5: "You are hunting one specific piece of information. Ignore everything else and wait for your target detail.",
+    6: "Follow the story order: who is involved, what happened, and how did it end? Don't lose the thread.",
+    7: "All skills at once. Stay calm. Main idea first, then tone, then specific detail — in that order.",
+  };
+
+  const CHALLENGE_STRATEGY: Record<number, Record<number, Record<number, string>>> = {
+    1: { // Isla ng Salita — Vocabulary in Context
+      1: {
+        0: "Listen for how the speaker uses the word in a sentence. Context clues — what comes just before and after — will reveal the meaning.",
+        1: "Focus on what the speaker is describing as limited or hard to find. That situation will point you to the right meaning.",
+      },
+      2: {
+        0: "Listen for what the character is encouraged to keep doing despite difficulty. The action being urged is the key.",
+        1: "Pay attention to how the character feels in that moment. The speaker's tone and the situation together reveal the emotional meaning.",
+      },
+      3: {
+        0: "Listen for hesitation. Is the character willing or pulling back from something? That attitude is the meaning.",
+        1: "Notice how seriously the character speaks or acts. Sincerity and genuine effort are the clues to the word's meaning.",
+      },
+      4: {
+        0: "What is being described as strange or out of the ordinary? The unusual thing is exactly what the word points to.",
+        1: "Focus on how lost or confused the character feels. Their reaction to the unexpected is the meaning.",
+      },
+      5: {
+        0: "Listen for determination that does not give up. How the character keeps going despite difficulty reveals the meaning.",
+        1: "Pay attention to the intensity being described. Strength and fierceness in the scene point directly to the meaning.",
+      },
+    },
+    2: { // Isla ng Bilis — Rapid Speech Comprehension
+      1: {
+        0: "The speaker moves fast. Listen for a schedule word — a day, time, or change in plan. Everything else can blur.",
+        1: "Focus only on the hours or time period. One number is your target — let everything around it pass.",
+      },
+      2: {
+        0: "Listen for the reason — a 'because', 'due to', or explanation word. What follows it is the answer.",
+        1: "A name or place is coming. Proper nouns stand out even in fast speech — hold on to it when you hear it.",
+      },
+      3: {
+        0: "Listen for a location change. The 'new' detail after the change word is the answer.",
+        1: "Focus on a status word — 'ready', 'delayed', 'available'. That single word carries the answer.",
+      },
+      4: {
+        0: "The reason will follow a cause word like 'because' or 'due to'. Stay focused after it — the answer is right there.",
+        1: "A specific number is being announced. Anticipate it — numbers move fast and won't repeat.",
+      },
+      5: {
+        0: "Listen for a postponement signal — 'delayed', 'moved to', 'rescheduled'. What comes after is the new plan.",
+        1: "One number — hours or duration. Let every other word blur. The figure is all you need.",
+      },
+    },
+    3: { // Isla ng Diwa — Main Idea and Details
+      1: {
+        0: "Ask: what is the speaker's overall point? The main idea is not the examples — it is what the examples are meant to support.",
+        1: "The speaker may mention negatives before the main point. Listen for what they conclude, not just what they describe.",
+      },
+      2: {
+        0: "Listen for a repeated concern or recommendation. What the speaker keeps returning to is the main idea.",
+        1: "The speaker builds toward a conclusion. Wait for the strongest statement — that is the main idea.",
+      },
+      3: {
+        0: "Listen for the speaker's central advice or lesson. Details illustrate it — but the lesson itself is the main idea.",
+        1: "Ask: what is the speaker most concerned about? Their priority is the main idea.",
+      },
+      4: {
+        0: "Notice what changes and why it matters. The significance of the change is the central point.",
+        1: "The speaker describes a process. The reason for the process — why it matters — is the main idea.",
+      },
+      5: {
+        0: "Listen for what the speaker ultimately recommends. The overall recommendation is the main idea.",
+        1: "What is the speaker arguing for? Their main argument — not the supporting examples — is what the question is asking.",
+      },
+    },
+    4: { // Isla ng Damdamin — Emotional Tone and Inference
+      1: {
+        0: "Listen past the words. How does the speaker sound? Hesitation, careful word choice, and pauses carry the feeling.",
+        1: "Listen for a shift in tone. A change in how the speaker sounds signals a change in feeling.",
+      },
+      2: {
+        0: "Pride shows in how the speaker elevates something — their word choice and emphasis will tell you.",
+        1: "Quiet acceptance is subtle. Listen for a calm tone, measured words, and the absence of protest.",
+      },
+      3: {
+        0: "Determination without emotion is steady and purposeful. Listen for resolve in the speaker's pace and word choice.",
+        1: "Warmth shows in specific words chosen — careful, encouraging, gentle. Listen for what the speaker chooses to emphasise.",
+      },
+      4: {
+        0: "Some tones carry two feelings at once. Listen for the firmness underneath the encouragement.",
+        1: "Gratitude is collective here. Listen for who is being thanked and how the speaker includes everyone.",
+      },
+      5: {
+        0: "A letter's tone is in the words chosen. Listen for warmth even in words about difficulty or distance.",
+        1: "Bittersweet holds two feelings at once — loss and something positive. Listen for both at the same time.",
+      },
+    },
+    5: { // Isla ng Tanong — Listening for Specific Information
+      1: {
+        0: "A percentage is coming. Ignore everything else and wait for the number — that is the only target.",
+        1: "A count is coming. Hold on for the exact figure — don't estimate from context.",
+      },
+      2: {
+        0: "A name is coming. Proper names stand out in speech — listen for it and hold it in memory.",
+        1: "One specific number. Wait for it — everything before is context, everything after is irrelevant.",
+      },
+      3: {
+        0: "A count will be stated. Lock onto the number being given for the specific item mentioned in the question.",
+        1: "Time expressed in nautical terms — 'bells' — is the target. Listen for when, not what.",
+      },
+      4: {
+        0: "Two numbers are coming. The question asks about restriction locations — hold both when you hear them.",
+        1: "A limit is being announced. The number after the limit word is the answer.",
+      },
+      5: {
+        0: "A pier number. Wait for the location word 'Pier' and the number that follows it immediately.",
+        1: "A requirement is being stated. The number of items required is what to listen for.",
+      },
+    },
+    6: { // Isla ng Kwento — Narrative Comprehension
+      1: {
+        0: "Follow the character's actions and ask why. The reason behind what they do is the key to the story.",
+        1: "Listen for what makes the character struggle at the start. The opening problem is the story's foundation.",
+      },
+      2: {
+        0: "Listen for what the character learns. The lesson at the end is usually the story's moral.",
+        1: "Track the order of events. When things happened matters as much as what happened.",
+      },
+      3: {
+        0: "Listen for how the character solves the problem. The solution is the story's turning point.",
+        1: "Listen for the decision the character makes alone. Independence in the decision is what the story is about.",
+      },
+      4: {
+        0: "Character is shown through actions, not descriptions. Listen for what the character does to understand who they are.",
+        1: "An object in a story carries meaning beyond itself. Ask: what does this object represent in context?",
+      },
+      5: {
+        0: "The theme is the overall message — not the plot. Ask: what does this story say about how to face difficulty?",
+        1: "Listen for how two characters treat each other. Their connection is what the story is built around.",
+      },
+    },
+    7: { // Isla ng Alingawngaw — Full Integration
+      1: {
+        0: "All six skills are active. Start with main idea: what is the speaker's central argument beneath all the detail?",
+        1: "Listen for a tone word — caution, concern, enthusiasm. The speaker's feeling will guide you to the right answer.",
+      },
+      2: {
+        0: "A specific day is coming. Hold on for it — all six skills are competing for your attention, but one fact is the target.",
+        1: "The instructor's feeling is implied, not stated. Listen to how they speak — the delivery is the evidence.",
+      },
+      3: {
+        0: "An unfamiliar word will be used in a context that explains it. Listen for the surrounding sentence — it is the definition.",
+        1: "The speaker builds to a main point. Wait for the conclusion — that final statement is the answer.",
+      },
+      4: {
+        0: "The word 'resilience' is being defined through a character's actions. What they do reveals what the word means.",
+        1: "Use every skill at once: vocabulary, speed, main idea, tone, specific fact, story sequence.",
+      },
+      5: {
+        0: "Ingay throws everything at once. Stay calm. Pick one anchor — main idea — and let the rest organise around it.",
+        1: "This is the final challenge. Bring everything you have learned. Trust your ears — you are ready.",
+      },
+    },
+  };
+
+  const CHALLENGE_REFLECTION: Record<number, Record<number, Record<number, string>>> = {
+    1: { // Isla ng Salita
+      1: {
+        0: "The meaning was in the surrounding sentence. What did the speaker say just before and after the unfamiliar word?",
+        1: "Think about what was being described. Were they talking about something plentiful or something hard to come by?",
+      },
+      2: {
+        0: "What was the speaker asking the character to keep doing? The encouraged action is the meaning.",
+        1: "How was the character feeling in that moment? The feeling described in the scene is the word's meaning.",
+      },
+      3: {
+        0: "Was the character eager or holding back? The hesitation in the scene defines the word.",
+        1: "How did the character approach the situation — casually or with real sincerity? That quality is the meaning.",
+      },
+      4: {
+        0: "What stood out as strange or unusual in the passage? That reaction reveals the word's meaning.",
+        1: "How did the character react when surprised? Confusion and disorientation are the clues.",
+      },
+      5: {
+        0: "Did the character give up or keep pushing? That persistence is what the word means.",
+        1: "What was being described as powerful or intense? That force is the word's meaning.",
+      },
+    },
+    2: { // Isla ng Bilis
+      1: {
+        0: "Did you catch the time word? When speech is fast, schedule words are what to anchor on first.",
+        1: "Time words move fast. Were you listening for the specific hours, or tracking too many other details?",
+      },
+      2: {
+        0: "Did you catch the reason word? In fast speech, cause-and-effect signals are what to listen for.",
+        1: "Proper nouns stand out even in fast speech. Did you hear the name or place mentioned?",
+      },
+      3: {
+        0: "Change words like 'moved to' or 'reassigned' signal the key detail. Did you catch what came right after?",
+        1: "Status updates are short. Did you catch the one word that described the current situation?",
+      },
+      4: {
+        0: "The reason always follows the cause word. Did you stay focused after 'because' or 'due to'?",
+        1: "In fast speech, numbers need to be anticipated, not chased. Did the figure slip by before you were ready?",
+      },
+      5: {
+        0: "Postponement words are the anchor. Did you hear the new plan immediately after the delay was announced?",
+        1: "The rest hours were a single number in a sea of fast words. Did you hold on long enough to hear it?",
+      },
+    },
+    3: { // Isla ng Diwa
+      1: {
+        0: "Did you follow a specific example instead of the overall point? The main idea is what the examples are meant to support.",
+        1: "Did you catch what the speaker ultimately argued, or did the details pull you toward a specific fact?",
+      },
+      2: {
+        0: "What topic kept coming back? The repeated point is always the main idea.",
+        1: "Did you catch the speaker's strongest statement? The main idea is usually the point they build toward.",
+      },
+      3: {
+        0: "What was the lesson being given? Details exist to support it — not to replace it.",
+        1: "What was the speaker treating as most urgent? Priority equals main idea.",
+      },
+      4: {
+        0: "What changed, and why did it matter? The significance of the change is the main idea.",
+        1: "Did you track the process instead of its purpose? The 'why it matters' is always the main idea.",
+      },
+      5: {
+        0: "What did the speaker ultimately recommend? That overall advice is the main idea, not the examples used to support it.",
+        1: "Did examples pull you away from the core argument? The speaker's central claim is always the main idea.",
+      },
+    },
+    4: { // Isla ng Damdamin
+      1: {
+        0: "Words alone didn't carry the feeling — tone did. What in the speaker's delivery hinted at worry or uncertainty?",
+        1: "Did you catch the moment when the tone shifted? The change in feeling is where the answer lives.",
+      },
+      2: {
+        0: "What was the speaker elevating or celebrating? That sense of achievement is what pride sounds like.",
+        1: "Quiet acceptance often shows in what the speaker does not say. Did you listen for the absence of resistance?",
+      },
+      3: {
+        0: "Calm determination sounds certain, not emotional. Did you hear the steadiness in the speaker's tone?",
+        1: "The warmth was in the word choice. Which words signalled care or encouragement?",
+      },
+      4: {
+        0: "Did you catch both tones — the support and the standard being set? Both were present at the same time.",
+        1: "Who was the gratitude directed toward? The scope of the thanks is the key detail.",
+      },
+      5: {
+        0: "What words carried warmth in the letter? Tone lives in specific word choices, not just in the situation.",
+        1: "Did you hear both feelings — the loss and the something-good? That combination is what makes a tone bittersweet.",
+      },
+    },
+    5: { // Isla ng Tanong
+      1: {
+        0: "Did the surrounding context distract you from the number? One figure is all you needed.",
+        1: "The exact number was stated clearly. Were you listening for it specifically, or tracking too broadly?",
+      },
+      2: {
+        0: "Did the name register clearly? Proper nouns are distinct — they sound different from surrounding words.",
+        1: "Were you waiting for the number, or were you still processing the surrounding information when it was stated?",
+      },
+      3: {
+        0: "One number for one item. Did you match the right number to the right item?",
+        1: "The time was given in a specific format. Did you recognise 'bells' as a time reference?",
+      },
+      4: {
+        0: "Were you listening for two numbers or just one? Both gallery numbers were needed for the answer.",
+        1: "Did you catch the limit? The number was paired with a restriction word — did you hold on to both?",
+      },
+      5: {
+        0: "Location plus number. Did you catch both parts of the answer — which place and which number?",
+        1: "The requirement was a specific count. Were you listening for how many, or still tracking who needed them?",
+      },
+    },
+    6: { // Isla ng Kwento
+      1: {
+        0: "What drove the character's action? Motivation is found in why a character does something, not just what they do.",
+        1: "What was the character's situation at the beginning? Every story's problem is set up early.",
+      },
+      2: {
+        0: "What changed for the character? What someone learns from their mistake is the story's lesson.",
+        1: "Did the sequence of events blur together? 'First, then, finally' signals are what to listen for.",
+      },
+      3: {
+        0: "What was the solution? The moment the problem is resolved is always the story's centre.",
+        1: "What did the character decide to do on their own? That decision itself is the story's point.",
+      },
+      4: {
+        0: "What did the character do that revealed who they are? Actions are the truest character clues.",
+        1: "What did the object mean in the story's context? Objects carry the meaning the storyteller places in them.",
+      },
+      5: {
+        0: "What was the story saying about how to face difficulty? That message is the theme.",
+        1: "What bound the two characters together? Their relationship is the story's emotional core.",
+      },
+    },
+    7: { // Isla ng Alingawngaw
+      1: {
+        0: "All six skills are active here. Did you stay on main idea, or did fast speech or emotion pull you away?",
+        1: "The tone carried the answer. Was it urgency, worry, or something else? Feelings are facts here.",
+      },
+      2: {
+        0: "Did competing details crowd out the specific day? One fact at a time — the day was all you needed.",
+        1: "The feeling wasn't named — it was shown. What in the delivery gave away the speaker's attitude?",
+      },
+      3: {
+        0: "The word's meaning was given by the situation. What was being called 'admirable', and what did that tell you?",
+        1: "What was the speaker's final point? The conclusion always holds the main idea.",
+      },
+      4: {
+        0: "What did the character do that embodied 'resilience'? Actions are the definition.",
+        1: "Which skill let you down — vocabulary, speed, main idea, tone, specific fact, or story order? Name it.",
+      },
+      5: {
+        0: "When everything was chaos, what did you try to hold onto? Main idea is always the steadiest anchor.",
+        1: "Whatever you missed — you know now which skill to sharpen. That knowledge is the real shard.",
+      },
+    },
+  };
+
+const ISLAND_CARD_LABEL: Record<number, string> = {
     1: "❄  ISLA NG SALITA",
     2: "⚡  ISLA NG BILIS",
     3: "🌫  ISLA NG DIWA",
@@ -498,6 +843,25 @@ export default function QuestScreen() {
               </Text>
             </View>
           )}
+          {/* Per-island listening strategy prompt */}
+          <View style={{
+            backgroundColor: accentColor + "18",
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: accentColor + "55",
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            marginBottom: 20,
+          }}>
+            <Text style={{ color: accentColor, fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+              LISTENING STRATEGY
+            </Text>
+            <Text style={{ color: "#e5e7eb", fontSize: 13, lineHeight: 20 }}>
+              {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+            </Text>
+          </View>
           <View className="items-center">
           {characterMode ? (
             <>
@@ -506,9 +870,30 @@ export default function QuestScreen() {
                 dialogue={npcIntro}
                 size={160}
               />
+              {islandNum < 7 && (
+                <TouchableOpacity
+                  onPress={() => setSlowMode((v) => !v)}
+                  style={{
+                    flexDirection: "row", alignItems: "center", gap: 8,
+                    marginTop: 16, marginBottom: 4,
+                    paddingHorizontal: 14, paddingVertical: 8,
+                    borderRadius: 10, borderWidth: 1,
+                    borderColor: slowMode ? "#f5c518" : "rgba(255,255,255,0.2)",
+                    backgroundColor: slowMode ? "rgba(245,197,24,0.12)" : "transparent",
+                  }}
+                >
+                  <Text style={{ fontSize: 16 }}>🐢</Text>
+                  <Text style={{ color: slowMode ? "#f5c518" : "#9ca3af", fontSize: 13, fontWeight: "600" }}>
+                    Slow Mode (0.75×)
+                  </Text>
+                  <Text style={{ color: slowMode ? "#f5c518" : "#6b7280", fontSize: 11 }}>
+                    {slowMode ? "ON — practice mode" : "OFF"}
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 onPress={() => setPhase("listening")}
-                className="mt-8 bg-gold rounded-xl px-10 py-4 w-full items-center"
+                className="mt-4 bg-gold rounded-xl px-10 py-4 w-full items-center"
               >
                 <Text className="text-ocean-deep font-bold text-lg">Start Listening</Text>
               </TouchableOpacity>
@@ -517,9 +902,30 @@ export default function QuestScreen() {
             <View className="items-center">
               <Text className="text-6xl mb-4">👂</Text>
               <Text className="text-gold text-2xl font-bold text-center mb-4">Sailor, Ready?</Text>
-              <Text className="text-parchment text-base text-center leading-7 mb-10">
+              <Text className="text-parchment text-base text-center leading-7 mb-6">
                 The audio plays once — no replays, no second chances.{"\n"}Trust your ears.
               </Text>
+              {islandNum < 7 && (
+                <TouchableOpacity
+                  onPress={() => setSlowMode((v) => !v)}
+                  style={{
+                    flexDirection: "row", alignItems: "center", gap: 8,
+                    marginBottom: 12,
+                    paddingHorizontal: 14, paddingVertical: 8,
+                    borderRadius: 10, borderWidth: 1,
+                    borderColor: slowMode ? "#f5c518" : "rgba(255,255,255,0.2)",
+                    backgroundColor: slowMode ? "rgba(245,197,24,0.12)" : "transparent",
+                  }}
+                >
+                  <Text style={{ fontSize: 16 }}>🐢</Text>
+                  <Text style={{ color: slowMode ? "#f5c518" : "#9ca3af", fontSize: 13, fontWeight: "600" }}>
+                    Slow Mode (0.75×)
+                  </Text>
+                  <Text style={{ color: slowMode ? "#f5c518" : "#6b7280", fontSize: 11 }}>
+                    {slowMode ? "ON — practice mode" : "OFF"}
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 onPress={() => setPhase("listening")}
                 className="bg-gold rounded-xl px-10 py-4 w-full items-center"
@@ -538,7 +944,7 @@ export default function QuestScreen() {
           {characterMode && (
             <DagatCharacter state="listening" size={160} />
           )}
-          <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay />
+          <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} />
         </View>
       )}
 
@@ -726,6 +1132,25 @@ export default function QuestScreen() {
                   {current.explanation}
                 </Text>
               </View>
+
+              {!isCorrect && CHALLENGE_REFLECTION[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim() && (
+                <View style={{
+                  backgroundColor: "rgba(127,29,29,0.35)",
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(239,68,68,0.35)",
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  marginBottom: 16,
+                }}>
+                  <Text style={{ color: "#fca5a5", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                    REFLECT
+                  </Text>
+                  <Text style={{ color: "#fecaca", fontSize: 13, lineHeight: 20 }}>
+                    {CHALLENGE_REFLECTION[islandNum][pinSortOrder][challengeIndex]}
+                  </Text>
+                </View>
+              )}
 
               <TouchableOpacity
                 onPress={handleNext}

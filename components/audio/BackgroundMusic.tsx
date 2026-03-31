@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
-import { Audio } from "expo-av";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import type { AudioPlayer } from "expo-audio";
 import { useAudioStore } from "@/stores/audio";
 
 const ISLAND_MUSIC: Record<number, string> = {
@@ -21,37 +21,38 @@ interface Props {
 
 export function BackgroundMusic({ islandNumber, bgMusicUrl }: Props) {
   const { isMuted } = useAudioStore();
-  const soundRef = useRef<Audio.Sound | null>(null);
   const isMutedRef = useRef(isMuted);
+  const playerRef = useRef<AudioPlayer | null>(null);
 
-  // Keep ref in sync so the load callback can read latest muted state
+  // Keep ref in sync so the load callback can read latest muted state,
+  // and update a live player if mute toggles while music is playing.
   useEffect(() => {
     isMutedRef.current = isMuted;
-    soundRef.current?.setIsMutedAsync(isMuted).catch(() => {});
+    if (playerRef.current) {
+      playerRef.current.muted = isMuted;
+    }
   }, [isMuted]);
 
   useFocusEffect(
     useCallback(() => {
-      let mounted = true;
+      const url = bgMusicUrl ?? ISLAND_MUSIC[islandNumber];
+      if (!url) return;
+
+      let cancelled = false;
 
       async function startMusic() {
-        const url = bgMusicUrl ?? ISLAND_MUSIC[islandNumber];
-        if (!url) return;
         try {
-          await Audio.setAudioModeAsync({
-            playsInSilentModeIOS: true,
-            staysActiveInBackground: false,
+          await setAudioModeAsync({
+            playsInSilentMode: true,
+            shouldPlayInBackground: false,
           });
-          const { sound } = await Audio.Sound.createAsync(
-            { uri: url },
-            { isLooping: true, volume: 0.35, isMuted: isMutedRef.current }
-          );
-          if (!mounted) {
-            sound.unloadAsync();
-            return;
-          }
-          soundRef.current = sound;
-          await sound.playAsync();
+          if (cancelled) return;
+          const p = createAudioPlayer({ uri: url });
+          p.loop = true;
+          p.volume = 0.35;
+          p.muted = isMutedRef.current;
+          p.play();
+          playerRef.current = p;
         } catch {
           // No music is fine — the UI must not break
         }
@@ -60,12 +61,13 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl }: Props) {
       startMusic();
 
       return () => {
-        mounted = false;
-        const s = soundRef.current;
-        soundRef.current = null;
-        s?.stopAsync()
-          .then(() => s.unloadAsync())
-          .catch(() => {});
+        cancelled = true;
+        const p = playerRef.current;
+        playerRef.current = null;
+        if (p) {
+          p.pause();
+          p.remove();
+        }
       };
     }, [islandNumber, bgMusicUrl])
   );

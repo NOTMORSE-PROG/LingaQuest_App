@@ -21,6 +21,7 @@ export default function LobbyScreen() {
   const netInfo = useNetInfo();
   const [mode, setMode] = useState<"menu" | "create" | "join">("menu");
   const [roomCode, setRoomCode] = useState("");
+  const [roundCount, setRoundCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { setRoom } = useMultiplayerStore();
@@ -49,7 +50,7 @@ export default function LobbyScreen() {
     setLoading(true);
     setError("");
     try {
-      const { code, roomId } = await apiClient.createRoom(5);
+      const { code, roomId } = await apiClient.createRoom(roundCount);
       connectToPusher(roomId, code);
     } catch (e: any) {
       setError(e.message);
@@ -87,7 +88,6 @@ export default function LobbyScreen() {
       router.replace("/(multiplayer)/game");
     });
 
-    // Store pusher instance for later cleanup (via global ref or context)
     (global as any).__pusher = pusher;
     router.push({ pathname: "/(multiplayer)/game", params: { roomId, code } });
   }
@@ -130,9 +130,34 @@ export default function LobbyScreen() {
 
       {mode === "create" && (
         <View>
-          <Text className="text-parchment mb-6">
+          <Text className="text-parchment mb-4">
             A room code will be generated. Share it with your crew (4–6 players).
           </Text>
+
+          {/* Round count picker */}
+          <Text className="text-parchment-dark text-sm mb-2">Rounds per session:</Text>
+          <View className="flex-row space-x-3 mb-6">
+            {[5, 6, 7].map((n) => (
+              <TouchableOpacity
+                key={n}
+                onPress={() => setRoundCount(n)}
+                className={`flex-1 py-3 rounded-xl items-center border ${
+                  roundCount === n
+                    ? "bg-gold border-gold"
+                    : "bg-ocean-mid border-ocean-light"
+                }`}
+              >
+                <Text
+                  className={`font-bold text-lg ${
+                    roundCount === n ? "text-ocean-deep" : "text-parchment"
+                  }`}
+                >
+                  {n}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {error ? <Text className="text-coral mb-4">{error}</Text> : null}
           <TouchableOpacity
             onPress={handleCreateRoom}

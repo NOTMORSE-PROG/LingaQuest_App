@@ -135,6 +135,24 @@ export const apiClient = {
       body: JSON.stringify({ roomId }),
     }),
 
+  submitRepairVote: (roomId: string, part: string) =>
+    request<{ ok: boolean }>("/multiplayer/repair-vote", {
+      method: "POST",
+      body: JSON.stringify({ roomId, part }),
+    }),
+
+  nextQuestion: (roomId: string) =>
+    request<{ ok: boolean }>("/multiplayer/next-question", {
+      method: "POST",
+      body: JSON.stringify({ roomId }),
+    }),
+
+  questionTimeout: (roomId: string) =>
+    request<{ ok: boolean }>("/multiplayer/question-timeout", {
+      method: "POST",
+      body: JSON.stringify({ roomId }),
+    }),
+
   // Account
   deleteAccount: () => request<{ ok: boolean }>("/user/delete", { method: "DELETE" }),
 };

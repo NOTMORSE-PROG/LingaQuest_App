@@ -650,6 +650,22 @@ export default function IslandScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, characterMode]);
 
+  // Captain intro entrance animation (slide-up + fade-in)
+  const captainEntranceY = useSharedValue(40);
+  const captainEntranceOpacity = useSharedValue(0);
+  const captainEntranceStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: captainEntranceY.value }],
+    opacity: captainEntranceOpacity.value,
+  }));
+  useEffect(() => {
+    if (phase !== "captain") return;
+    captainEntranceY.value = 40;
+    captainEntranceOpacity.value = 0;
+    captainEntranceY.value = withTiming(0, { duration: 420 });
+    captainEntranceOpacity.value = withTiming(1, { duration: 380 });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
   if (isLoading || !island) {
     return (
       <View className="flex-1 bg-ocean-deep items-center justify-center">
@@ -680,7 +696,7 @@ export default function IslandScreen() {
   if (phase === "captain" && characterMode) {
     return (
       <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
-        <View className="flex-1 items-center justify-center px-8">
+        <Animated.View style={[{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }, captainEntranceStyle]}>
           <Text className="text-parchment-dark text-sm mb-6">Island {island.number}</Text>
           <CaptainSalita
             state="talking"
@@ -696,7 +712,7 @@ export default function IslandScreen() {
           >
             <Text className="text-ocean-deep font-bold text-lg">Let's go ⚓</Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </SafeAreaView>
     );
   }
@@ -706,7 +722,7 @@ export default function IslandScreen() {
   const pinStates = pins.map((pin: any, idx: number) => {
     const isCompleted = pin.isCompleted ?? false;
     // Completed pins are always re-enterable; new pins require previous pin passed at 100%
-    const isUnlocked = idx === 0 || isCompleted || ((pins[idx - 1]?.isCompleted ?? false) && (pins[idx - 1]?.accuracy ?? 0) >= 100);
+    const isUnlocked = idx === 0 || isCompleted || (pins[idx - 1]?.isCompleted ?? false);
     const isCurrent = isUnlocked && !isCompleted;
     return { ...pin, isCompleted, isUnlocked, isCurrent };
   });

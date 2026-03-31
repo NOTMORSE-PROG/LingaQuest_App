@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { View, Text } from "react-native";
-import { Audio } from "expo-av";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import type { AudioPlayer } from "expo-audio";
 import Svg, { Circle, Ellipse, Path, Rect, Line } from "react-native-svg";
 import Animated, {
   useSharedValue,
@@ -26,7 +27,7 @@ interface Props {
 }
 
 export function CaptainSalita({ state, dialogue, audioUrl, size = 180 }: Props) {
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const soundRef = useRef<AudioPlayer | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -34,23 +35,23 @@ export function CaptainSalita({ state, dialogue, audioUrl, size = 180 }: Props) 
     async function playAudio() {
       if (!audioUrl || state !== "talking") return;
       try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
-        if (!mounted) { await sound.unloadAsync(); return; }
-        soundRef.current = sound;
-        await sound.playAsync();
+        await setAudioModeAsync({ playsInSilentMode: true });
+        if (!mounted) return;
+        const p = createAudioPlayer({ uri: audioUrl });
+        if (!mounted) { p.remove(); return; }
+        soundRef.current = p;
+        p.play();
       } catch {
         // Audio unavailable — visual animation continues without sound
       }
     }
 
-    async function stopAudio() {
-      if (soundRef.current) {
-        try {
-          await soundRef.current.stopAsync();
-          await soundRef.current.unloadAsync();
-        } catch { /* ignore */ }
-        soundRef.current = null;
+    function stopAudio() {
+      const p = soundRef.current;
+      soundRef.current = null;
+      if (p) {
+        p.pause();
+        p.remove();
       }
     }
 
