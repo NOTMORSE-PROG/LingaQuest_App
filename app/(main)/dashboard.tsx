@@ -291,14 +291,14 @@ export default function DashboardScreen() {
 
         <TouchableOpacity
           onPress={() => router.push("/(multiplayer)/lobby")}
-          className="bg-coral rounded-2xl p-5 flex-row items-center justify-between"
+          className="bg-ocean-light rounded-2xl p-5 flex-row items-center justify-between border border-gold/30"
           activeOpacity={0.85}
         >
           <View>
-            <Text className="text-white font-bold text-lg">Abandon Ship</Text>
-            <Text className="text-white/70 text-sm">Multiplayer crew challenge</Text>
+            <Text className="text-gold font-bold text-lg">Treasure Hunt</Text>
+            <Text className="text-parchment-dark text-sm">5 audio clues · Crew wins together</Text>
           </View>
-          <Text className="text-3xl">⚓</Text>
+          <Text className="text-3xl">💰</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

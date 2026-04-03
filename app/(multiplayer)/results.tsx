@@ -1,21 +1,13 @@
 import { useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
-import { useMultiplayerStore } from "@/stores/multiplayer";
+import { useMultiplayerStore, destroyPusher } from "@/stores/multiplayer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
-const SHIP_PARTS = ["hull", "mast", "sails", "anchor", "rudder"] as const;
-
 export default function ResultsScreen() {
-  const { room, reset } = useMultiplayerStore();
-  const health = room?.shipHealth;
-
-  const fullyRepaired = health
-    ? SHIP_PARTS.filter((p) => health[p] >= 100).length
-    : 0;
-
-  const crewWon = fullyRepaired >= 3;
+  const { correctCount, questionResults, reset } = useMultiplayerStore();
+  const treasureFound = correctCount >= 3;
 
   const emojiScale = useSharedValue(0);
   useEffect(() => {
@@ -26,77 +18,108 @@ export default function ResultsScreen() {
   }));
 
   function handleDone() {
+    destroyPusher();
     reset();
     router.replace("/(main)/dashboard");
   }
 
+  function handlePlayAgain() {
+    destroyPusher();
+    reset();
+    router.replace("/(multiplayer)/lobby");
+  }
+
+  const stopNames = ["Pirate Port", "Coral Reef", "Hidden Cave", "Storm Pass", "Treasure Isle"];
+
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
     <ScrollView contentContainerClassName="px-6 pt-8 pb-8 items-center">
-      {/* Outcome */}
+      {/* Big emoji */}
       <Animated.Text style={emojiStyle} className="text-7xl mb-4">
-        {crewWon ? "🏆" : "💀"}
+        {treasureFound ? "💰" : "🔒"}
       </Animated.Text>
-      <Text className="text-gold text-3xl font-bold text-center mb-2">
-        {crewWon ? "Ship Saved!" : "Ship Sunk!"}
-      </Text>
-      <Text className="text-parchment text-base text-center mb-10">
-        {crewWon
-          ? `Your crew fully repaired ${fullyRepaired}/5 parts. Victory!`
-          : `Only ${fullyRepaired}/5 parts fully repaired. Better luck next voyage.`}
-      </Text>
 
-      {/* Final ship health */}
-      {health && (
-        <View className="w-full bg-ocean-mid rounded-2xl p-5 border border-ocean-light mb-8">
-          <Text className="text-gold font-bold text-sm mb-4">FINAL SHIP HEALTH</Text>
-          {SHIP_PARTS.map((part) => {
-            const hp = health[part];
-            const color = hp >= 100 ? "bg-green-500" : hp > 0 ? "bg-yellow-500" : "bg-red-700";
-            return (
-              <View key={part} className="mb-3">
-                <View className="flex-row justify-between mb-1">
-                  <Text className="text-parchment text-sm capitalize">{part}</Text>
-                  <Text
-                    className={`text-xs font-bold ${hp >= 100 ? "text-green-400" : hp > 0 ? "text-yellow-400" : "text-red-400"}`}
-                  >
-                    {hp >= 100 ? "✓ INTACT" : hp <= 0 ? "✗ SUNK" : `${hp}%`}
-                  </Text>
-                </View>
-                <View className="h-2 bg-ocean-deep rounded-full overflow-hidden">
-                  <View
-                    className={`h-full rounded-full ${color}`}
-                    style={{ width: `${Math.max(0, hp)}%` }}
-                  />
-                </View>
+      {/* Win/Loss header */}
+      {treasureFound ? (
+        <View className="items-center mb-6">
+          <Text className="text-green-400 text-3xl font-bold text-center mb-2">
+            Treasure Found!
+          </Text>
+          <Text className="text-parchment text-base text-center">
+            Your crew solved {correctCount}/5 clues and found the treasure!
+          </Text>
+        </View>
+      ) : (
+        <View className="items-center mb-6">
+          <Text className="text-gold text-3xl font-bold text-center mb-2">
+            Treasure Lost...
+          </Text>
+          <Text className="text-parchment text-base text-center">
+            Your crew solved {correctCount}/5 clues. The treasure awaits your return!
+          </Text>
+        </View>
+      )}
+
+      {/* Score visualization */}
+      <View className={`w-full rounded-2xl p-5 border mb-6 ${
+        treasureFound ? "bg-ocean-mid border-green-500/30" : "bg-ocean-mid border-ocean-light"
+      }`}>
+        <Text className="text-gold font-bold text-sm mb-4">VOYAGE RESULTS</Text>
+
+        {/* Question-by-question breakdown */}
+        {questionResults.map((result, i) => (
+          <View key={i} className="flex-row items-center justify-between py-2.5 border-b border-ocean-light/20 last:border-b-0">
+            <View className="flex-row items-center">
+              <View className={`w-6 h-6 rounded-full items-center justify-center mr-3 ${
+                result === true ? "bg-green-500" : result === false ? "bg-red-500" : "bg-ocean-light/40"
+              }`}>
+                <Text className="text-white text-xs font-bold">
+                  {result === true ? "✓" : result === false ? "✗" : "?"}
+                </Text>
               </View>
-            );
-          })}
-        </View>
-      )}
+              <Text className="text-parchment text-sm">{stopNames[i]}</Text>
+            </View>
+            <Text className={`text-xs font-bold ${
+              result === true ? "text-green-400" : result === false ? "text-red-400" : "text-parchment-dark"
+            }`}>
+              {result === true ? "Solved" : result === false ? "Missed" : "—"}
+            </Text>
+          </View>
+        ))}
 
-      {/* Round summary */}
-      {room?.currentRound && (
-        <View className="w-full bg-ocean-mid rounded-2xl p-5 border border-ocean-light mb-4">
-          <Text className="text-gold font-bold text-sm mb-2">SESSION SUMMARY</Text>
-          <Text className="text-parchment text-sm">
-            Rounds completed: {room.currentRound - 1}/{room.roundCount}
-          </Text>
-          <Text className="text-parchment text-sm mt-1">
-            Parts fully repaired: {fullyRepaired}/5
-          </Text>
+        {/* Score summary */}
+        <View className="flex-row justify-center mt-4 space-x-2">
+          {questionResults.map((r, i) => (
+            <View
+              key={i}
+              className={`w-4 h-4 rounded-full ${
+                r === true ? "bg-green-500" : r === false ? "bg-red-500" : "bg-ocean-light/40"
+              }`}
+            />
+          ))}
         </View>
-      )}
+        <Text className="text-parchment-dark text-xs text-center mt-2">
+          {correctCount}/5 clues solved · Need 3 to find treasure
+        </Text>
+      </View>
 
-      <Text className="text-parchment-dark text-xs text-center mb-8">
-        Repair 3 or more ship parts to win.
-      </Text>
+      {/* Action buttons */}
+      <TouchableOpacity
+        onPress={handlePlayAgain}
+        className={`w-full rounded-xl py-4 items-center mb-3 ${
+          treasureFound ? "bg-green-600" : "bg-gold"
+        }`}
+      >
+        <Text className={`font-bold text-lg ${treasureFound ? "text-white" : "text-ocean-deep"}`}>
+          Play Again
+        </Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         onPress={handleDone}
-        className="w-full bg-gold rounded-xl py-4 items-center"
+        className="w-full bg-ocean-mid rounded-xl py-4 items-center border border-ocean-light"
       >
-        <Text className="text-ocean-deep font-bold text-lg">Return to Dashboard</Text>
+        <Text className="text-parchment font-bold text-base">Return to Dashboard</Text>
       </TouchableOpacity>
     </ScrollView>
     </SafeAreaView>

@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse, GoogleAuthResponse, User, IslandWithPins, IslandProgress, Badge } from "@/types";
+import { LoginRequest, LoginResponse, GoogleAuthResponse, User, IslandWithPins, IslandProgress, Badge, MultiplayerRoom } from "@/types";
 import { useAuthStore } from "@/stores/auth";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000/api";
@@ -114,12 +114,12 @@ export const apiClient = {
 
   // Multiplayer
   createRoom: (roundCount: number) =>
-    request<{ code: string; roomId: string }>("/multiplayer/rooms", {
+    request<{ code: string; roomId: string; room: MultiplayerRoom }>("/multiplayer/rooms", {
       method: "POST",
       body: JSON.stringify({ roundCount }),
     }),
   joinRoom: (code: string) =>
-    request<{ roomId: string }>("/multiplayer/rooms/join", {
+    request<{ roomId: string; room: MultiplayerRoom }>("/multiplayer/rooms/join", {
       method: "POST",
       body: JSON.stringify({ code }),
     }),

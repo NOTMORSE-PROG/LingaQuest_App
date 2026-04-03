@@ -28,25 +28,7 @@ export interface RoomPlayer {
   joinedAt: string;
 }
 
-// Pusher event payloads
-
-export interface RepairVoteStartEvent {
-  round: number;
-  totalRounds: number;
-  shipHealth: ShipHealth;
-}
-
-export interface RepairVoteUpdateEvent {
-  userId: string;
-  hasVoted: boolean;
-  totalVotes: number;
-  totalPlayers: number;
-}
-
-export interface RepairVoteResultEvent {
-  chosenPart: ShipPart;
-  shipHealth: ShipHealth;
-}
+// Pusher event payloads — Treasure Hunt
 
 export interface RoundQuestionEvent {
   round: number;
@@ -56,7 +38,6 @@ export interface RoundQuestionEvent {
   question: string;
   choices: { label: string; text: string }[];
   challengeId: string;
-  partToRepair: ShipPart;
 }
 
 export interface VoteUpdateEvent {
@@ -67,19 +48,14 @@ export interface VoteUpdateEvent {
 }
 
 export interface RoundResultEvent {
-  crewAnswer: "A" | "B" | "C" | "D";
-  correctAnswer: "A" | "B" | "C" | "D";
+  crewAnswer: string;
+  correctAnswer: string;
   isCorrect: boolean;
-  healthDelta: number;
-  partTarget: ShipPart;
-  newShipHealth: ShipHealth;
   questionIndex: number;
-  isRoundOver: boolean;
-  newPartTarget?: ShipPart;
+  isGameOver: boolean;
 }
 
-export interface RoundEndEvent {
-  round: number;
-  totalRounds: number;
-  shipHealth: ShipHealth;
+export interface GameEndEvent {
+  correctCount: number;
+  totalQuestions: number;
 }
