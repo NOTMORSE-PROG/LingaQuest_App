@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { apiClient } from "@/lib/api";
-import { useMultiplayerStore } from "@/stores/multiplayer";
+import { useMultiplayerStore, destroyPusher } from "@/stores/multiplayer";
 import Pusher from "pusher-js";
-import { MultiplayerRoom } from "@/types";
 
 const PUSHER_KEY = process.env.EXPO_PUBLIC_PUSHER_KEY ?? "";
 const PUSHER_CLUSTER = process.env.EXPO_PUBLIC_PUSHER_CLUSTER ?? "ap1";
@@ -21,10 +20,14 @@ export default function LobbyScreen() {
   const netInfo = useNetInfo();
   const [mode, setMode] = useState<"menu" | "create" | "join">("menu");
   const [roomCode, setRoomCode] = useState("");
-  const [roundCount, setRoundCount] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { setRoom } = useMultiplayerStore();
+  const { setRoom, reset } = useMultiplayerStore();
+
+  useEffect(() => {
+    destroyPusher();
+    reset();
+  }, [reset]);
 
   if (!netInfo.isConnected) {
     return (
@@ -34,7 +37,7 @@ export default function LobbyScreen() {
           No Internet Connection
         </Text>
         <Text className="text-parchment text-base text-center mb-8">
-          Abandon Ship requires an internet connection. Sail to the Main Quest instead.
+          Treasure Hunt requires an internet connection. Sail to the Main Quest instead.
         </Text>
         <TouchableOpacity
           onPress={() => router.push("/(main)/map")}
@@ -50,7 +53,8 @@ export default function LobbyScreen() {
     setLoading(true);
     setError("");
     try {
-      const { code, roomId } = await apiClient.createRoom(roundCount);
+      const { code, roomId, room } = await apiClient.createRoom(1);
+      setRoom(room);
       connectToPusher(roomId, code);
     } catch (e: any) {
       setError(e.message);
@@ -67,7 +71,8 @@ export default function LobbyScreen() {
     setLoading(true);
     setError("");
     try {
-      const { roomId } = await apiClient.joinRoom(roomCode.trim().toUpperCase());
+      const { roomId, room } = await apiClient.joinRoom(roomCode.trim().toUpperCase());
+      setRoom(room);
       connectToPusher(roomId, roomCode.trim().toUpperCase());
     } catch (e: any) {
       setError(e.message);
@@ -77,17 +82,8 @@ export default function LobbyScreen() {
   }
 
   function connectToPusher(roomId: string, code: string) {
+    destroyPusher();
     const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
-    const channel = pusher.subscribe(`room-${roomId}`);
-
-    channel.bind("room:updated", (room: MultiplayerRoom) => {
-      setRoom(room);
-    });
-
-    channel.bind("game:start", () => {
-      router.replace("/(multiplayer)/game");
-    });
-
     (global as any).__pusher = pusher;
     router.push({ pathname: "/(multiplayer)/game", params: { roomId, code } });
   }
@@ -99,9 +95,9 @@ export default function LobbyScreen() {
         <Text className="text-gold text-base">← Back</Text>
       </TouchableOpacity>
 
-      <Text className="text-gold text-4xl font-bold mb-2">Abandon Ship</Text>
+      <Text className="text-gold text-4xl font-bold mb-2">Treasure Hunt</Text>
       <Text className="text-parchment-dark text-sm mb-10">
-        4–6 sailors. One ship. Will you make it?
+        1–6 sailors · 5 audio clues · Find the treasure!
       </Text>
 
       {mode === "menu" && (
@@ -130,33 +126,9 @@ export default function LobbyScreen() {
 
       {mode === "create" && (
         <View>
-          <Text className="text-parchment mb-4">
-            A room code will be generated. Share it with your crew (4–6 players).
+          <Text className="text-parchment mb-6">
+            A room code will be generated. Share it with your crew. Solve 5 audio clues to find the treasure!
           </Text>
-
-          {/* Round count picker */}
-          <Text className="text-parchment-dark text-sm mb-2">Rounds per session:</Text>
-          <View className="flex-row space-x-3 mb-6">
-            {[5, 6, 7].map((n) => (
-              <TouchableOpacity
-                key={n}
-                onPress={() => setRoundCount(n)}
-                className={`flex-1 py-3 rounded-xl items-center border ${
-                  roundCount === n
-                    ? "bg-gold border-gold"
-                    : "bg-ocean-mid border-ocean-light"
-                }`}
-              >
-                <Text
-                  className={`font-bold text-lg ${
-                    roundCount === n ? "text-ocean-deep" : "text-parchment"
-                  }`}
-                >
-                  {n}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
 
           {error ? <Text className="text-coral mb-4">{error}</Text> : null}
           <TouchableOpacity
