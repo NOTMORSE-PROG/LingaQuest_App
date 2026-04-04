@@ -9,6 +9,7 @@ import { DagatCharacter, DagatState } from "@/components/characters/DagatCharact
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
 import { QuestSceneOverlay } from "@/components/scene/QuestSceneOverlay";
 import { ShardClaimCinematic } from "@/components/scene/ShardClaimCinematic";
+import { CertificateModal } from "@/components/scene/CertificateModal";
 import { useAuthStore } from "@/stores/auth";
 import { MuteButton } from "@/components/audio/MuteButton";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
@@ -37,7 +38,7 @@ function shuffleChallenge(c: Challenge): Challenge {
   return { ...c, choices: relabeled, answer: newAnswer };
 }
 
-type Phase = "intro" | "listening" | "answering" | "result" | "submitting" | "claimShard" | "pinComplete";
+type Phase = "intro" | "listening" | "answering" | "result" | "submitting" | "claimShard" | "certificate" | "pinComplete";
 
 export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
@@ -176,7 +177,7 @@ export default function QuestScreen() {
 
   function confirmExit() {
     const dest = `/(main)/island/${pin?.islandId}` as const;
-    if (phase === "intro" || phase === "submitting" || phase === "pinComplete" || phase === "claimShard") {
+    if (phase === "intro" || phase === "submitting" || phase === "pinComplete" || phase === "claimShard" || phase === "certificate") {
       router.replace(dest);
       return;
     }
@@ -710,7 +711,13 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
   }
 
   function handleClaimShard() {
-    setPhase("pinComplete");
+    // Show certificate after completing the final quest (Island 7, Pin 5) for the first time
+    const isFinalQuest = islandNum === 7 && pin?.sortOrder === 5;
+    if (isFinalQuest && !wasAlreadyCompleted.current) {
+      setPhase("certificate");
+    } else {
+      setPhase("pinComplete");
+    }
   }
 
 
@@ -1178,6 +1185,14 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
         npcSuccess={pin.island?.npcDialogueSuccess ?? "The shard is yours, sailor. The sea remembers."}
         npcAudioSuccess={npcAudioSuccess}
         onClaim={handleClaimShard}
+      />
+    )}
+
+    {/* Certificate of completion — shown after final quest (Island 7, Pin 5) */}
+    {phase === "certificate" && (
+      <CertificateModal
+        username={user?.username ?? "Sailor"}
+        onClose={() => setPhase("pinComplete")}
       />
     )}
     </SafeAreaView>
