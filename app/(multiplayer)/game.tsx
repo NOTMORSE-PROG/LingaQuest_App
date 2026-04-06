@@ -85,6 +85,7 @@ export default function GameScreen() {
   const [getReadyCount, setGetReadyCount] = useState(3);
   const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState<number | null>(null);
   const [gameEndData, setGameEndData] = useState<{ correctCount: number; totalQuestions: number } | null>(null);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutCalledRef = useRef(false);
@@ -92,6 +93,7 @@ export default function GameScreen() {
   const autoAdvanceCancelledRef = useRef(false);
   const isHostRef = useRef(false);
   const getReadyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasNavigatedRef = useRef(false);
 
   // Reanimated values for result animations
   const resultSlideY = useSharedValue(100);
@@ -218,18 +220,41 @@ export default function GameScreen() {
       }, 2000);
     });
 
+    // Connection state handling
+    channel.bind("pusher:subscription_error", (status: any) => {
+      console.warn("[Pusher] subscription error:", status);
+      setConnectionError("Connection lost. Trying to reconnect...");
+    });
+
+    pusher.connection.bind("disconnected", () => {
+      setConnectionError("Disconnected from game server.");
+    });
+
+    pusher.connection.bind("connected", () => {
+      setConnectionError(null);
+    });
+
+    pusher.connection.bind("error", (err: any) => {
+      console.warn("[Pusher] connection error:", err);
+      setConnectionError("Connection error. Trying to reconnect...");
+    });
+
     return () => {
       clearTimer();
       clearAutoAdvance();
       if (getReadyTimerRef.current) clearInterval(getReadyTimerRef.current);
       channel.unbind_all();
       pusher.unsubscribe(`room-${roomId}`);
+      pusher.connection.unbind("disconnected");
+      pusher.connection.unbind("connected");
+      pusher.connection.unbind("error");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   useEffect(() => {
-    if (phase === "final") {
+    if (phase === "final" && !hasNavigatedRef.current) {
+      hasNavigatedRef.current = true;
       router.replace("/(multiplayer)/results");
     }
   }, [phase]);
@@ -315,6 +340,22 @@ export default function GameScreen() {
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
     <ScrollView contentContainerClassName="px-6 pt-4 pb-8">
+
+      {/* Connection error banner */}
+      {connectionError && (
+        <View style={{ backgroundColor: "rgba(127,29,29,0.6)", borderWidth: 1, borderColor: "rgba(239,68,68,0.4)", borderRadius: 12, padding: 12, marginBottom: 12 }}>
+          <Text style={{ color: "#fca5a5", fontSize: 13, textAlign: "center" }}>{connectionError}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              const p = (global as any).__pusher;
+              if (p) p.connect();
+            }}
+            style={{ marginTop: 8, backgroundColor: "#991b1b", borderRadius: 8, paddingVertical: 8, alignItems: "center" }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 13 }}>Reconnect</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Header */}
       <View className="flex-row justify-between items-center mb-3">

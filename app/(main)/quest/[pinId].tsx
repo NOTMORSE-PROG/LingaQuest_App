@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withSpring, cancelAnimation, Easing } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -40,6 +41,509 @@ function shuffleChallenge(c: Challenge): Challenge {
 
 type Phase = "intro" | "listening" | "answering" | "result" | "submitting" | "claimShard" | "certificate" | "pinComplete";
 
+// ─── Island 1 animated components ────────────────────────────────────────────
+
+function FrostBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 1500, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(100,200,230,${0.25 + shimmer.value * 0.15})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(13,30,53,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function FrostBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.0, { duration: 800, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 800 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute", alignSelf: "center",
+        width: 120, height: 120, borderRadius: 60,
+        borderWidth: 2, borderColor: "rgba(100,200,230,0.7)",
+      }, style]}
+    />
+  );
+}
+
+function ThawRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1200, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 1000 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute", alignSelf: "center",
+        width: 80, height: 80, borderRadius: 40,
+        borderWidth: 1.5, borderColor: "rgba(100,200,230,0.6)",
+      }, style]}
+    />
+  );
+}
+
+// ─── Island 2 animated components ────────────────────────────────────────────
+
+function ElectricBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 1200, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(142,68,173,${0.30 + shimmer.value * 0.20})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(20,10,40,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function SpeedBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.2, { duration: 700, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 700 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 120, height: 120, borderRadius: 60,
+      borderWidth: 2, borderColor: "rgba(195,155,211,0.75)",
+    }, style]} />
+  );
+}
+
+function LightningRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1000, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 800 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(195,155,211,0.65)",
+    }, style]} />
+  );
+}
+
+// ─── Island 3 animated components ────────────────────────────────────────────
+
+
+function MistBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(52,152,219,${0.25 + shimmer.value * 0.18})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(8,14,28,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function ClarityBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.1, { duration: 900, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 900 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 120, height: 120, borderRadius: 60,
+      borderWidth: 2, borderColor: "rgba(52,152,219,0.70)",
+    }, style]} />
+  );
+}
+
+function FogRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1100, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 900 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(52,152,219,0.60)",
+    }, style]} />
+  );
+}
+
+// ─── Island 4 animated components ────────────────────────────────────────────
+
+function EmberBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 1600, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(231,76,60,${0.28 + shimmer.value * 0.20})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(20,6,6,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function PassionBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.2, { duration: 900, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 900 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 120, height: 120, borderRadius: 60,
+      borderWidth: 2, borderColor: "rgba(231,76,60,0.72)",
+    }, style]} />
+  );
+}
+
+function EmberRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1100, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 900 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(231,76,60,0.62)",
+    }, style]} />
+  );
+}
+
+// ─── Island 5 animated components ────────────────────────────────────────────
+
+function BeamBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(230,126,34,${0.28 + shimmer.value * 0.20})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(22,10,0,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function PrecisionBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.2, { duration: 850, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 850 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 120, height: 120, borderRadius: 60,
+      borderWidth: 2, borderColor: "rgba(230,126,34,0.72)",
+    }, style]} />
+  );
+}
+
+function HarborRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1100, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 900 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(230,126,34,0.62)",
+    }, style]} />
+  );
+}
+
+// ─── Island 6 animated components ────────────────────────────────────────────
+
+function NarrativeBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(26,188,156,${0.28 + shimmer.value * 0.22})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(3,12,10,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function NarrativeBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.2, { duration: 850, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 850 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 120, height: 120, borderRadius: 60,
+      borderWidth: 2, borderColor: "rgba(26,188,156,0.72)",
+    }, style]} />
+  );
+}
+
+function StoryRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 900 }),
+      );
+      scale.value = withTiming(2.5, { duration: 1100, easing: Easing.out(Easing.quad) });
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }], opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(26,188,156,0.62)",
+    }, style]} />
+  );
+}
+
+// ─── Island 7 animated components ────────────────────────────────────────────
+
+function EchoBorderCard({ children }: { children: ReactNode }) {
+  const shimmer = useSharedValue(0);
+  useEffect(() => {
+    shimmer.value = withRepeat(withSequence(
+      withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
+    ), -1, false);
+    return () => cancelAnimation(shimmer);
+  }, [shimmer]);
+  const borderStyle = useAnimatedStyle(() => ({
+    borderColor: `rgba(245,197,24,${0.30 + shimmer.value * 0.22})`,
+  }));
+  return (
+    <Animated.View style={[{
+      backgroundColor: "rgba(16,13,0,0.92)",
+      borderRadius: 14, borderWidth: 1,
+      paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
+    }, borderStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+function EchoBurst() {
+  const scale = useSharedValue(0.3);
+  const opacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withTiming(2.4, { duration: 900, easing: Easing.out(Easing.quad) });
+    opacity.value = withTiming(0, { duration: 900 });
+  }, [opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute", alignSelf: "center",
+        width: 120, height: 120, borderRadius: 60,
+        borderWidth: 2, borderColor: "rgba(245,197,24,0.75)",
+      }, style]}
+    />
+  );
+}
+
+function EchoShockRing({ delay }: { delay: number }) {
+  const scale = useSharedValue(0.2);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withTiming(0.7, { duration: 200 });
+      scale.value = withTiming(2.5, { duration: 1000, easing: Easing.out(Easing.quad) });
+      opacity.value = withSequence(
+        withTiming(0.7, { duration: 200 }),
+        withTiming(0, { duration: 800 }),
+      );
+    }, delay);
+    return () => clearTimeout(t);
+  }, [delay, opacity, scale]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[{
+      position: "absolute", alignSelf: "center",
+      width: 80, height: 80, borderRadius: 40,
+      borderWidth: 1.5, borderColor: "rgba(245,197,24,0.65)",
+    }, style]} />
+  );
+}
+
 export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
   const [isResultMode, setIsResultMode] = useState(mode === "result");
@@ -60,6 +564,33 @@ export default function QuestScreen() {
   const [slowMode, setSlowMode] = useState(false);
   // Track if pin was already completed when loaded — used to skip shard cinematic on retry
   const wasAlreadyCompleted = useRef(false);
+
+  // Island 1 — shake animation for wrong result card
+  const shakeX = useSharedValue(0);
+  const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shakeX.value }] }));
+
+  // Island 1 — score emoji spring-in
+  const scoreScale = useSharedValue(0);
+  const scoreOpacity = useSharedValue(0);
+  const scoreStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scoreScale.value }],
+    opacity: scoreOpacity.value,
+  }));
+
+  // Island 1 — track whether FrostBurst should be shown
+  const [showFrostBurst, setShowFrostBurst] = useState(false);
+  // Island 2 — track whether SpeedBurst should be shown
+  const [showSpeedBurst, setShowSpeedBurst] = useState(false);
+  // Island 3 — track whether ClarityBurst should be shown
+  const [showClarityBurst, setShowClarityBurst] = useState(false);
+  // Island 4 — track whether PassionBurst should be shown
+  const [showPassionBurst, setShowPassionBurst] = useState(false);
+  // Island 5 — track whether PrecisionBurst should be shown
+  const [showPrecisionBurst, setShowPrecisionBurst] = useState(false);
+  // Island 6 — track whether NarrativeBurst should be shown
+  const [showNarrativeBurst, setShowNarrativeBurst] = useState(false);
+  // Island 7 — track whether EchoBurst should be shown
+  const [showEchoBurst, setShowEchoBurst] = useState(false);
 
   // Reset all per-pin state when navigating to a different pin.
   // The (main) layout uses a Tabs navigator which REUSES this component instance across
@@ -95,6 +626,8 @@ export default function QuestScreen() {
   const submitMutation = useMutation({
     mutationFn: (data: { pinId: string; accuracy: number }) =>
       apiClient.submitProgress(data),
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     onSuccess: () => {
       setSubmitError(null);
       queryClient.invalidateQueries({ queryKey: ["progress"] });
@@ -160,6 +693,60 @@ export default function QuestScreen() {
     const timer = setTimeout(() => setShowHint(true), 30000);
     return () => clearTimeout(timer);
   }, [phase, selected, showHint]);
+
+  // Island 1-7 — shake on wrong result, burst on correct
+  useEffect(() => {
+    if (phase !== "result" || selected === null) return;
+    const islandN = pin?.island?.number ?? 0;
+    if (islandN !== 1 && islandN !== 2 && islandN !== 3 && islandN !== 4 && islandN !== 5 && islandN !== 6 && islandN !== 7) return;
+    if (selected !== current?.answer) {
+      // Shake wrong card
+      shakeX.value = withSequence(
+        withTiming(-6, { duration: 50 }),
+        withTiming(6, { duration: 50 }),
+        withTiming(-4, { duration: 50 }),
+        withTiming(4, { duration: 50 }),
+        withTiming(-2, { duration: 50 }),
+        withTiming(0, { duration: 50 }),
+      );
+    } else {
+      if (islandN === 1) {
+        setShowFrostBurst(true);
+        setTimeout(() => setShowFrostBurst(false), 900);
+      } else if (islandN === 2) {
+        setShowSpeedBurst(true);
+        setTimeout(() => setShowSpeedBurst(false), 800);
+      } else if (islandN === 3) {
+        setShowClarityBurst(true);
+        setTimeout(() => setShowClarityBurst(false), 1000);
+      } else if (islandN === 4) {
+        setShowPassionBurst(true);
+        setTimeout(() => setShowPassionBurst(false), 1000);
+      } else if (islandN === 5) {
+        setShowPrecisionBurst(true);
+        setTimeout(() => setShowPrecisionBurst(false), 950);
+      } else if (islandN === 6) {
+        setShowNarrativeBurst(true);
+        setTimeout(() => setShowNarrativeBurst(false), 950);
+      } else if (islandN === 7) {
+        setShowEchoBurst(true);
+        setTimeout(() => setShowEchoBurst(false), 1000);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
+  // Island 1-7 — spring-in score emoji on pinComplete
+  useEffect(() => {
+    if (phase !== "pinComplete") return;
+    const islandN = pin?.island?.number ?? 0;
+    if (islandN !== 1 && islandN !== 2 && islandN !== 3 && islandN !== 4 && islandN !== 5 && islandN !== 6 && islandN !== 7) return;
+    scoreScale.value = 0;
+    scoreOpacity.value = 0;
+    scoreScale.value = withSpring(1, { damping: 8, stiffness: 100 });
+    scoreOpacity.value = withTiming(1, { duration: 300 });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   function resetToIntro() {
     setPhase("intro");
@@ -727,6 +1314,77 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       <QuestSceneOverlay islandNumber={islandNum} />
       {phase !== "listening" && <MuteButton />}
 
+      {/* Island 1 — warm-to-ice gradient depth behind content */}
+      {islandNum === 1 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#091d2e" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
+            backgroundColor: "rgba(245,197,24,0.045)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(80,200,230,0.05)" }} />
+        </View>
+      )}
+      {/* Island 2 — purple storm gradient depth */}
+      {islandNum === 2 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#0a0618" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
+            backgroundColor: "rgba(142,68,173,0.04)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(30,15,60,0.06)" }} />
+        </View>
+      )}
+      {/* Island 3 — misty lagoon gradient depth */}
+      {islandNum === 3 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#071018" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
+            backgroundColor: "rgba(52,152,219,0.04)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(26,74,107,0.06)" }} />
+        </View>
+      )}
+      {/* Island 4 — volcanic ember gradient depth */}
+      {islandNum === 4 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#140808" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%",
+            backgroundColor: "rgba(231,76,60,0.04)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(100,20,10,0.06)" }} />
+        </View>
+      )}
+      {/* Island 5 — harbour lighthouse gradient depth */}
+      {islandNum === 5 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#160c00" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%",
+            backgroundColor: "rgba(230,126,34,0.04)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(80,35,0,0.06)" }} />
+        </View>
+      )}
+      {/* Island 6 — scroll library gradient depth */}
+      {islandNum === 6 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#031714" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
+            backgroundColor: "rgba(26,188,156,0.03)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(10,50,38,0.06)" }} />
+        </View>
+      )}
+      {/* Island 7 — storm amphitheater gradient depth */}
+      {islandNum === 7 && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+          <View style={{ flex: 1, backgroundColor: "#100d00" }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
+            backgroundColor: "rgba(142,68,173,0.035)" }} />
+          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+            backgroundColor: "rgba(245,197,24,0.04)" }} />
+        </View>
+      )}
+
     <ScrollView
       contentContainerClassName="px-6 pt-4 pb-8"
       showsVerticalScrollIndicator={false}
@@ -762,18 +1420,111 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island + Pin Banner */}
       {islandName ? (
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-          <View style={{
-            backgroundColor: accentColor + "22",
-            borderRadius: 8,
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderWidth: 1,
-            borderColor: accentColor + "55",
-          }}>
-            <Text style={{ color: accentColor, fontSize: 11, fontWeight: "700" }}>
-              Island {islandNum} · {islandName}
-            </Text>
-          </View>
+          {islandNum === 1 ? (
+            <View style={{
+              backgroundColor: "rgba(10,28,50,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(100,200,230,0.45)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(180,230,255,0.70)", transform: [{ rotate: "45deg" }] }} />
+              <Text style={{ color: "rgba(140,215,250,0.90)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                ❄ Island 1 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(180,230,255,0.70)", transform: [{ rotate: "45deg" }] }} />
+            </View>
+          ) : islandNum === 2 ? (
+            <View style={{
+              backgroundColor: "rgba(20,10,40,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(195,155,211,0.50)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(220,190,255,0.70)", transform: [{ rotate: "45deg" }] }} />
+              <Text style={{ color: "rgba(195,155,211,0.90)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                ⚡ Island 2 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(220,190,255,0.70)", transform: [{ rotate: "45deg" }] }} />
+            </View>
+          ) : islandNum === 3 ? (
+            <View style={{
+              backgroundColor: "rgba(8,14,28,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(52,152,219,0.45)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(168,200,224,0.70)", borderRadius: 2.5 }} />
+              <Text style={{ color: "rgba(100,180,240,0.90)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                {"🌫"} Island 3 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(168,200,224,0.70)", borderRadius: 2.5 }} />
+            </View>
+          ) : islandNum === 4 ? (
+            <View style={{
+              backgroundColor: "rgba(20,5,5,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(231,76,60,0.48)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(231,120,100,0.72)", borderRadius: 2.5 }} />
+              <Text style={{ color: "rgba(245,130,100,0.92)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                🔥 Island 4 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(231,120,100,0.72)", borderRadius: 2.5 }} />
+            </View>
+          ) : islandNum === 5 ? (
+            <View style={{
+              backgroundColor: "rgba(22,10,0,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(230,126,34,0.48)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(245,165,80,0.72)", transform: [{ rotate: "45deg" }] }} />
+              <Text style={{ color: "rgba(245,165,80,0.92)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                🔍 Island 5 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(245,165,80,0.72)", transform: [{ rotate: "45deg" }] }} />
+            </View>
+          ) : islandNum === 6 ? (
+            <View style={{
+              backgroundColor: "rgba(3,12,10,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(26,188,156,0.48)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(26,188,156,0.72)", borderRadius: 2.5 }} />
+              <Text style={{ color: "rgba(80,210,190,0.92)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                {"📜"} Island 6 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(26,188,156,0.72)", borderRadius: 2.5 }} />
+            </View>
+          ) : islandNum === 7 ? (
+            <View style={{
+              backgroundColor: "rgba(16,13,0,0.95)",
+              borderRadius: 8, paddingHorizontal: 12, paddingVertical: 5,
+              borderWidth: 1, borderColor: "rgba(245,197,24,0.50)",
+              flexDirection: "row", alignItems: "center", gap: 6,
+            }}>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(245,197,24,0.75)", borderRadius: 2.5 }} />
+              <Text style={{ color: "rgba(245,210,80,0.92)", fontSize: 11, fontWeight: "700", letterSpacing: 0.8 }}>
+                {"🌪️"} Island 7 · {islandName}
+              </Text>
+              <View style={{ width: 5, height: 5, backgroundColor: "rgba(245,197,24,0.75)", borderRadius: 2.5 }} />
+            </View>
+          ) : (
+            <View style={{
+              backgroundColor: accentColor + "22",
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderWidth: 1,
+              borderColor: accentColor + "55",
+            }}>
+              <Text style={{ color: accentColor, fontSize: 11, fontWeight: "700" }}>
+                Island {islandNum} · {islandName}
+              </Text>
+            </View>
+          )}
           {pin?.number != null && (
             <View style={{
               backgroundColor: "rgba(255,255,255,0.07)",
@@ -797,53 +1548,92 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* ========== INTRO ========== */}
       {phase === "intro" && (
         <View className="mt-4">
-          {/* Per-pin story card (Island 1) */}
-          {storyCard && (
+          {/* Per-pin story card */}
+          {storyCard && islandNum === 1 && (
+            <FrostBorderCard>
+              <Text style={{ color: "rgba(148,210,240,0.6)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#c8e6f0", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </FrostBorderCard>
+          )}
+          {storyCard && islandNum === 2 && (
+            <ElectricBorderCard>
+              <Text style={{ color: "rgba(180,100,220,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#d7b8f0", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </ElectricBorderCard>
+          )}
+          {storyCard && islandNum === 3 && (
+            <MistBorderCard>
+              <Text style={{ color: "rgba(100,180,240,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#b8d4ee", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </MistBorderCard>
+          )}
+          {storyCard && islandNum === 4 && (
+            <EmberBorderCard>
+              <Text style={{ color: "rgba(220,80,60,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#f0c4b8", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </EmberBorderCard>
+          )}
+          {storyCard && islandNum === 5 && (
+            <BeamBorderCard>
+              <Text style={{ color: "rgba(230,126,34,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#f5d5a8", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </BeamBorderCard>
+          )}
+          {storyCard && islandNum === 6 && (
+            <NarrativeBorderCard>
+              <Text style={{ color: "rgba(26,188,156,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#b2ead8", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </NarrativeBorderCard>
+          )}
+          {storyCard && islandNum === 7 && (
+            <EchoBorderCard>
+              <Text style={{ color: "rgba(245,197,24,0.65)", fontSize: 10, marginBottom: 6, letterSpacing: 1.2 }}>
+                {storyCardLabel}
+              </Text>
+              <Text style={{ color: "#f5e8b8", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>
+                {storyCard}
+              </Text>
+            </EchoBorderCard>
+          )}
+          {storyCard && islandNum !== 1 && islandNum !== 2 && islandNum !== 3 && islandNum !== 4 && islandNum !== 5 && islandNum !== 6 && islandNum !== 7 && (
             <View style={{
-              backgroundColor:
-                islandNum === 2 ? "rgba(13,8,28,0.92)" :
-                islandNum === 3 ? "rgba(5,10,20,0.92)" :
-                islandNum === 4 ? "rgba(20,6,6,0.92)" :
-                islandNum === 5 ? "rgba(18,10,0,0.92)" :
-                islandNum === 6 ? "rgba(3,12,10,0.92)" :
-                islandNum === 7 ? "rgba(16,13,0,0.92)" :
-                "rgba(13,30,53,0.92)",
-              borderRadius: 14,
-              borderWidth: 1,
-              borderColor:
-                islandNum === 2 ? "rgba(142,68,173,0.40)" :
-                islandNum === 3 ? "rgba(52,152,219,0.35)" :
-                islandNum === 4 ? "rgba(231,76,60,0.35)" :
-                islandNum === 5 ? "rgba(230,126,34,0.40)" :
-                islandNum === 6 ? "rgba(26,188,156,0.35)" :
-                islandNum === 7 ? "rgba(245,197,24,0.40)" :
-                "rgba(100,200,230,0.35)",
-              paddingHorizontal: 18,
-              paddingVertical: 14,
-              marginBottom: 20,
+              backgroundColor: "rgba(16,13,0,0.92)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(245,197,24,0.40)",
+              paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
             }}>
               <Text style={{
-                color:
-                  islandNum === 2 ? "rgba(180,100,220,0.65)" :
-                  islandNum === 3 ? "rgba(100,180,240,0.60)" :
-                  islandNum === 4 ? "rgba(220,80,60,0.65)" :
-                  islandNum === 5 ? "rgba(230,126,34,0.65)" :
-                  islandNum === 6 ? "rgba(26,188,156,0.65)" :
-                  islandNum === 7 ? "rgba(245,197,24,0.65)" :
-                  "rgba(148,210,240,0.6)",
+                color: "rgba(245,197,24,0.65)",
                 fontSize: 10, marginBottom: 6, letterSpacing: 1.2
               }}>
                 {storyCardLabel}
               </Text>
               <Text style={{
-                color:
-                  islandNum === 2 ? "#d7b8f0" :
-                  islandNum === 3 ? "#b8d4ee" :
-                  islandNum === 4 ? "#f0c4b8" :
-                  islandNum === 5 ? "#f5d5a8" :
-                  islandNum === 6 ? "#b2ead8" :
-                  islandNum === 7 ? "#f5e8a0" :
-                  "#c8e6f0",
+                color: "#f5e8a0",
                 fontSize: 13, lineHeight: 21, fontStyle: "italic"
               }}>
                 {storyCard}
@@ -851,24 +1641,138 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
             </View>
           )}
           {/* Per-island listening strategy prompt */}
-          <View style={{
-            backgroundColor: accentColor + "18",
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: accentColor + "55",
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            marginBottom: 20,
-          }}>
-            <Text style={{ color: accentColor, fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-              LISTENING STRATEGY
-            </Text>
-            <Text style={{ color: "#e5e7eb", fontSize: 13, lineHeight: 20 }}>
-              {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-            </Text>
-          </View>
+          {islandNum === 1 ? (
+            <View style={{
+              backgroundColor: "rgba(10,32,55,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(80,180,220,0.45)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(120,200,240,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                ❄ LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#daf0ff", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 2 ? (
+            <View style={{
+              backgroundColor: "rgba(20,10,40,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(142,68,173,0.50)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(195,155,211,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                ⚡ LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#e0d0f5", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 3 ? (
+            <View style={{
+              backgroundColor: "rgba(8,14,28,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(52,152,219,0.45)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(100,180,240,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                {"🌫"} LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#c8dff0", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 4 ? (
+            <View style={{
+              backgroundColor: "rgba(20,6,6,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(231,76,60,0.48)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(245,130,100,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                🔥 LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#f0c4b8", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 5 ? (
+            <View style={{
+              backgroundColor: "rgba(22,10,0,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(230,126,34,0.48)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(245,165,80,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                🔍 LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#f5ddb8", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 6 ? (
+            <View style={{
+              backgroundColor: "rgba(3,12,10,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(26,188,156,0.48)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(80,210,190,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                {"📜"} LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#b2ead8", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : islandNum === 7 ? (
+            <View style={{
+              backgroundColor: "rgba(16,13,0,0.88)",
+              borderRadius: 12, borderWidth: 1,
+              borderColor: "rgba(245,197,24,0.48)",
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+            }}>
+              <Text style={{ color: "rgba(245,210,80,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                {"🌪️"} LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#f5e8b8", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          ) : (
+            <View style={{
+              backgroundColor: accentColor + "18",
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: accentColor + "55",
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              marginBottom: 20,
+            }}>
+              <Text style={{ color: accentColor, fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+                LISTENING STRATEGY
+              </Text>
+              <Text style={{ color: "#e5e7eb", fontSize: 13, lineHeight: 20 }}>
+                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+              </Text>
+            </View>
+          )}
           <View className="items-center">
           {characterMode ? (
             <>
@@ -877,7 +1781,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                 dialogue={npcIntro}
                 size={160}
               />
-              {islandNum < 7 && (
+              {islandNum <= 5 && (
                 <TouchableOpacity
                   onPress={() => setSlowMode((v) => !v)}
                   style={{
@@ -912,7 +1816,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
               <Text className="text-parchment text-base text-center leading-7 mb-6">
                 The audio plays once — no replays, no second chances.{"\n"}Trust your ears.
               </Text>
-              {islandNum < 7 && (
+              {islandNum <= 5 && (
                 <TouchableOpacity
                   onPress={() => setSlowMode((v) => !v)}
                   style={{
@@ -951,7 +1855,144 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
           {characterMode && (
             <DagatCharacter state="listening" size={160} />
           )}
-          <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} />
+          {islandNum === 1 ? (
+            <View style={{
+              backgroundColor: "rgba(8,20,36,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(100,200,230,0.38)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Mini icicle row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 14 }}>
+                {[0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.07, 0.05].map((hFrac, i) => (
+                  <View key={i} style={{
+                    width: 4, height: Math.round(14 * hFrac * 10),
+                    backgroundColor: "rgba(200,240,255,0.55)",
+                    borderBottomLeftRadius: 2, borderBottomRightRadius: 2,
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 2 ? (
+            <View style={{
+              backgroundColor: "rgba(16,8,32,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(142,68,173,0.42)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Mini spark dots at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[3, 2, 4, 2, 3, 2, 4, 3].map((s, i) => (
+                  <View key={i} style={{
+                    width: s, height: s, borderRadius: s / 2,
+                    backgroundColor: "rgba(195,155,211,0.55)",
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 3 ? (
+            <View style={{
+              backgroundColor: "rgba(8,14,28,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(52,152,219,0.38)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Mini fog dot row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[4, 3, 5, 3, 4, 3, 5, 4].map((s, i) => (
+                  <View key={i} style={{
+                    width: s, height: s, borderRadius: s / 2,
+                    backgroundColor: "rgba(168,200,224,0.45)",
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 4 ? (
+            <View style={{
+              backgroundColor: "rgba(20,6,6,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(231,76,60,0.40)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Mini ember dot row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[4, 3, 5, 3, 4, 3, 5, 4].map((s, i) => (
+                  <View key={i} style={{
+                    width: s, height: s, borderRadius: s / 2,
+                    backgroundColor: "rgba(231,120,100,0.48)",
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 5 ? (
+            <View style={{
+              backgroundColor: "rgba(22,10,0,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(230,126,34,0.40)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Diamond dot row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[3, 4, 3, 5, 3, 4, 3, 5].map((s, i) => (
+                  <View key={i} style={{
+                    width: s, height: s,
+                    backgroundColor: "rgba(245,165,80,0.48)",
+                    transform: [{ rotate: "45deg" }],
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 6 ? (
+            <View style={{
+              backgroundColor: "rgba(3,12,10,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(26,188,156,0.40)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Parchment strip fragment row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[10, 8, 12, 8, 10, 8, 12, 10].map((w, i) => (
+                  <View key={i} style={{
+                    width: w, height: 4, borderRadius: 1,
+                    backgroundColor: "rgba(26,188,156,0.50)",
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : islandNum === 7 ? (
+            <View style={{
+              backgroundColor: "rgba(16,13,0,0.82)",
+              borderRadius: 18, borderWidth: 1.5,
+              borderColor: "rgba(245,197,24,0.40)",
+              paddingHorizontal: 8, paddingVertical: 12,
+              marginTop: 12, overflow: "hidden", width: "100%",
+            }}>
+              {/* Echo pulse dot row at top */}
+              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
+                {[3, 4, 5, 4, 5, 4, 3, 5].map((s, i) => (
+                  <View key={i} style={{
+                    width: s, height: s, borderRadius: s / 2,
+                    backgroundColor: "rgba(245,197,24,0.50)",
+                  }} />
+                ))}
+              </View>
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            </View>
+          ) : (
+            <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+          )}
         </View>
       )}
 
@@ -968,9 +2009,72 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* ========== PIN COMPLETE ========== */}
       {phase === "pinComplete" && (
         <View className="mt-8 items-center px-2">
-          <Text className="text-5xl mb-4">{pinScore === 100 ? "⭐" : "❌"}</Text>
+          {/* Island 1 thaw rings (100% pass) */}
+          {islandNum === 1 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <ThawRing delay={0} />
+              <ThawRing delay={400} />
+              <ThawRing delay={800} />
+            </View>
+          )}
+          {/* Island 2 lightning rings (100% pass) */}
+          {islandNum === 2 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <LightningRing delay={0} />
+              <LightningRing delay={350} />
+              <LightningRing delay={700} />
+            </View>
+          )}
+          {/* Island 3 fog rings (100% pass) */}
+          {islandNum === 3 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <FogRing delay={0} />
+              <FogRing delay={400} />
+              <FogRing delay={800} />
+            </View>
+          )}
+          {/* Island 4 ember rings (100% pass) */}
+          {islandNum === 4 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <EmberRing delay={0} />
+              <EmberRing delay={400} />
+              <EmberRing delay={800} />
+            </View>
+          )}
+          {/* Island 5 harbor rings (100% pass) */}
+          {islandNum === 5 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <HarborRing delay={0} />
+              <HarborRing delay={380} />
+              <HarborRing delay={760} />
+            </View>
+          )}
+          {/* Island 6 story rings (100% pass) */}
+          {islandNum === 6 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <StoryRing delay={0} />
+              <StoryRing delay={400} />
+              <StoryRing delay={800} />
+            </View>
+          )}
+          {/* Island 7 echo shock rings (100% pass) */}
+          {islandNum === 7 && pinScore === 100 && (
+            <View style={{ position: "relative", alignItems: "center", height: 0, width: "100%" }}>
+              <EchoShockRing delay={0} />
+              <EchoShockRing delay={350} />
+              <EchoShockRing delay={700} />
+            </View>
+          )}
+          {/* Score emoji — spring-in for Island 1-7, plain for others */}
+          {(islandNum === 1 || islandNum === 2 || islandNum === 3 || islandNum === 4 || islandNum === 5 || islandNum === 6 || islandNum === 7) ? (
+            <Animated.Text style={[{ fontSize: 48, marginBottom: 16 }, scoreStyle]}>
+              {pinScore === 100 ? "⭐" : "❌"}
+            </Animated.Text>
+          ) : (
+            <Text className="text-5xl mb-4">{pinScore === 100 ? "⭐" : "❌"}</Text>
+          )}
           <Text className="text-gold text-2xl font-bold text-center mb-3">
-            {pinScore === 100 ? "Quest Complete!" : "Quest Failed"}
+            {pinScore === 100 ? "Quest Complete!" : "Quest Incomplete"}
           </Text>
           <View style={{
             paddingHorizontal: 24, paddingVertical: 10,
@@ -981,24 +2085,29 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
             marginBottom: 20,
           }}>
             <Text style={{ color: pinScore === 100 ? "#4ade80" : "#f87171", fontSize: 20, fontWeight: "800", textAlign: "center" }}>
-              {pinScore === 100 ? "PASSED" : "FAILED"}
+              {pinScore === 100 ? "PASSED" : `Score: ${pinScore}%`}
             </Text>
           </View>
           <Text className="text-parchment/60 text-xs text-center mb-6 leading-5">
             {pinScore === 100
               ? "Perfect score! Your best record is saved."
-              : "Any wrong answer fails the quest. Try again to pass!"}
+              : "You need 100% to pass this quest, but your score still counts toward your island average."}
           </Text>
 
           {/* Submission error + manual retry */}
           {submitError && (
-            <View className="w-full bg-red-900/50 border border-red-500 rounded-xl p-4 mb-4">
-              <Text className="text-red-300 text-sm text-center mb-3">{submitError}</Text>
+            <View className="w-full bg-yellow-900/40 border border-yellow-600 rounded-xl p-4 mb-4">
+              <Text className="text-yellow-300 text-sm text-center mb-3">
+                Your score couldn't be saved yet. Tap below to try again.
+              </Text>
               <TouchableOpacity
                 onPress={() => submitMutation.mutate({ pinId, accuracy: pinScore })}
-                className="bg-red-700 rounded-lg py-2 items-center"
+                disabled={submitMutation.isPending}
+                className="bg-yellow-700 rounded-lg py-2 items-center"
               >
-                <Text className="text-white font-bold text-sm">Retry Submission</Text>
+                <Text className="text-white font-bold text-sm">
+                  {submitMutation.isPending ? "Saving..." : "Save Score"}
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -1074,14 +2183,321 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
             </View>
           )}
 
-          <Text className="text-parchment text-base font-semibold mb-5 leading-7">
-            {current.question}
-          </Text>
+          {islandNum === 1 ? (
+            <View style={{
+              backgroundColor: "rgba(8,24,45,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(80,160,210,0.35)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#e0f4ff", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 2 ? (
+            <View style={{
+              backgroundColor: "rgba(16,10,35,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(142,68,173,0.40)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#e8d8f5", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 3 ? (
+            <View style={{
+              backgroundColor: "rgba(8,14,28,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(52,152,219,0.35)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#d0e8f5", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 4 ? (
+            <View style={{
+              backgroundColor: "rgba(20,6,6,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(231,76,60,0.38)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#f5d5c8", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 5 ? (
+            <View style={{
+              backgroundColor: "rgba(22,10,0,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(230,126,34,0.38)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#f5ddb8", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 6 ? (
+            <View style={{
+              backgroundColor: "rgba(3,12,10,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(26,188,156,0.35)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#b2ead8", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : islandNum === 7 ? (
+            <View style={{
+              backgroundColor: "rgba(16,13,0,0.78)",
+              borderRadius: 14, borderWidth: 1,
+              borderColor: "rgba(245,197,24,0.38)",
+              padding: 16, marginBottom: 20,
+            }}>
+              <Text style={{ color: "#f5e8b8", fontSize: 15, fontWeight: "600", lineHeight: 26 }}>
+                {current.question}
+              </Text>
+            </View>
+          ) : (
+            <Text className="text-parchment text-base font-semibold mb-5 leading-7">
+              {current.question}
+            </Text>
+          )}
 
           <View className="space-y-3">
             {current.choices.map((choice) => {
               const isSelected = selected === choice.label;
               const choiceIsCorrect = choice.label === current.answer;
+              // Island 1 — themed buttons with ice styling
+              if (islandNum === 1) {
+                let btnBg = "rgba(13,42,64,0.85)";
+                let btnBorder = "rgba(58,122,154,0.5)";
+                let crystalColor = "rgba(180,230,255,0.20)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; crystalColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; crystalColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; crystalColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Ice crystal diamond accent top-right */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8,
+                      backgroundColor: crystalColor,
+                      transform: [{ rotate: "45deg" }],
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 2 — themed buttons with electric styling
+              if (islandNum === 2) {
+                let btnBg = "rgba(20,12,45,0.85)";
+                let btnBorder = "rgba(120,60,160,0.50)";
+                let sparkColor = "rgba(195,155,211,0.25)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; sparkColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; sparkColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; sparkColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Speed diamond accent top-right */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8,
+                      backgroundColor: sparkColor,
+                      transform: [{ rotate: "45deg" }],
+                    }} />
+                    {/* Spark dot bottom-left */}
+                    <View style={{
+                      position: "absolute", bottom: 8, left: 8,
+                      width: 3, height: 3, borderRadius: 1.5,
+                      backgroundColor: sparkColor,
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 3 — themed buttons with fog/mist styling
+              if (islandNum === 3) {
+                let btnBg = "rgba(8,18,38,0.85)";
+                let btnBorder = "rgba(42,120,180,0.50)";
+                let orbColor = "rgba(168,200,224,0.25)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; orbColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; orbColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; orbColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Fog orb accent top-right (round) */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8, borderRadius: 4,
+                      backgroundColor: orbColor,
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 4 — themed buttons with ember/fire styling
+              if (islandNum === 4) {
+                let btnBg = "rgba(28,6,6,0.85)";
+                let btnBorder = "rgba(180,40,20,0.52)";
+                let orbColor = "rgba(231,120,100,0.28)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; orbColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; orbColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; orbColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Ember orb accent top-right (round) */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8, borderRadius: 4,
+                      backgroundColor: orbColor,
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 5 — themed buttons with harbour/precision styling
+              if (islandNum === 5) {
+                let btnBg = "rgba(28,12,0,0.85)";
+                let btnBorder = "rgba(180,80,10,0.52)";
+                let diamondColor = "rgba(245,165,80,0.28)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; diamondColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; diamondColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; diamondColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Precision diamond accent top-right (rotated square) */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8,
+                      backgroundColor: diamondColor,
+                      transform: [{ rotate: "45deg" }],
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 6 — themed buttons with scroll fragment styling
+              if (islandNum === 6) {
+                let btnBg = "rgba(5,20,16,0.85)";
+                let btnBorder = "rgba(10,130,100,0.52)";
+                let fragmentColor = "rgba(26,188,156,0.28)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; fragmentColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; fragmentColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#1abc9c"; fragmentColor = "rgba(26,188,156,0.5)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Scroll fragment accent top-right (small parchment rect) */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 10, height: 6, borderRadius: 1,
+                      backgroundColor: fragmentColor,
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Island 7 — themed buttons with storm/echo styling
+              if (islandNum === 7) {
+                let btnBg = "rgba(16,13,0,0.85)";
+                let btnBorder = "rgba(180,140,20,0.52)";
+                let ringColor = "rgba(245,197,24,0.28)";
+                if (phase === "result") {
+                  if (choiceIsCorrect) { btnBg = "rgba(14,60,30,0.85)"; btnBorder = "rgba(100,200,80,0.7)"; ringColor = "rgba(100,200,80,0.3)"; }
+                  else if (isSelected) { btnBg = "rgba(60,14,14,0.85)"; btnBorder = "rgba(200,80,80,0.7)"; ringColor = "rgba(200,80,80,0.2)"; }
+                } else if (isSelected) {
+                  btnBorder = "#f5c518"; ringColor = "rgba(245,197,24,0.4)";
+                }
+                return (
+                  <TouchableOpacity
+                    key={choice.label}
+                    disabled={phase === "result"}
+                    onPress={() => handleAnswer(choice.label as "A" | "B" | "C" | "D")}
+                    style={{ borderRadius: 12, padding: 16, borderWidth: 1, backgroundColor: btnBg, borderColor: btnBorder, position: "relative" }}
+                  >
+                    {/* Echo ring accent top-right (hollow circle) */}
+                    <View style={{
+                      position: "absolute", top: 8, right: 8,
+                      width: 8, height: 8, borderRadius: 4,
+                      borderWidth: 1.5, borderColor: ringColor,
+                      backgroundColor: "transparent",
+                    }} />
+                    <Text style={{ color: "#f4e4c1" }}>
+                      <Text style={{ fontWeight: "700" }}>{choice.label}. </Text>
+                      {choice.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              // Default styling for other islands
               let bg = "bg-ocean-mid border-ocean-light";
               if (phase === "result") {
                 if (choiceIsCorrect) bg = "bg-green-900 border-green-500";
@@ -1127,18 +2543,95 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                 </View>
               )}
 
-              <View
-                className={`rounded-xl p-4 mb-4 ${
-                  isCorrect ? "bg-green-900/50" : "bg-red-900/50"
-                }`}
+              {/* Island 1 frost burst (correct answer) */}
+              {islandNum === 1 && isCorrect && showFrostBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <FrostBurst />
+                </View>
+              )}
+              {/* Island 2 speed burst (correct answer) */}
+              {islandNum === 2 && isCorrect && showSpeedBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <SpeedBurst />
+                </View>
+              )}
+              {/* Island 3 clarity burst (correct answer) */}
+              {islandNum === 3 && isCorrect && showClarityBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <ClarityBurst />
+                </View>
+              )}
+              {/* Island 4 passion burst (correct answer) */}
+              {islandNum === 4 && isCorrect && showPassionBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <PassionBurst />
+                </View>
+              )}
+              {/* Island 5 precision burst (correct answer) */}
+              {islandNum === 5 && isCorrect && showPrecisionBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <PrecisionBurst />
+                </View>
+              )}
+              {/* Island 6 narrative burst (correct answer) */}
+              {islandNum === 6 && isCorrect && showNarrativeBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <NarrativeBurst />
+                </View>
+              )}
+              {/* Island 7 echo burst (correct answer) */}
+              {islandNum === 7 && isCorrect && showEchoBurst && (
+                <View style={{ position: "relative", alignItems: "center", height: 0 }}>
+                  <EchoBurst />
+                </View>
+              )}
+
+              <Animated.View
+                style={[
+                  {
+                    borderRadius: 12, padding: 16, marginBottom: 16,
+                    backgroundColor: islandNum === 1
+                      ? (isCorrect ? "rgba(26,107,90,0.4)" : "rgba(40,20,40,0.5)")
+                      : islandNum === 2
+                      ? (isCorrect ? "rgba(26,60,107,0.4)" : "rgba(40,15,50,0.5)")
+                      : islandNum === 3
+                      ? (isCorrect ? "rgba(26,74,107,0.4)" : "rgba(20,30,50,0.5)")
+                      : islandNum === 4
+                      ? (isCorrect ? "rgba(100,20,10,0.4)" : "rgba(30,8,8,0.5)")
+                      : islandNum === 5
+                      ? (isCorrect ? "rgba(80,40,0,0.4)" : "rgba(30,12,0,0.5)")
+                      : islandNum === 6
+                      ? (isCorrect ? "rgba(10,50,38,0.4)" : "rgba(5,25,20,0.5)")
+                      : islandNum === 7
+                      ? (isCorrect ? "rgba(60,45,0,0.4)" : "rgba(30,20,0,0.5)")
+                      : (isCorrect ? "rgba(20,83,45,0.5)" : "rgba(127,29,29,0.5)"),
+                    borderWidth: 1,
+                    borderColor: islandNum === 1
+                      ? (isCorrect ? "rgba(100,200,230,0.5)" : "rgba(100,60,120,0.4)")
+                      : islandNum === 2
+                      ? (isCorrect ? "rgba(142,68,173,0.5)" : "rgba(120,40,80,0.4)")
+                      : islandNum === 3
+                      ? (isCorrect ? "rgba(52,152,219,0.50)" : "rgba(80,100,140,0.40)")
+                      : islandNum === 4
+                      ? (isCorrect ? "rgba(231,76,60,0.52)" : "rgba(120,30,20,0.42)")
+                      : islandNum === 5
+                      ? (isCorrect ? "rgba(230,126,34,0.52)" : "rgba(140,60,10,0.42)")
+                      : islandNum === 6
+                      ? (isCorrect ? "rgba(26,188,156,0.52)" : "rgba(15,100,80,0.42)")
+                      : islandNum === 7
+                      ? (isCorrect ? "rgba(245,197,24,0.52)" : "rgba(140,100,10,0.42)")
+                      : (isCorrect ? "rgba(74,222,128,0.5)" : "rgba(239,68,68,0.5)"),
+                  },
+                  (islandNum === 1 || islandNum === 2 || islandNum === 3 || islandNum === 4 || islandNum === 5 || islandNum === 6 || islandNum === 7) && !isCorrect ? shakeStyle : {},
+                ]}
               >
-                <Text className="text-white font-bold mb-1">
+                <Text style={{ color: "white", fontWeight: "700", marginBottom: 4 }}>
                   {isCorrect ? "✓ Correct!" : "✗ Incorrect"}
                 </Text>
-                <Text className="text-parchment text-sm leading-6">
+                <Text style={{ color: "#f4e4c1", fontSize: 14, lineHeight: 22 }}>
                   {current.explanation}
                 </Text>
-              </View>
+              </Animated.View>
 
               {!isCorrect && CHALLENGE_REFLECTION[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim() && (
                 <View style={{

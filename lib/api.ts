@@ -14,7 +14,7 @@ async function request<T>(
   const token = getToken();
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
 
   let res: Response;
   try {

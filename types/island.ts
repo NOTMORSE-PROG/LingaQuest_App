@@ -53,6 +53,7 @@ export interface Challenge {
   pinId: string;
   sortOrder: number;
   audioUrl: string;
+  audioScript?: string | null;
   question: string;
   choices: Choice[];
   answer: "A" | "B" | "C" | "D";

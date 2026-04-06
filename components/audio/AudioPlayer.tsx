@@ -13,15 +13,18 @@ interface AudioPlayerProps {
   onEnd: () => void;
   autoPlay?: boolean;
   rate?: number;
+  passage?: string;
 }
 
-export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0 }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, passage }: AudioPlayerProps) {
   const [uiStatus, setUiStatus] = useState<"loading" | "playing" | "done" | "error">("loading");
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pulsationRef = useRef<Animated.CompositeAnimation | null>(null);
   // Prevent double-firing onEnd if didJustFinish fires more than once
   const hasStartedRef = useRef(false);
   const hasEndedRef = useRef(false);
+  // Stores last known duration so timer shows correctly after audio ends (currentTime resets to 0)
+  const durRef = useRef(0);
 
   // BUG 2 FIX (callback-ref pattern): always holds the latest onEnd without it being a
   // useEffect dependency. Prevents audio from restarting on parent re-renders.
@@ -95,17 +98,32 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0 }: A
     pulsationRef.current.start();
     return () => {
       pulsationRef.current?.stop();
+      pulsationRef.current = null;
     };
   }, [pulseAnim]);
 
-  const isPlaying = uiStatus === "playing";
-  const progress = status.duration > 0 ? status.currentTime / status.duration : 0;
+  if (status.duration > 0) durRef.current = status.duration;
 
-  const statusEmoji =
-    uiStatus === "loading" ? "⏳"
-    : uiStatus === "playing" ? "👂"
-    : uiStatus === "error" ? "❌"
-    : "✓";
+  const isPlaying = uiStatus === "playing";
+  const knownDuration = durRef.current || status.duration;
+  const progress = uiStatus === "done" ? 1.0 : (knownDuration > 0 ? status.currentTime / knownDuration : 0);
+  const displayCurrentTime = uiStatus === "done" ? knownDuration : status.currentTime;
+
+  const sentences = passage?.split(/(?<=[.!?])\s+/).filter(Boolean) ?? [];
+  let sentIdx = 0;
+  if (sentences.length > 0) {
+    const totalChars = sentences.reduce((sum, s) => sum + s.length, 0);
+    if (totalChars > 0) {
+      let cumFraction = 0;
+      for (let i = 0; i < sentences.length; i++) {
+        cumFraction += sentences[i].length / totalChars;
+        if (progress < cumFraction) { sentIdx = i; break; }
+        sentIdx = i;
+      }
+    }
+  }
+
+  const statusEmoji = uiStatus === "loading" ? "⏳" : uiStatus === "playing" ? "👂" : uiStatus === "error" ? "❌" : "✓";
 
   const statusText =
     uiStatus === "loading" ? "Loading audio..."
@@ -115,6 +133,7 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0 }: A
 
   return (
     <View className="items-center py-8">
+      {/* Pulsing emoji circle */}
       <Animated.View
         style={{ transform: [{ scale: isPlaying ? pulseAnim : 1 }] }}
         className={`w-24 h-24 rounded-full border-4 items-center justify-center ${
@@ -123,23 +142,35 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0 }: A
       >
         <Text className="text-5xl">{statusEmoji}</Text>
       </Animated.View>
-      <Text className={`text-sm mt-4 ${uiStatus === "error" ? "text-coral" : "text-parchment-dark"}`}>
+      <Text className={`text-sm mt-2 ${uiStatus === "error" ? "text-coral" : "text-parchment-dark"}`}>
         {statusText}
       </Text>
-      {(uiStatus === "playing" || uiStatus === "done") && status.duration > 0 && (
+      {uiStatus === "playing" && sentences.length > 0 && (
+        <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, fontStyle: "italic",
+          textAlign: "center", marginTop: 6, marginHorizontal: 16, lineHeight: 18 }}>
+          {sentences[sentIdx]}
+        </Text>
+      )}
+      {(uiStatus === "playing" || uiStatus === "done") && knownDuration > 0 && (
         <View style={{ width: "80%", marginTop: 14 }}>
-          <View style={{ height: 6, backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 3, overflow: "hidden" }}>
+          <View style={{ height: 6, backgroundColor: "rgba(180,230,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
             <View style={{
-              height: "100%",
+              position: "absolute", top: 0, left: 0, bottom: 0,
               width: `${Math.round(progress * 100)}%`,
               backgroundColor: "#f5c518",
               borderRadius: 3,
             }} />
+            <View style={{
+              position: "absolute", top: 0, left: 0,
+              width: `${Math.round(progress * 100)}%`,
+              height: 1.5,
+              backgroundColor: "rgba(220,245,255,0.3)",
+              borderRadius: 1,
+            }} />
           </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
-            <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{formatSec(status.currentTime)}</Text>
-            <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{formatSec(status.duration)}</Text>
-          </View>
+          <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textAlign: "center", marginTop: 4 }}>
+            {formatSec(displayCurrentTime)} / {formatSec(knownDuration)}
+          </Text>
         </View>
       )}
       {uiStatus !== "error" && (

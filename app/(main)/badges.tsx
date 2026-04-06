@@ -7,10 +7,8 @@ import { MuteButton } from "@/components/audio/MuteButton";
 import { Badge, BadgeType } from "@/types";
 
 const BADGE_META: Record<BadgeType, { label: string; emoji: string; desc: string }> = {
-  first_steps: { label: "First Steps", emoji: "👣", desc: "Complete your first island" },
-  sharp_ear: { label: "Sharp Ear", emoji: "👂", desc: "100% accuracy on any island" },
-  never_lost: { label: "Never Lost", emoji: "🧭", desc: "Complete an island without hints" },
-  ship_saver: { label: "Ship Saver", emoji: "🚢", desc: "Win Abandon Ship 3 times" },
+  first_steps: { label: "First Steps", emoji: "👣", desc: "Complete your first quest" },
+  sharp_ear: { label: "Sharp Ear", emoji: "👂", desc: "100% accuracy on any quest" },
   the_captain: { label: "The Captain", emoji: "🏴‍☠️", desc: "Complete all 7 islands" },
   island_1: { label: "Isla ng Salita", emoji: "📖", desc: "Vocabulary in Context" },
   island_2: { label: "Isla ng Bilis", emoji: "⚡", desc: "Rapid Speech Comprehension" },
@@ -19,10 +17,6 @@ const BADGE_META: Record<BadgeType, { label: string; emoji: string; desc: string
   island_5: { label: "Isla ng Tanong", emoji: "❓", desc: "Listening for Specific Info" },
   island_6: { label: "Isla ng Kwento", emoji: "📜", desc: "Narrative Comprehension" },
   island_7: { label: "Isla ng Alingawngaw", emoji: "🐚", desc: "Full Integration Challenge" },
-  unsinkable: { label: "Unsinkable", emoji: "⛵", desc: "All 5 parts reach 100% health" },
-  unanimous: { label: "Unanimous", emoji: "🤝", desc: "Unanimous correct vote every round" },
-  true_crew: { label: "True Crew", emoji: "🏆", desc: "Win with zero wrong votes" },
-  comeback: { label: "Comeback", emoji: "💥", desc: "Repair a 0% part in the final round" },
   island_conqueror: { label: "Island Conqueror", emoji: "👑", desc: "Grand Certificate — all 7 islands" },
 };
 

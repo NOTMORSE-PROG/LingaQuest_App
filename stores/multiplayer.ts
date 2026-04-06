@@ -58,6 +58,9 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
   setQuestionIndex: (questionIndex) => set({ questionIndex }),
   addQuestionResult: (isCorrect) =>
     set((state) => {
+      if (state.questionIndex < 0 || state.questionIndex >= state.questionResults.length) {
+        return state;
+      }
       const results = [...state.questionResults];
       results[state.questionIndex] = isCorrect;
       return {

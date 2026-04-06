@@ -11,6 +11,7 @@ import Animated, {
   Easing,
   FadeInDown,
   SharedValue,
+  cancelAnimation,
 } from "react-native-reanimated";
 import { DagatCharacter } from "@/components/characters/DagatCharacter";
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
@@ -34,6 +35,188 @@ const ISLAND_LABELS: Record<number, string> = {
   6: "📜  ISLA NG KWENTO",
   7: "🌪️  ISLA NG ALINGAWNGAW",
 };
+
+function FrostSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.75, { duration: 600, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 800, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#b4e6ff",
+      }, style]}
+    />
+  );
+}
+
+function ElectricSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.80, { duration: 400, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 600, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#c39bd3",
+      }, style]}
+    />
+  );
+}
+
+function MistSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.70, { duration: 700, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 900, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#a8c8e0",
+      }, style]}
+    />
+  );
+}
+
+function EmberSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.75, { duration: 500, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 700, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#e74c3c",
+      }, style]}
+    />
+  );
+}
+
+function PrecisionSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.72, { duration: 550, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 750, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#e67e22",
+      }, style]}
+    />
+  );
+}
+
+function NarrativeSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.70, { duration: 600, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1,  { duration: 800, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#1abc9c",
+      }, style]}
+    />
+  );
+}
+
+function EchoSparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const opacity = useSharedValue(0.1);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      opacity.value = withRepeat(withSequence(
+        withTiming(0.85, { duration: 350, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.1, { duration: 550, easing: Easing.inOut(Easing.quad) }),
+      ), -1, false);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(opacity); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[{
+        position: "absolute",
+        left: x - 2, top: y - 2,
+        width: 4, height: 4, borderRadius: 2,
+        backgroundColor: "#f5c518",
+      }, style]}
+    />
+  );
+}
 
 interface Props {
   islandNum: number;
@@ -93,6 +276,20 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
 
     btnOpacity.value = withDelay(700, withTiming(1, { duration: 300 }));
     btnScale.value = withDelay(700, withSpring(1, { damping: 12, stiffness: 100 }));
+
+    return () => {
+      cancelAnimation(bgOpacity);
+      cancelAnimation(r1Scale);
+      cancelAnimation(r1Opacity);
+      cancelAnimation(r2Scale);
+      cancelAnimation(r2Opacity);
+      cancelAnimation(r3Scale);
+      cancelAnimation(r3Opacity);
+      cancelAnimation(shardScale);
+      cancelAnimation(shardOpacity);
+      cancelAnimation(btnScale);
+      cancelAnimation(btnOpacity);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -110,7 +307,7 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
       {/* Dark overlay */}
       <Animated.View style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.93)" }, bgStyle]} />
 
-      {/* Echo rings — centered */}
+      {/* Echo rings — colored + Island 1 extra ice-blue ring */}
       {[r1Style, r2Style, r3Style].map((style, i) => (
         <View key={i} style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
           <Animated.View style={[{
@@ -122,12 +319,99 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
           }, style]} />
         </View>
       ))}
+      {islandNum === 1 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(100,200,230,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 2 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(195,155,211,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 3 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(100,180,240,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 4 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(245,130,80,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 5 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(245,197,24,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 6 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(26,188,156,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
+      {islandNum === 7 && (
+        <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+          <Animated.View style={[{
+            width: RING_SIZE,
+            height: RING_SIZE,
+            borderRadius: RING_SIZE / 2,
+            borderWidth: 1.5,
+            borderColor: "rgba(142,68,173,0.5)",
+          }, r2Style]} />
+        </View>
+      )}
 
       {/* Main content */}
       <View style={[StyleSheet.absoluteFillObject, styles.center, { paddingHorizontal: 32 }]} pointerEvents="box-none">
 
         {/* Diamond shard */}
         <Animated.View style={[styles.center, shardStyle]}>
+          {/* Island 1 — warm tropical underglow (nature trying to return) */}
+          {islandNum === 1 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#27ae6018",
+              borderRadius: 12,
+            }} />
+          )}
           {/* Glow bloom */}
           <View style={{
             position: "absolute",
@@ -145,7 +429,215 @@ export function ShardClaimCinematic({ islandNum, accentColor, characterMode, npc
             borderColor: accentColor,
             borderRadius: 8,
           }} />
+          {/* Island 1 — ice blue top glow */}
+          {islandNum === 1 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(100,200,230,0.06)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 2 — electric storm underglow */}
+          {islandNum === 2 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#8e44ad18",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 2 — purple top glow */}
+          {islandNum === 2 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(195,155,211,0.08)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 3 — misty lagoon underglow */}
+          {islandNum === 3 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#3498db18",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 3 — fog blue top glow */}
+          {islandNum === 3 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(100,180,240,0.07)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 4 — lava underglow */}
+          {islandNum === 4 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#e74c3c18",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 4 — ember top glow */}
+          {islandNum === 4 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(245,130,80,0.08)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 5 — harbour underglow */}
+          {islandNum === 5 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#e67e2218",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 5 — beacon top glow */}
+          {islandNum === 5 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(245,197,24,0.08)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 6 — library underglow */}
+          {islandNum === 6 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#1abc9c18",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 6 — parchment-teal top glow */}
+          {islandNum === 6 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(26,188,156,0.07)",
+              borderRadius: 8,
+            }} />
+          )}
+          {/* Island 7 — storm underglow */}
+          {islandNum === 7 && (
+            <View style={{
+              position: "absolute",
+              width: 150, height: 150,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "#f5c51818",
+              borderRadius: 12,
+            }} />
+          )}
+          {/* Island 7 — purple-gold top glow */}
+          {islandNum === 7 && (
+            <View style={{
+              position: "absolute",
+              width: 84, height: 84,
+              transform: [{ rotate: "45deg" }],
+              backgroundColor: "rgba(142,68,173,0.08)",
+              borderRadius: 8,
+            }} />
+          )}
         </Animated.View>
+
+        {/* Island 1 — frost sparkle particles around the shard */}
+        {islandNum === 1 && (
+          <>
+            <FrostSparkle x={22}  y={22}  delay={0} />
+            <FrostSparkle x={108} y={18}  delay={300} />
+            <FrostSparkle x={12}  y={70}  delay={600} />
+            <FrostSparkle x={118} y={76}  delay={200} />
+            <FrostSparkle x={44}  y={112} delay={900} />
+            <FrostSparkle x={96}  y={116} delay={500} />
+          </>
+        )}
+        {/* Island 2 — electric sparkle particles around the shard */}
+        {islandNum === 2 && (
+          <>
+            <ElectricSparkle x={22}  y={22}  delay={0} />
+            <ElectricSparkle x={108} y={18}  delay={250} />
+            <ElectricSparkle x={12}  y={70}  delay={500} />
+            <ElectricSparkle x={118} y={76}  delay={150} />
+            <ElectricSparkle x={44}  y={112} delay={750} />
+            <ElectricSparkle x={96}  y={116} delay={400} />
+          </>
+        )}
+        {/* Island 3 — mist sparkle particles around the shard */}
+        {islandNum === 3 && (
+          <>
+            <MistSparkle x={22}  y={22}  delay={0} />
+            <MistSparkle x={108} y={18}  delay={350} />
+            <MistSparkle x={12}  y={70}  delay={700} />
+            <MistSparkle x={118} y={76}  delay={200} />
+            <MistSparkle x={44}  y={112} delay={850} />
+            <MistSparkle x={96}  y={116} delay={450} />
+          </>
+        )}
+        {/* Island 4 — ember sparkle particles around the shard */}
+        {islandNum === 4 && (
+          <>
+            <EmberSparkle x={22}  y={22}  delay={0} />
+            <EmberSparkle x={108} y={18}  delay={250} />
+            <EmberSparkle x={12}  y={70}  delay={500} />
+            <EmberSparkle x={118} y={76}  delay={150} />
+            <EmberSparkle x={44}  y={112} delay={700} />
+            <EmberSparkle x={96}  y={116} delay={350} />
+          </>
+        )}
+        {/* Island 5 — precision sparkle particles around the shard */}
+        {islandNum === 5 && (
+          <>
+            <PrecisionSparkle x={22}  y={22}  delay={0} />
+            <PrecisionSparkle x={108} y={18}  delay={200} />
+            <PrecisionSparkle x={12}  y={70}  delay={450} />
+            <PrecisionSparkle x={118} y={76}  delay={150} />
+            <PrecisionSparkle x={44}  y={112} delay={650} />
+            <PrecisionSparkle x={96}  y={116} delay={350} />
+          </>
+        )}
+        {/* Island 6 — narrative sparkle particles around the shard */}
+        {islandNum === 6 && (
+          <>
+            <NarrativeSparkle x={22}  y={22}  delay={0} />
+            <NarrativeSparkle x={108} y={18}  delay={300} />
+            <NarrativeSparkle x={12}  y={70}  delay={550} />
+            <NarrativeSparkle x={118} y={76}  delay={150} />
+            <NarrativeSparkle x={44}  y={112} delay={750} />
+            <NarrativeSparkle x={96}  y={116} delay={400} />
+          </>
+        )}
+        {/* Island 7 — echo sparkle particles around the shard */}
+        {islandNum === 7 && (
+          <>
+            <EchoSparkle x={22}  y={22}  delay={0} />
+            <EchoSparkle x={108} y={18}  delay={200} />
+            <EchoSparkle x={12}  y={70}  delay={400} />
+            <EchoSparkle x={118} y={76}  delay={100} />
+            <EchoSparkle x={44}  y={112} delay={600} />
+            <EchoSparkle x={96}  y={116} delay={300} />
+          </>
+        )}
 
         {/* Shard text */}
         <Animated.View entering={FadeInDown.delay(500).duration(380)} style={{ marginTop: 44, alignItems: "center" }}>

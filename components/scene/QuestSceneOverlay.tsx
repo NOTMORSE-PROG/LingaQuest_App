@@ -71,45 +71,6 @@ function Snowflake({ delay, x, r, totalHeight }: { delay: number; x: number; r: 
   );
 }
 
-// ─── Frozen Word Shard (Island 1 — Frozen vocabulary fragments) ───────────────
-function FrozenWordShard({ word, x, delay, totalHeight }: { word: string; x: number; delay: number; totalHeight: number }) {
-  const y = useSharedValue(totalHeight * 0.3 + delay * 60);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    y.value = withRepeat(
-      withSequence(
-        withTiming(totalHeight * 0.3 + delay * 60, { duration: 0 }),
-        withTiming(totalHeight * 0.3 + delay * 60 - 80, { duration: 10000, easing: Easing.linear })
-      ),
-      -1, false
-    );
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(0, { duration: delay * 1000 }),
-        withTiming(0.20, { duration: 2000 }),
-        withTiming(0.20, { duration: 5000 }),
-        withTiming(0, { duration: 2000 })
-      ),
-      -1, false
-    );
-    return () => { cancelAnimation(y); cancelAnimation(opacity); };
-  }, [delay, opacity, totalHeight, y]);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }],
-    opacity: opacity.value,
-  }));
-
-  return (
-    <Animated.View style={[{ position: "absolute", left: x, top: 0 }, style]} pointerEvents="none">
-      <Text style={{ color: "#94d2e6", fontSize: 9, fontStyle: "italic", letterSpacing: 0.5 }}>
-        {word}
-      </Text>
-    </Animated.View>
-  );
-}
-
 // ─── Speed Streak (Island 2 — Bilis) ─────────────────────────────────────────
 function SpeedStreak({ y, delay, totalWidth }: { y: number; delay: number; totalWidth: number }) {
   const x = useSharedValue(-200);
@@ -127,8 +88,8 @@ function SpeedStreak({ y, delay, totalWidth }: { y: number; delay: number; total
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 300 }),
-        withTiming(0.25, { duration: 200 }),
-        withTiming(0.25, { duration: 400 }),
+        withTiming(0.35, { duration: 200 }),
+        withTiming(0.35, { duration: 400 }),
         withTiming(0, { duration: 200 })
       ),
       -1,
@@ -175,7 +136,7 @@ function TimeShimmer({ x, y, delay }: { x: number; y: number; delay: number }) {
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 500 }),
-        withTiming(0.22, { duration: 300 }),
+        withTiming(0.35, { duration: 300 }),
         withTiming(0, { duration: 900 })
       ),
       -1, false
@@ -198,7 +159,7 @@ function TimeShimmer({ x, y, delay }: { x: number; y: number; delay: number }) {
         height: 36,
         borderRadius: 18,
         borderWidth: 1.5,
-        borderColor: "#a569bd",
+        borderColor: "#c39bd3",
         backgroundColor: "transparent",
       }, style]}
       pointerEvents="none"
@@ -223,8 +184,8 @@ function FogPuff({ x, startY, size, delay }: { x: number; startY: number; size: 
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 400 }),
-        withTiming(0.10, { duration: 2000 }),
-        withTiming(0.10, { duration: 4000 }),
+        withTiming(0.22, { duration: 2000 }),
+        withTiming(0.22, { duration: 4000 }),
         withTiming(0, { duration: 2000 })
       ),
       -1,
@@ -254,45 +215,6 @@ function FogPuff({ x, startY, size, delay }: { x: number; startY: number; size: 
   );
 }
 
-// ─── Mist Drift (Island 3 — Diwa, ghost idea fragments) ─────────────────────
-function MistDrift({ word, x, delay, totalHeight }: { word: string; x: number; delay: number; totalHeight: number }) {
-  const y = useSharedValue(totalHeight * 0.6 + delay * 50);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    y.value = withRepeat(
-      withSequence(
-        withTiming(totalHeight * 0.6 + delay * 50, { duration: 0 }),
-        withTiming(totalHeight * 0.6 + delay * 50 - 100, { duration: 12000, easing: Easing.linear })
-      ),
-      -1, false
-    );
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(0, { duration: delay * 1200 }),
-        withTiming(0.13, { duration: 3000 }),
-        withTiming(0.13, { duration: 5000 }),
-        withTiming(0, { duration: 3000 })
-      ),
-      -1, false
-    );
-    return () => { cancelAnimation(y); cancelAnimation(opacity); };
-  }, [delay, opacity, totalHeight, y]);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }],
-    opacity: opacity.value,
-  }));
-
-  return (
-    <Animated.View style={[{ position: "absolute", left: x, top: 0 }, style]} pointerEvents="none">
-      <Text style={{ color: "#7fb3d3", fontSize: 9, fontStyle: "italic", letterSpacing: 0.5 }}>
-        {word}
-      </Text>
-    </Animated.View>
-  );
-}
-
 // ─── Ember Spark (Island 4 — Damdamin) ───────────────────────────────────────
 function EmberSpark({ x, y, delay }: { x: number; y: number; delay: number }) {
   const opacity = useSharedValue(0);
@@ -301,7 +223,7 @@ function EmberSpark({ x, y, delay }: { x: number; y: number; delay: number }) {
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 600 }),
-        withTiming(0.20, { duration: 600 }),
+        withTiming(0.35, { duration: 600 }),
         withTiming(0, { duration: 1200 })
       ),
       -1,
@@ -337,16 +259,16 @@ function WarmPulse({ x, y, delay }: { x: number; y: number; delay: number }) {
     scale.value = withRepeat(
       withSequence(
         withTiming(0.3, { duration: delay * 800 }),
-        withTiming(1.0, { duration: 3000, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.3, { duration: 3000, easing: Easing.inOut(Easing.sin) })
+        withTiming(1.0, { duration: 3000, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.3, { duration: 3000, easing: Easing.inOut(Easing.quad) })
       ),
       -1, false
     );
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 800 }),
-        withTiming(0.14, { duration: 1500 }),
-        withTiming(0.14, { duration: 1500 }),
+        withTiming(0.28, { duration: 1500 }),
+        withTiming(0.28, { duration: 1500 }),
         withTiming(0, { duration: 1500 })
       ),
       -1, false
@@ -368,7 +290,7 @@ function WarmPulse({ x, y, delay }: { x: number; y: number; delay: number }) {
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: "rgba(231,76,60,0.20)",
+        backgroundColor: "rgba(231,76,60,0.35)",
       }, style]}
       pointerEvents="none"
     />
@@ -392,8 +314,8 @@ function ScatteredChar({ char, x, startY, angle, delay }: { char: string; x: num
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 500 }),
-        withTiming(0.22, { duration: 800 }),
-        withTiming(0.22, { duration: 3000 }),
+        withTiming(0.38, { duration: 800 }),
+        withTiming(0.38, { duration: 3000 }),
         withTiming(0, { duration: 800 })
       ),
       -1,
@@ -425,8 +347,8 @@ function DataFragment({ text, x, y, delay }: { text: string; x: number; y: numbe
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 700 }),
-        withTiming(0.20, { duration: 400 }),
-        withTiming(0.20, { duration: 600 }),
+        withTiming(0.35, { duration: 400 }),
+        withTiming(0.35, { duration: 600 }),
         withTiming(0, { duration: 500 })
       ),
       -1, false
@@ -474,8 +396,8 @@ function ScrollFragment({ x, delay, rotation, totalHeight }: { x: number; delay:
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 800 }),
-        withTiming(0.18, { duration: 1500 }),
-        withTiming(0.18, { duration: 6000 }),
+        withTiming(0.35, { duration: 1500 }),
+        withTiming(0.35, { duration: 6000 }),
         withTiming(0, { duration: 1500 })
       ),
       -1,
@@ -525,8 +447,8 @@ function StoryThread({ y, delay, totalWidth }: { y: number; delay: number; total
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 600 }),
-        withTiming(0.18, { duration: 500 }),
-        withTiming(0.18, { duration: 2500 }),
+        withTiming(0.35, { duration: 500 }),
+        withTiming(0.35, { duration: 2500 }),
         withTiming(0, { duration: 500 })
       ),
       -1, false
@@ -571,7 +493,7 @@ function EchoRing({ delay, sw, sh }: { delay: number; sw: number; sh: number }) 
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 1200 }),
-        withTiming(0.14, { duration: 400 }),
+        withTiming(0.38, { duration: 400 }),
         withTiming(0, { duration: 2100 })
       ),
       -1, false
@@ -588,10 +510,10 @@ function EchoRing({ delay, sw, sh }: { delay: number; sw: number; sh: number }) 
     <Animated.View
       style={[{
         position: "absolute",
-        left: sw * 0.5 - 140,
-        top: sh * 0.5 - 140,
-        width: 280, height: 280, borderRadius: 140,
-        borderWidth: 1.5, borderColor: "#f5c518",
+        left: sw * 0.5 - 160,
+        top: sh * 0.5 - 160,
+        width: 320, height: 320, borderRadius: 160,
+        borderWidth: 2.5, borderColor: "#f5c518",
         backgroundColor: "transparent",
       }, style]}
       pointerEvents="none"
@@ -606,14 +528,14 @@ function LightningFlash() {
   useEffect(() => {
     const flash = () => {
       opacity.value = withSequence(
-        withTiming(0.12, { duration: 60 }),
+        withTiming(0.22, { duration: 60 }),
         withTiming(0, { duration: 80 }),
-        withTiming(0.08, { duration: 50 }),
+        withTiming(0.14, { duration: 50 }),
         withTiming(0, { duration: 100 })
       );
     };
     flash();
-    const id = setInterval(flash, 3200);
+    const id = setInterval(flash, 2800);
     return () => { clearInterval(id); cancelAnimation(opacity); };
   }, [opacity]);
 
@@ -639,7 +561,7 @@ function ElectricParticle({ x, y, delay }: { x: number; y: number; delay: number
     opacity.value = withRepeat(
       withSequence(
         withTiming(0, { duration: delay * 400 }),
-        withTiming(0.30, { duration: 200 }),
+        withTiming(0.62, { duration: 200 }),
         withTiming(0, { duration: 400 })
       ),
       -1,
@@ -668,9 +590,9 @@ function ElectricParticle({ x, y, delay }: { x: number; y: number; delay: number
         position: "absolute",
         left: x,
         top: y,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
+        width: 10,
+        height: 10,
+        borderRadius: 5,
         backgroundColor: "#f5c518",
       }, style]}
       pointerEvents="none"
@@ -694,21 +616,41 @@ export function QuestSceneOverlay({ islandNumber }: Props) {
           <Snowflake delay={1.5} x={sw * 0.38} r={7}  totalHeight={sh} />
           <Snowflake delay={3}   x={sw * 0.63} r={13} totalHeight={sh} />
           <Snowflake delay={4.5} x={sw * 0.84} r={8}  totalHeight={sh} />
-          <FrozenWordShard word="...ela..."  x={sw * 0.05} delay={0} totalHeight={sh} />
-          <FrozenWordShard word="∿scarce∿"  x={sw * 0.50} delay={2} totalHeight={sh} />
-          <FrozenWordShard word="...per..."  x={sw * 0.72} delay={4} totalHeight={sh} />
+          <Snowflake delay={2.2} x={sw * 0.52} r={9}  totalHeight={sh} />
+          <Snowflake delay={5.0} x={sw * 0.25} r={6}  totalHeight={sh} />
+          {/* Frost screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(180,230,255,0.06)",
+            }}
+          />
         </>
       )}
 
       {islandNumber === 2 && (
         <>
+          <SpeedStreak y={sh * 0.08} delay={2} totalWidth={sw} />
           <SpeedStreak y={sh * 0.18} delay={0} totalWidth={sw} />
           <SpeedStreak y={sh * 0.35} delay={1} totalWidth={sw} />
+          <SpeedStreak y={sh * 0.42} delay={1} totalWidth={sw} />
           <SpeedStreak y={sh * 0.52} delay={2} totalWidth={sw} />
           <SpeedStreak y={sh * 0.70} delay={0} totalWidth={sw} />
           <SpeedStreak y={sh * 0.85} delay={3} totalWidth={sw} />
+          <SpeedStreak y={sh * 0.92} delay={0} totalWidth={sw} />
           <TimeShimmer x={sw * 0.20} y={sh * 0.30} delay={0} />
           <TimeShimmer x={sw * 0.75} y={sh * 0.60} delay={2} />
+          {/* Electric screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(142,68,173,0.08)",
+            }}
+          />
         </>
       )}
 
@@ -719,33 +661,48 @@ export function QuestSceneOverlay({ islandNumber }: Props) {
           <FogPuff x={sw * 0.60} startY={sh * 0.60} size={130} delay={2} />
           <FogPuff x={sw * 0.15} startY={sh * 0.70} size={160} delay={3} />
           <FogPuff x={sw * 0.55} startY={sh * 0.85} size={140} delay={1} />
-          <MistDrift word="...main..."  x={sw * 0.08} delay={0} totalHeight={sh} />
-          <MistDrift word="...idea..."  x={sw * 0.62} delay={3} totalHeight={sh} />
+          {/* Fog screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(52,152,219,0.08)",
+            }}
+          />
         </>
       )}
 
       {islandNumber === 4 && (
         <>
-          {/* Emotional drain desaturation overlay */}
-          <View
-            style={{
-              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: "rgba(80,80,80,0.10)",
-            }}
-            pointerEvents="none"
-          />
+          {/* Ember spark particles */}
           <EmberSpark x={sw * 0.12} y={sh * 0.25} delay={0} />
           <EmberSpark x={sw * 0.55} y={sh * 0.42} delay={1} />
           <EmberSpark x={sw * 0.80} y={sh * 0.58} delay={2} />
           <EmberSpark x={sw * 0.25} y={sh * 0.72} delay={3} />
           <EmberSpark x={sw * 0.65} y={sh * 0.85} delay={1} />
+          <EmberSpark x={sw * 0.40} y={sh * 0.18} delay={2} />
+          <EmberSpark x={sw * 0.88} y={sh * 0.32} delay={0} />
+          <EmberSpark x={sw * 0.05} y={sh * 0.60} delay={3} />
+          {/* Warm pulse halos */}
           <WarmPulse x={sw * 0.25} y={sh * 0.38} delay={0} />
           <WarmPulse x={sw * 0.72} y={sh * 0.68} delay={3} />
+          <WarmPulse x={sw * 0.50} y={sh * 0.52} delay={1} />
+          {/* Fire screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(231,76,60,0.08)",
+            }}
+          />
         </>
       )}
 
       {islandNumber === 5 && (
         <>
+          {/* ScatteredChar × 12 */}
           <ScatteredChar char="A"  x={sw * 0.08} startY={sh * 0.60} angle={-15} delay={0} />
           <ScatteredChar char="?"  x={sw * 0.25} startY={sh * 0.45} angle={20}  delay={1} />
           <ScatteredChar char="1"  x={sw * 0.48} startY={sh * 0.70} angle={-8}  delay={2} />
@@ -754,8 +711,25 @@ export function QuestSceneOverlay({ islandNumber }: Props) {
           <ScatteredChar char="3"  x={sw * 0.15} startY={sh * 0.80} angle={25}  delay={2} />
           <ScatteredChar char="C"  x={sw * 0.55} startY={sh * 0.25} angle={-12} delay={0} />
           <ScatteredChar char="%" x={sw * 0.75} startY={sh * 0.75} angle={18}  delay={3} />
-          <DataFragment text="42"  x={sw * 0.18} y={sh * 0.30} delay={0} />
-          <DataFragment text="3rd" x={sw * 0.68} y={sh * 0.58} delay={2} />
+          <ScatteredChar char="§"  x={sw * 0.35} startY={sh * 0.50} angle={-10} delay={1} />
+          <ScatteredChar char="±"  x={sw * 0.90} startY={sh * 0.40} angle={22}  delay={4} />
+          <ScatteredChar char=">"  x={sw * 0.05} startY={sh * 0.35} angle={-5}  delay={3} />
+          <ScatteredChar char="D"  x={sw * 0.60} startY={sh * 0.88} angle={15}  delay={0} />
+          {/* DataFragment × 5 */}
+          <DataFragment text="42"   x={sw * 0.18} y={sh * 0.30} delay={0} />
+          <DataFragment text="3rd"  x={sw * 0.68} y={sh * 0.58} delay={2} />
+          <DataFragment text="1st"  x={sw * 0.40} y={sh * 0.20} delay={1} />
+          <DataFragment text="%"    x={sw * 0.85} y={sh * 0.70} delay={3} />
+          <DataFragment text="No."  x={sw * 0.08} y={sh * 0.48} delay={2} />
+          {/* Harbour/lighthouse screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(230,126,34,0.08)",
+            }}
+          />
         </>
       )}
 
@@ -768,6 +742,15 @@ export function QuestSceneOverlay({ islandNumber }: Props) {
           <ScrollFragment x={sw * 0.88} delay={1} rotation={-9}  totalHeight={sh} />
           <StoryThread y={sh * 0.32} delay={0} totalWidth={sw} />
           <StoryThread y={sh * 0.68} delay={3} totalWidth={sw} />
+          {/* Narrative screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(26,188,156,0.08)",
+            }}
+          />
         </>
       )}
 
@@ -782,6 +765,15 @@ export function QuestSceneOverlay({ islandNumber }: Props) {
           <ElectricParticle x={sw * 0.65} y={sh * 0.75} delay={3} />
           <ElectricParticle x={sw * 0.20} y={sh * 0.50} delay={2} />
           <ElectricParticle x={sw * 0.88} y={sh * 0.55} delay={0} />
+          {/* Storm screen border */}
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              borderWidth: 3,
+              borderColor: "rgba(245,197,24,0.08)",
+            }}
+          />
         </>
       )}
 
