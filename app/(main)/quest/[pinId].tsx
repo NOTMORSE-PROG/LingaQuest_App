@@ -618,10 +618,11 @@ export default function QuestScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pinId]);
 
-  const { data: pin, isLoading, isError: isPinError, refetch: refetchPin } = useQuery({
+  const { data: pin, isLoading, isError: isPinError, error: pinError, refetch: refetchPin } = useQuery({
     queryKey: ["pin", pinId],
     queryFn: () => apiClient.getPin(pinId),
   });
+  const isPinLocked = isPinError && (pinError as Error)?.message?.includes("permission");
 
   const submitMutation = useMutation({
     mutationFn: (data: { pinId: string; accuracy: number }) =>
@@ -792,6 +793,21 @@ export default function QuestScreen() {
     return (
       <View className="flex-1 bg-ocean-deep items-center justify-center">
         <ActivityIndicator color="#f5c518" size="large" />
+      </View>
+    );
+  }
+
+  if (isPinLocked) {
+    return (
+      <View className="flex-1 bg-ocean-deep items-center justify-center px-8">
+        <Text className="text-5xl mb-4">🔒</Text>
+        <Text className="text-gold text-xl font-bold text-center mb-2">Island Locked</Text>
+        <Text className="text-parchment text-sm text-center mb-8">
+          Complete and pass all previous islands to unlock this quest.
+        </Text>
+        <TouchableOpacity onPress={() => router.back()} className="bg-gold rounded-xl px-8 py-3 w-full items-center">
+          <Text className="text-ocean-deep font-bold">Go Back</Text>
+        </TouchableOpacity>
       </View>
     );
   }

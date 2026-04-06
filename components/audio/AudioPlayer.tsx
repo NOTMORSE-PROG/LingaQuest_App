@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text, Animated } from "react-native";
-import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from "expo-audio";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+import type { AudioPlayer as ExpoAudioPlayer, AudioStatus } from "expo-audio";
 
 function formatSec(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -38,21 +39,44 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, pas
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
   }, []);
 
-  const player = useAudioPlayer({ uri: audioUrl }, { updateInterval: 100 });
-  const status = useAudioPlayerStatus(player);
+  const playerRef = useRef<ExpoAudioPlayer | null>(null);
+  const [status, setStatus] = useState<AudioStatus>({
+    id: "", currentTime: 0, playbackState: "", timeControlStatus: "",
+    reasonForWaitingToPlay: "", mute: false, duration: 0, playing: false,
+    loop: false, didJustFinish: false, isBuffering: false, isLoaded: false,
+    playbackRate: 1, shouldCorrectPitch: true,
+  });
+
+  // Own the full player lifecycle manually so cleanup runs pause() before any expo-audio teardown
+  useEffect(() => {
+    const p = createAudioPlayer({ uri: audioUrl }, { updateInterval: 100 });
+    playerRef.current = p;
+    const sub = p.addListener("playbackStatusUpdate", (s: AudioStatus) => {
+      setStatus(s);
+    });
+    return () => {
+      sub.remove();
+      playerRef.current = null;
+      try { p.pause(); } catch { /* ignore */ }
+      try { p.remove(); } catch { /* ignore */ }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioUrl]);
 
   // When audio finishes loading, apply rate and start playback
   useEffect(() => {
-    if (!status.isLoaded) return;
-    player.setPlaybackRate(rate, "high"); // pitch-corrected slow/fast mode
-    if (autoPlay) player.play();
+    const p = playerRef.current;
+    if (!p || !status.isLoaded) return;
+    p.setPlaybackRate(rate, "high"); // pitch-corrected slow/fast mode
+    if (autoPlay) p.play();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status.isLoaded]);
 
   // Apply rate changes dynamically (e.g. slow mode toggled — not currently used mid-listen)
   useEffect(() => {
-    if (!status.isLoaded) return;
-    player.setPlaybackRate(rate, "high");
+    const p = playerRef.current;
+    if (!p || !status.isLoaded) return;
+    p.setPlaybackRate(rate, "high");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rate]);
 
