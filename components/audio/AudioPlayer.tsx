@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { View, Text, Animated } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer as ExpoAudioPlayer, AudioStatus } from "expo-audio";
 
@@ -46,6 +47,19 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, pas
     loop: false, didJustFinish: false, isBuffering: false, isLoaded: false,
     playbackRate: 1, shouldCorrectPitch: true,
   });
+
+  // Pause audio when the screen loses focus (tabs navigator reuses this component,
+  // so useEffect cleanup alone doesn't fire on navigation away)
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        const p = playerRef.current;
+        if (p) {
+          try { p.pause(); } catch { /* ignore */ }
+        }
+      };
+    }, [])
+  );
 
   // Own the full player lifecycle manually so cleanup runs pause() before any expo-audio teardown
   useEffect(() => {
