@@ -16,6 +16,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { MuteButton } from "@/components/audio/MuteButton";
+import { CertificateSection } from "@/components/profile/CertificateSection";
 
 export default function ProfileScreen() {
   const { user, updateUser, logout } = useAuthStore();
@@ -383,7 +384,10 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      {/* Section 4 — Danger Zone */}
+      {/* Section 4 — Certificate */}
+      <CertificateSection username={user.username} />
+
+      {/* Section 5 — Danger Zone */}
       <View className="bg-ocean-mid rounded-2xl p-5 mb-8">
         <Text className="text-parchment-dark text-xs uppercase tracking-widest mb-4">
           Account

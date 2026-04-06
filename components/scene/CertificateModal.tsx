@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from "react-native";
 import Animated, {
   useSharedValue,
@@ -8,11 +8,15 @@ import Animated, {
   withDelay,
   Easing,
 } from "react-native-reanimated";
+import ViewShot from "react-native-view-shot";
+import { File, Paths } from "expo-file-system";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CERT_WIDTH = SCREEN_WIDTH - 32; // 16px padding each side
 const CERT_ASPECT = 778 / 1010; // height / width of the certificate image
 const CERT_HEIGHT = CERT_WIDTH * CERT_ASPECT;
+
+export const CERTIFICATE_FILE = new File(Paths.document, "certificate.png");
 
 interface Props {
   username: string;
@@ -25,6 +29,19 @@ export function CertificateModal({ username, onClose }: Props) {
   const certOpacity = useSharedValue(0);
   const btnOpacity = useSharedValue(0);
   const btnScale = useSharedValue(0);
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const captureCertificate = useCallback(async () => {
+    try {
+      const uri = await viewShotRef.current?.capture?.();
+      if (uri) {
+        const captured = new File(uri);
+        captured.copy(CERTIFICATE_FILE);
+      }
+    } catch {
+      // Silent fail — certificate will be regenerable from profile
+    }
+  }, []);
 
   useEffect(() => {
     bgOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.quad) });
@@ -32,6 +49,10 @@ export function CertificateModal({ username, onClose }: Props) {
     certScale.value = withDelay(200, withSpring(1, { damping: 12, stiffness: 100 }));
     btnOpacity.value = withDelay(800, withTiming(1, { duration: 300 }));
     btnScale.value = withDelay(800, withSpring(1, { damping: 12, stiffness: 100 }));
+
+    // Capture certificate after animations settle
+    const timer = setTimeout(captureCertificate, 1500);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,17 +77,19 @@ export function CertificateModal({ username, onClose }: Props) {
       <View style={[StyleSheet.absoluteFillObject, styles.center, { paddingHorizontal: 16 }]} pointerEvents="box-none">
         {/* Certificate image with username overlay */}
         <Animated.View style={[{ width: CERT_WIDTH, height: CERT_HEIGHT }, certStyle]}>
-          <Image
-            source={require("@/assets/images/certificate.png")}
-            style={{ width: CERT_WIDTH, height: CERT_HEIGHT, borderRadius: 8 }}
-            resizeMode="contain"
-          />
-          {/* Username positioned on the underline — approximately 37% from top */}
-          <View style={styles.usernameContainer}>
-            <Text style={styles.usernameText} numberOfLines={1} adjustsFontSizeToFit>
-              {username}
-            </Text>
-          </View>
+          <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1 }}>
+            <Image
+              source={require("@/assets/images/certificate.png")}
+              style={{ width: CERT_WIDTH, height: CERT_HEIGHT, borderRadius: 8 }}
+              resizeMode="contain"
+            />
+            {/* Username positioned on the underline — approximately 37% from top */}
+            <View style={styles.usernameContainer}>
+              <Text style={styles.usernameText} numberOfLines={1} adjustsFontSizeToFit>
+                {username}
+              </Text>
+            </View>
+          </ViewShot>
         </Animated.View>
 
         {/* Continue button */}
