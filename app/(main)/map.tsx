@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
+import { createAudioPlayer } from "expo-audio";
 import Svg, {
   Path, Circle, Ellipse, Rect, Polygon, G, Line,
   Text as SvgText, Defs, LinearGradient, RadialGradient, Stop,
@@ -32,6 +33,11 @@ const POS_FRACS = [
 // Per-island visual theme
 const OCEAN_COLORS = ["#1e5631", "#4a235a", "#1a4a6e", "#7d1515", "#7e3a0a", "#0e6655", "#7d6608"];
 const LAND_COLORS  = ["#27ae60", "#8e44ad", "#3498db", "#e74c3c", "#e67e22", "#1abc9c", "#f5c518"];
+
+// ── Victory (all-islands-complete) palette ──────────────────────────────────
+const V_GOLD       = "#FFD700";
+const V_WAVE_A     = "rgba(72,202,228,0.22)";
+const V_WAVE_B     = "rgba(245,197,24,0.18)";
 
 // Build rope sub-path between two consecutive islands
 function buildSegmentPath(p1: { x: number; y: number }, p2: { x: number; y: number }) {
@@ -101,38 +107,6 @@ function CausticPulse({ cx, cy, rx, ry, delay }: {
       style={[{ position: "absolute", left: cx - rx, top: cy - ry, width: rx * 2, height: ry * 2, borderRadius: rx, backgroundColor: "rgba(52,152,219,0.5)" }, style]}
       pointerEvents="none"
     />
-  );
-}
-
-function FloatingElement({ children, x, y, driftX, driftY, period }: {
-  children: React.ReactNode; x: number; y: number; driftX: number; driftY: number; period: number;
-}) {
-  const tx = useSharedValue(0);
-  const ty = useSharedValue(0);
-  useEffect(() => {
-    tx.value = withRepeat(
-      withSequence(
-        withTiming(-driftX, { duration: period, easing: Easing.inOut(Easing.sin) }),
-        withTiming(driftX, { duration: period, easing: Easing.inOut(Easing.sin) })
-      ),
-      -1, true
-    );
-    ty.value = withRepeat(
-      withSequence(
-        withTiming(-driftY, { duration: period * 0.8, easing: Easing.inOut(Easing.sin) }),
-        withTiming(driftY, { duration: period * 0.8, easing: Easing.inOut(Easing.sin) })
-      ),
-      -1, true
-    );
-    return () => { cancelAnimation(tx); cancelAnimation(ty); };
-  }, [driftX, driftY, period, tx, ty]);
-  const style = useAnimatedStyle(() => ({
-    transform: [{ translateX: tx.value }, { translateY: ty.value }],
-  }));
-  return (
-    <Animated.View style={[{ position: "absolute", left: x, top: y }, style]} pointerEvents="none">
-      {children}
-    </Animated.View>
   );
 }
 
@@ -444,6 +418,396 @@ function IslandArt({ idx }: { idx: number }) {
   }
 }
 
+// ─── Victory-only Animated Components ───────────────────────────────────────
+
+function CharacterFigure({ bodyColor, hatColor, skinColor, delay, label }: {
+  bodyColor: string; hatColor: string; skinColor: string; delay: number; label: string;
+}) {
+  const armRot = useSharedValue(0);
+  const bob = useSharedValue(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      armRot.value = withRepeat(
+        withSequence(
+          withTiming(-55, { duration: 380, easing: Easing.inOut(Easing.sin) }),
+          withTiming(5,   { duration: 380, easing: Easing.inOut(Easing.sin) })
+        ),
+        -1, true
+      );
+      bob.value = withRepeat(
+        withSequence(
+          withTiming(-5, { duration: 550, easing: Easing.inOut(Easing.sin) }),
+          withTiming(0,  { duration: 550, easing: Easing.inOut(Easing.sin) })
+        ),
+        -1, true
+      );
+    }, delay);
+    return () => { clearTimeout(timeout); cancelAnimation(armRot); cancelAnimation(bob); };
+  }, [delay, armRot, bob]);
+
+  const containerStyle = useAnimatedStyle(() => ({ transform: [{ translateY: bob.value }] }));
+  // Waving arm: rotates around shoulder pivot at (42, 42) in the 60×90 SVG
+  const armStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: 42 },
+      { translateY: 42 },
+      { rotate: `${armRot.value}deg` },
+      { translateX: -42 },
+      { translateY: -42 },
+    ],
+  }));
+
+  return (
+    <Animated.View style={[{ alignItems: "center" }, containerStyle]} pointerEvents="none">
+      {/* Static body */}
+      <Svg width={60} height={90}>
+        {/* Body */}
+        <Rect x="18" y="40" width="24" height="30" rx="6" fill={bodyColor} />
+        {/* Head */}
+        <Circle cx="30" cy="28" r="17" fill={skinColor} />
+        {/* Hat brim */}
+        <Rect x="14" y="15" width="32" height="6" rx="3" fill={hatColor} />
+        {/* Hat top */}
+        <Rect x="20" y="6" width="20" height="12" rx="3" fill={hatColor} />
+        {/* Happy squint eyes */}
+        <Path d="M22 25 Q25 22 28 25" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <Path d="M32 25 Q35 22 38 25" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Big smile */}
+        <Path d="M21 33 Q30 42 39 33" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Rosy cheeks */}
+        <Circle cx="21" cy="31" r="4" fill="rgba(255,100,100,0.25)" />
+        <Circle cx="39" cy="31" r="4" fill="rgba(255,100,100,0.25)" />
+        {/* Left arm (down) */}
+        <Path d="M18 46 L8 60" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+        {/* Legs */}
+        <Path d="M22 70 L20 86" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+        <Path d="M38 70 L40 86" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+      </Svg>
+      {/* Right arm — waving (animated, layered on top) */}
+      <Animated.View style={[{ position: "absolute", top: 0, left: 0 }, armStyle]} pointerEvents="none">
+        <Svg width={60} height={90}>
+          <Path d="M42 42 L56 26" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Little hand wave */}
+          <Circle cx="56" cy="24" r="5" fill={skinColor} />
+        </Svg>
+      </Animated.View>
+      {/* Name */}
+      <Text style={{ color: "#1a3a5c", fontSize: 8, fontWeight: "800", textAlign: "center", marginTop: 2, letterSpacing: 0.3 }}>
+        {label}
+      </Text>
+    </Animated.View>
+  );
+}
+
+function WavingCharacters({ sw, canvasH }: { sw: number; canvasH: number }) {
+  const chars = [
+    { xf: 0.12, bodyColor: "#1a3a5c", hatColor: "#C8A415", skinColor: "#FDBCB4", label: "Captain\nSalita", delay: 0   },
+    { xf: 0.35, bodyColor: "#27ae60", hatColor: "#f5c518", skinColor: "#D4A574", label: "Kali",             delay: 180 },
+    { xf: 0.65, bodyColor: "#8e44ad", hatColor: "#FF6B8A", skinColor: "#FDBCB4", label: "Mira",             delay: 360 },
+    { xf: 0.88, bodyColor: "#e74c3c", hatColor: "#f5c518", skinColor: "#C68642", label: "Riku",             delay: 540 },
+  ];
+  return (
+    <>
+      {chars.map(({ xf, bodyColor, hatColor, skinColor, label, delay }, i) => (
+        <View
+          key={`wchar-${i}`}
+          style={{
+            position: "absolute",
+            left: sw * xf - 30,
+            top: canvasH * 0.975,
+            width: 60,
+            alignItems: "center",
+          }}
+          pointerEvents="none"
+        >
+          <CharacterFigure
+            bodyColor={bodyColor}
+            hatColor={hatColor}
+            skinColor={skinColor}
+            delay={delay}
+            label={label}
+          />
+        </View>
+      ))}
+    </>
+  );
+}
+
+function SunRays({ cx, cy, radius }: { cx: number; cy: number; radius: number }) {
+  const rot = useSharedValue(0);
+  useEffect(() => {
+    rot.value = withRepeat(withTiming(360, { duration: 40000, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(rot);
+  }, [rot]);
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: cx - radius },
+      { translateY: cy - radius },
+      { rotate: `${rot.value}deg` },
+      { translateX: -(cx - radius) },
+      { translateY: -(cy - radius) },
+    ],
+  }));
+  const rays: { angle: number; len: number }[] = Array.from({ length: 12 }, (_, i) => ({
+    angle: (i * 30 * Math.PI) / 180,
+    len: i % 2 === 0 ? radius : radius * 0.65,
+  }));
+  return (
+    <Animated.View
+      style={[{ position: "absolute", top: 0, left: 0, width: cx * 2, height: cy * 2 + radius }, style]}
+      pointerEvents="none"
+    >
+      <Svg width={cx * 2} height={cy * 2 + radius}>
+        {rays.map(({ angle, len }, i) => (
+          <Path
+            key={i}
+            d={`M ${cx} ${cy} L ${(cx + Math.cos(angle) * len).toFixed(1)} ${(cy + Math.sin(angle) * len).toFixed(1)}`}
+            stroke={i % 2 === 0 ? "#FFD700" : "#FFF3B0"}
+            strokeWidth={i % 2 === 0 ? 3 : 2}
+            strokeLinecap="round"
+            opacity={0.22}
+          />
+        ))}
+      </Svg>
+    </Animated.View>
+  );
+}
+
+function GodRayShaft({ x, canvasH, angle, color }: { x: number; canvasH: number; angle: number; color: string }) {
+  const opacity = useSharedValue(0.04);
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.10, { duration: 3000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.03, { duration: 3000, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1, true
+    );
+    return () => cancelAnimation(opacity);
+  }, [opacity]);
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  const shaftH = canvasH * 0.5;
+  return (
+    <Animated.View
+      style={[{
+        position: "absolute",
+        left: x - 15,
+        top: 0,
+        width: 30,
+        height: shaftH,
+        backgroundColor: color,
+        transformOrigin: "top center",
+        transform: [{ rotate: `${angle}deg` }],
+      }, style]}
+      pointerEvents="none"
+    />
+  );
+}
+
+function FlyingBird({ sw, startY, speed, delay }: { sw: number; startY: number; speed: number; delay: number }) {
+  const tx = useSharedValue(-60);
+  const ty = useSharedValue(0);
+  useEffect(() => {
+    // delayed start
+    const timeout = setTimeout(() => {
+      tx.value = withRepeat(
+        withSequence(
+          withTiming(sw + 60, { duration: speed, easing: Easing.linear }),
+          withTiming(-60, { duration: 0 })
+        ),
+        -1, false
+      );
+      ty.value = withRepeat(
+        withSequence(
+          withTiming(-4, { duration: 800, easing: Easing.inOut(Easing.sin) }),
+          withTiming(4, { duration: 800, easing: Easing.inOut(Easing.sin) })
+        ),
+        -1, true
+      );
+    }, delay);
+    return () => { clearTimeout(timeout); cancelAnimation(tx); cancelAnimation(ty); };
+  }, [sw, speed, delay, tx, ty]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: tx.value }, { translateY: ty.value }],
+  }));
+  return (
+    <Animated.View
+      style={[{ position: "absolute", left: 0, top: startY }, style]}
+      pointerEvents="none"
+    >
+      <Svg width={24} height={12}>
+        <Path d="M0 8 Q6 2 12 6 Q18 2 24 8" stroke="rgba(30,60,90,0.55)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </Svg>
+    </Animated.View>
+  );
+}
+
+function GoldenSparkle({ x, y, delay, size }: { x: number; y: number; delay: number; size: number }) {
+  const opacity = useSharedValue(0);
+  const ty = useSharedValue(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(0.8, { duration: 400, easing: Easing.out(Easing.quad) }),
+          withTiming(0.6, { duration: 800 }),
+          withTiming(0, { duration: 600, easing: Easing.in(Easing.quad) })
+        ),
+        -1, false
+      );
+      ty.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(40, { duration: 1800, easing: Easing.in(Easing.quad) })
+        ),
+        -1, false
+      );
+    }, delay);
+    return () => { clearTimeout(timeout); cancelAnimation(opacity); cancelAnimation(ty); };
+  }, [delay, opacity, ty]);
+  const style = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: ty.value }],
+  }));
+  const half = size;
+  return (
+    <Animated.View
+      style={[{ position: "absolute", left: x - half, top: y - half, width: half * 2, height: half * 2 }, style]}
+      pointerEvents="none"
+    >
+      <Svg width={half * 2} height={half * 2}>
+        <Path
+          d={`M ${half} 0 L ${half + half * 0.3} ${half - half * 0.3} L ${half * 2} ${half} L ${half + half * 0.3} ${half + half * 0.3} L ${half} ${half * 2} L ${half - half * 0.3} ${half + half * 0.3} L 0 ${half} L ${half - half * 0.3} ${half - half * 0.3} Z`}
+          fill="#FFD700"
+        />
+      </Svg>
+    </Animated.View>
+  );
+}
+
+function ConfettiPiece({ x, canvasH, delay, color }: { x: number; canvasH: number; delay: number; color: string }) {
+  const ty = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      ty.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(canvasH * 0.35, { duration: 6000, easing: Easing.linear })
+        ),
+        -1, false
+      );
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(0.65, { duration: 800 }),
+          withTiming(0.50, { duration: 4400 }),
+          withTiming(0, { duration: 800 })
+        ),
+        -1, false
+      );
+    }, delay);
+    return () => { clearTimeout(timeout); cancelAnimation(ty); cancelAnimation(opacity); };
+  }, [delay, canvasH, ty, opacity]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: ty.value }],
+    opacity: opacity.value,
+  }));
+  return (
+    <Animated.View
+      style={[{ position: "absolute", left: x - 3, top: 0, width: 6, height: 10, backgroundColor: color, borderRadius: 2 }, style]}
+      pointerEvents="none"
+    />
+  );
+}
+
+function VictoryBanner({ sw, canvasH }: { sw: number; canvasH: number }) {
+  const scale = useSharedValue(0.8);
+  const borderOpacity = useSharedValue(0.6);
+  useEffect(() => {
+    scale.value = withSequence(
+      withTiming(1.04, { duration: 400, easing: Easing.out(Easing.back(1.5)) }),
+      withTiming(1.0, { duration: 200 })
+    );
+    borderOpacity.value = withRepeat(
+      withSequence(
+        withTiming(1.0, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0.5, { duration: 1500, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1, true
+    );
+    return () => { cancelAnimation(scale); cancelAnimation(borderOpacity); };
+  }, [scale, borderOpacity]);
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+  const bannerW = sw - 48;
+  return (
+    <Animated.View
+      style={[{
+        position: "absolute",
+        top: canvasH * 0.93,
+        left: 24,
+        width: bannerW,
+        backgroundColor: "rgba(255,249,230,0.97)",
+        borderRadius: 14,
+        borderWidth: 2,
+        borderColor: "#C8A415",
+        paddingVertical: 14,
+        paddingHorizontal: 18,
+        alignItems: "center",
+        shadowColor: "#C8A415",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.45,
+        shadowRadius: 12,
+        elevation: 8,
+      }, style]}
+      pointerEvents="none"
+    >
+      {/* Scroll curl left */}
+      <View style={{ position: "absolute", left: -8, top: "50%", marginTop: -16, width: 16, height: 32, backgroundColor: "rgba(200,164,21,0.3)", borderRadius: 8 }} />
+      {/* Scroll curl right */}
+      <View style={{ position: "absolute", right: -8, top: "50%", marginTop: -16, width: 16, height: 32, backgroundColor: "rgba(200,164,21,0.3)", borderRadius: 8 }} />
+      <Text style={{ color: "#1a3a5c", fontWeight: "900", fontSize: 13, letterSpacing: 2, textAlign: "center" }}>
+        ⚓  ALL SEVEN CONQUERED  ⚓
+      </Text>
+      <Text style={{ color: "#7d5a00", fontSize: 11, fontStyle: "italic", marginTop: 4, textAlign: "center" }}>
+        You are the Legend.
+      </Text>
+    </Animated.View>
+  );
+}
+
+function LegendSeal({ x, y }: { x: number; y: number }) {
+  const rot = useSharedValue(0);
+  useEffect(() => {
+    rot.value = withRepeat(
+      withSequence(
+        withTiming(-5, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(5, { duration: 4000, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1, true
+    );
+    return () => cancelAnimation(rot);
+  }, [rot]);
+  const style = useAnimatedStyle(() => ({ transform: [{ rotate: `${rot.value}deg` }] }));
+  return (
+    <Animated.View style={[{ position: "absolute", left: x - 22, top: y }, style]} pointerEvents="none">
+      <Svg width={44} height={44}>
+        {/* Wax seal */}
+        <Circle cx="22" cy="22" r="20" fill="#C41E3A" stroke="#FFD700" strokeWidth="2.5" />
+        <Circle cx="22" cy="22" r="16" fill="none" stroke="rgba(255,215,0,0.45)" strokeWidth="1" />
+        {/* Anchor icon */}
+        <Line x1="22" y1="10" x2="22" y2="34" stroke="#FFD700" strokeWidth="2.5" strokeLinecap="round" />
+        <Line x1="14" y1="14" x2="30" y2="14" stroke="#FFD700" strokeWidth="2.5" strokeLinecap="round" />
+        <Circle cx="22" cy="10" r="3" fill="none" stroke="#FFD700" strokeWidth="2" />
+        <Path d="M14 30 Q14 36 22 34 Q30 36 30 30" stroke="#FFD700" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </Svg>
+    </Animated.View>
+  );
+}
+
 // Star shape path builder for decorative stars
 function starPath(cx: number, cy: number, outerR: number, innerR: number) {
   const points = [];
@@ -479,6 +843,26 @@ export default function MapScreen() {
     refetchOnMount: true,
   });
 
+  // ── Victory sound — hook must live before early returns (Rules of Hooks) ──
+  const victorySoundFiredRef = useRef(false);
+  useEffect(() => {
+    if (!islands || !progress) return;
+    const doneSet = new Set<string>(
+      (progress as IslandProgress[]).filter((p) => p.isCompleted).map((p) => p.islandId)
+    );
+    const total = (islands as Island[]).length;
+    const done = total > 0 && doneSet.size === total;
+    if (!done || victorySoundFiredRef.current) return;
+    victorySoundFiredRef.current = true;
+    const player = createAudioPlayer({ uri: "https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" });
+    player.play();
+    const cleanup = setTimeout(() => { try { player.remove(); } catch { /* ignore */ } }, 10000);
+    return () => {
+      clearTimeout(cleanup);
+      try { player.remove(); } catch { /* ignore */ }
+    };
+  }, [islands, progress]);
+
   if (isLoading) {
     return (
       <View className="flex-1 bg-ocean-deep items-center justify-center">
@@ -512,6 +896,8 @@ export default function MapScreen() {
       .map((p: IslandProgress) => p.islandId)
   );
   const completedCount = completedSet.size;
+  const totalIslands = (islands as Island[]).length;
+  const allCompleted = completedCount === totalIslands && totalIslands > 0;
 
   const positions = POS_FRACS.map((p) => ({ x: p.xf * sw, y: p.yf * CANVAS_H }));
 
@@ -519,70 +905,178 @@ export default function MapScreen() {
     (isl) => !isl.isLocked && !completedSet.has(isl.id)
   );
 
+
   return (
     <View style={{ flex: 1 }}>
       <MuteButton />
-    <ScrollView className="flex-1 bg-ocean-deep" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className={!allCompleted ? "flex-1 bg-ocean-deep" : "flex-1"}
+      style={allCompleted ? { backgroundColor: "#E8F8FF" } : undefined}
+      showsVerticalScrollIndicator={false}
+    >
       {/* ── Header with Progress Bar ────────────────────── */}
-      <View className="px-6 pt-14 pb-2">
+      <View
+        className="px-6 pt-14 pb-4"
+        style={allCompleted ? {
+          backgroundColor: "rgba(255,249,230,0.97)",
+          borderBottomWidth: 2,
+          borderBottomColor: "rgba(200,164,21,0.50)",
+          shadowColor: "#FFD700",
+          shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: 0.25,
+          shadowRadius: 8,
+        } : { paddingBottom: 8 }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <View style={{ flex: 1 }}>
-            <Text className="text-gold text-3xl font-bold">The Listening Sea</Text>
-            <Text className="text-parchment-dark text-sm mt-1">Seven islands. Seven skills. One legend.</Text>
+            <Text
+              style={allCompleted
+                ? { color: "#1a3a5c", fontSize: 28, fontWeight: "900", letterSpacing: 0.5 }
+                : undefined}
+              className={!allCompleted ? "text-gold text-3xl font-bold" : ""}
+            >
+              The Listening Sea{allCompleted ? " ✦" : ""}
+            </Text>
+            <Text
+              style={allCompleted
+                ? { color: "#7d5a00", fontSize: 13, marginTop: 2, fontStyle: "italic" }
+                : undefined}
+              className={!allCompleted ? "text-parchment-dark text-sm mt-1" : ""}
+            >
+              {allCompleted
+                ? "All Seven Conquered. You are the Legend."
+                : "Seven islands. Seven skills. One legend."}
+            </Text>
           </View>
         </View>
         {/* Progress bar */}
         <View style={{ marginTop: 10, flexDirection: "row", alignItems: "center" }}>
           <View style={{
-            flex: 1, height: 10, borderRadius: 5,
-            backgroundColor: "rgba(15,52,96,0.6)", borderWidth: 1, borderColor: "rgba(245,197,24,0.2)",
+            flex: 1, height: allCompleted ? 12 : 10, borderRadius: 6,
+            backgroundColor: allCompleted ? "rgba(245,197,24,0.15)" : "rgba(15,52,96,0.6)",
+            borderWidth: 1,
+            borderColor: allCompleted ? "rgba(200,164,21,0.45)" : "rgba(245,197,24,0.2)",
           }}>
             <View style={{
               width: `${Math.round((completedCount / 7) * 100)}%` as unknown as number,
-              height: "100%", borderRadius: 5,
+              height: "100%", borderRadius: 6,
               backgroundColor: "#f5c518",
             }} />
           </View>
-          <Text style={{ color: "#f5c518", fontSize: 12, fontWeight: "700", marginLeft: 8 }}>
-            {completedCount}/7
-          </Text>
+          {allCompleted ? (
+            <View style={{
+              backgroundColor: "#FFD700",
+              borderRadius: 14, paddingHorizontal: 12, paddingVertical: 4,
+              marginLeft: 10,
+              shadowColor: "#C8A415", shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.5, shadowRadius: 4,
+            }}>
+              <Text style={{ color: "#1a1a2e", fontWeight: "900", fontSize: 11, letterSpacing: 1.5 }}>
+                LEGEND
+              </Text>
+            </View>
+          ) : (
+            <Text style={{ color: "#f5c518", fontSize: 12, fontWeight: "700", marginLeft: 8 }}>
+              {completedCount}/7
+            </Text>
+          )}
         </View>
       </View>
 
       {/* ── Map canvas ──────────────────────────────────── */}
-      <View style={{ width: sw, height: CANVAS_H + 60, position: "relative" }}>
+      <View style={{ width: sw, height: allCompleted ? CANVAS_H + 150 : CANVAS_H + 60, position: "relative" }}>
 
         {/* ── Background SVG ─────────────────────────────── */}
-        <Svg width={sw} height={CANVAS_H + 60} style={{ position: "absolute", top: 0, left: 0 }}>
+        <Svg width={sw} height={allCompleted ? CANVAS_H + 150 : CANVAS_H + 60} style={{ position: "absolute", top: 0, left: 0 }}>
           <Defs>
-            {/* Ocean gradient */}
-            <LinearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor="#0f3460" stopOpacity="1" />
-              <Stop offset="0.25" stopColor="#16213e" stopOpacity="1" />
-              <Stop offset="0.6" stopColor="#1a1a2e" stopOpacity="1" />
-              <Stop offset="1" stopColor="#0d0d1a" stopOpacity="1" />
-            </LinearGradient>
+            {/* Ocean gradient — switches between dark voyage and victorious sunrise */}
+            {allCompleted ? (
+              <LinearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0"    stopColor="#FFF9E6" stopOpacity="1" />
+                <Stop offset="0.18" stopColor="#FFD580" stopOpacity="1" />
+                <Stop offset="0.45" stopColor="#87CEEB" stopOpacity="1" />
+                <Stop offset="0.72" stopColor="#48CAE4" stopOpacity="1" />
+                <Stop offset="1"    stopColor="#0096C7" stopOpacity="1" />
+              </LinearGradient>
+            ) : (
+              <LinearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0"    stopColor="#0f3460" stopOpacity="1" />
+                <Stop offset="0.25" stopColor="#16213e" stopOpacity="1" />
+                <Stop offset="0.6"  stopColor="#1a1a2e" stopOpacity="1" />
+                <Stop offset="1"    stopColor="#0d0d1a" stopOpacity="1" />
+              </LinearGradient>
+            )}
             {/* Sun glow */}
             <RadialGradient id="sunGlow" cx="0.5" cy="0.5" rx="0.5" ry="0.5">
-              <Stop offset="0" stopColor="#f5c518" stopOpacity="0.2" />
-              <Stop offset="0.6" stopColor="#f5c518" stopOpacity="0.05" />
+              <Stop offset="0" stopColor="#f5c518" stopOpacity={allCompleted ? 0.5 : 0.2} />
+              <Stop offset="0.6" stopColor="#f5c518" stopOpacity={allCompleted ? 0.15 : 0.05} />
               <Stop offset="1" stopColor="#f5c518" stopOpacity="0" />
             </RadialGradient>
+            {/* Victory halo gradient */}
+            {allCompleted && (
+              <RadialGradient id="victoryGlow" cx="0.5" cy="0.5" rx="0.5" ry="0.5">
+                <Stop offset="0"   stopColor="#FFD700" stopOpacity="0.50" />
+                <Stop offset="0.4" stopColor="#FFD700" stopOpacity="0.15" />
+                <Stop offset="1"   stopColor="#FFD700" stopOpacity="0" />
+              </RadialGradient>
+            )}
           </Defs>
 
           {/* Gradient background */}
-          <Rect x="0" y="0" width={sw} height={CANVAS_H + 60} fill="url(#oceanGrad)" />
+          <Rect x="0" y="0" width={sw} height={allCompleted ? CANVAS_H + 150 : CANVAS_H + 60} fill="url(#oceanGrad)" />
 
           {/* Per-island biome color zones */}
           {positions.map((pos, i) => (
-            <Circle key={`zone-${i}`} cx={pos.x} cy={pos.y} r={90} fill={OCEAN_COLORS[i]} opacity={0.06} />
+            <Circle key={`zone-${i}`} cx={pos.x} cy={pos.y} r={90} fill={OCEAN_COLORS[i]} opacity={allCompleted ? 0.14 : 0.06} />
           ))}
 
-          {/* Sun glow — top right */}
-          <Circle cx={sw - 40} cy={30} r={50} fill="url(#sunGlow)" />
+          {/* Sun — massive radiant sunrise in victory, subtle glow normally */}
+          {allCompleted && (
+            <Circle cx={sw * 0.85} cy={40} r={220} fill="url(#victoryGlow)" />
+          )}
+          <Circle cx={sw * 0.85} cy={40} r={allCompleted ? 55 : 50} fill="url(#sunGlow)" />
+          {allCompleted && (
+            <Circle cx={sw * 0.85} cy={40} r={28} fill="#FFD700" opacity={0.45} />
+          )}
 
-          {/* ── Static wave lines (more visible) ────────── */}
-          {[
+          {/* Victory-only: Rainbow arcs near the sun */}
+          {allCompleted && [
+            { r: sw * 0.48, color: "#FF6B6B", w: 4 },
+            { r: sw * 0.43, color: "#FFA500", w: 4 },
+            { r: sw * 0.38, color: "#FFD700", w: 4 },
+            { r: sw * 0.33, color: "#48CAE4", w: 4 },
+            { r: sw * 0.28, color: "#4ECDC4", w: 3 },
+          ].map(({ r, color, w }, i) => (
+            <Path
+              key={`rainbow-${i}`}
+              d={`M ${(sw * 0.85 - r).toFixed(0)} 40 A ${r.toFixed(0)} ${r.toFixed(0)} 0 0 1 ${(sw * 0.85 + r).toFixed(0)} 40`}
+              stroke={color} strokeWidth={w} fill="none" opacity={0.30}
+              strokeLinecap="round"
+            />
+          ))}
+
+          {/* Victory-only: Golden horizon glow line */}
+          {allCompleted && (
+            <Line x1="0" y1={CANVAS_H * 0.18} x2={sw} y2={CANVAS_H * 0.18} stroke="#FFD700" strokeWidth="2" opacity={0.22} />
+          )}
+          {/* Victory-only: Sun reflection on water */}
+          {allCompleted && (
+            <Ellipse cx={sw * 0.85} cy={CANVAS_H * 0.22} rx={20} ry={60} fill="#FFD700" opacity={0.07} />
+          )}
+
+          {/* ── Static wave lines — turquoise/gold in victory, dark blues normally ── */}
+          {(allCompleted ? [
+            { yf: 0.08, amp: 12, color: V_WAVE_A },
+            { yf: 0.16, amp: 16, color: V_WAVE_B },
+            { yf: 0.26, amp: 10, color: V_WAVE_A },
+            { yf: 0.36, amp: 18, color: "rgba(255,255,255,0.30)" },
+            { yf: 0.46, amp: 14, color: V_WAVE_A },
+            { yf: 0.56, amp: 20, color: V_WAVE_B },
+            { yf: 0.66, amp: 12, color: V_WAVE_A },
+            { yf: 0.76, amp: 16, color: "rgba(255,255,255,0.25)" },
+            { yf: 0.86, amp: 14, color: V_WAVE_A },
+            { yf: 0.94, amp: 10, color: V_WAVE_B },
+          ] : [
             { yf: 0.08, amp: 12, color: "rgba(52,152,219,0.08)" },
             { yf: 0.16, amp: 16, color: "rgba(255,255,255,0.06)" },
             { yf: 0.26, amp: 10, color: "rgba(52,152,219,0.07)" },
@@ -593,7 +1087,7 @@ export default function MapScreen() {
             { yf: 0.76, amp: 16, color: "rgba(255,255,255,0.06)" },
             { yf: 0.86, amp: 14, color: "rgba(52,152,219,0.08)" },
             { yf: 0.94, amp: 10, color: "rgba(255,255,255,0.05)" },
-          ].map(({ yf, amp, color }, i) => {
+          ]).map(({ yf, amp, color }, i) => {
             const y = Math.round(yf * CANVAS_H);
             return (
               <Path
@@ -606,45 +1100,45 @@ export default function MapScreen() {
             );
           })}
 
-          {/* ── Seagulls — top zone ─────────────────────── */}
-          <Path d={`M ${sw * 0.18} ${CANVAS_H * 0.025} Q ${sw * 0.20} ${CANVAS_H * 0.018} ${sw * 0.22} ${CANVAS_H * 0.025}`} stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" fill="none" />
-          <Path d={`M ${sw * 0.65} ${CANVAS_H * 0.035} Q ${sw * 0.67} ${CANVAS_H * 0.028} ${sw * 0.69} ${CANVAS_H * 0.035}`} stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" fill="none" />
-          <Path d={`M ${sw * 0.40} ${CANVAS_H * 0.015} Q ${sw * 0.42} ${CANVAS_H * 0.008} ${sw * 0.44} ${CANVAS_H * 0.015}`} stroke="rgba(255,255,255,0.15)" strokeWidth="1" fill="none" />
+          {/* ── Seagulls — dark & visible on light sky in victory ─────────────── */}
+          <Path d={`M ${sw * 0.18} ${CANVAS_H * 0.025} Q ${sw * 0.20} ${CANVAS_H * 0.018} ${sw * 0.22} ${CANVAS_H * 0.025}`} stroke={allCompleted ? "rgba(30,60,90,0.55)" : "rgba(255,255,255,0.22)"} strokeWidth="1.5" fill="none" />
+          <Path d={`M ${sw * 0.65} ${CANVAS_H * 0.035} Q ${sw * 0.67} ${CANVAS_H * 0.028} ${sw * 0.69} ${CANVAS_H * 0.035}`} stroke={allCompleted ? "rgba(30,60,90,0.50)" : "rgba(255,255,255,0.18)"} strokeWidth="1.5" fill="none" />
+          <Path d={`M ${sw * 0.40} ${CANVAS_H * 0.015} Q ${sw * 0.42} ${CANVAS_H * 0.008} ${sw * 0.44} ${CANVAS_H * 0.015}`} stroke={allCompleted ? "rgba(30,60,90,0.45)" : "rgba(255,255,255,0.15)"} strokeWidth="1" fill="none" />
 
-          {/* ── Rope segments (color-coded by progress) ─── */}
+          {/* ── Rope/Path segments — golden legendary bridges in victory ─────── */}
           {positions.map((pos, i) => {
             if (i === 0) return null;
             const prev = positions[i - 1];
             const segPath = buildSegmentPath(prev, pos);
             const isl = (islands as Island[])[i];
             const prevIsl = (islands as Island[])[i - 1];
-            const segCompleted = completedSet.has(prevIsl?.id ?? "") && completedSet.has(isl?.id ?? "");
-            const segAvailable = !isl?.isLocked;
+            const segCompleted = allCompleted || (completedSet.has(prevIsl?.id ?? "") && completedSet.has(isl?.id ?? ""));
+            const segAvailable = allCompleted || !isl?.isLocked;
 
             return (
               <G key={`rope-${i}`}>
                 {/* Shadow */}
-                <Path d={segPath} stroke="rgba(0,0,0,0.25)" strokeWidth="10" fill="none" strokeLinecap="round" />
+                <Path d={segPath} stroke={allCompleted ? "rgba(200,150,0,0.30)" : "rgba(0,0,0,0.25)"} strokeWidth={allCompleted ? 14 : 10} fill="none" strokeLinecap="round" />
                 {/* Main trail */}
                 <Path
                   d={segPath}
-                  stroke={segCompleted ? "#d4a756" : segAvailable ? "#8b6f3a" : "#3a3a4a"}
-                  strokeWidth="6"
+                  stroke={allCompleted ? V_GOLD : segCompleted ? "#d4a756" : segAvailable ? "#8b6f3a" : "#3a3a4a"}
+                  strokeWidth={allCompleted ? 10 : 6}
                   fill="none"
                   strokeLinecap="round"
                 />
-                {/* Gold dotted overlay */}
+                {/* Highlight / dotted overlay */}
                 <Path
                   d={segPath}
-                  stroke={segCompleted ? "#f5c518" : "rgba(200,164,21,0.3)"}
-                  strokeWidth="2"
+                  stroke={allCompleted ? "#FFFDE7" : segCompleted ? "#f5c518" : "rgba(200,164,21,0.3)"}
+                  strokeWidth={allCompleted ? 3 : 2}
                   fill="none"
                   strokeLinecap="round"
-                  strokeDasharray="3,10"
+                  strokeDasharray={allCompleted ? undefined : "3,10"}
                 />
-                {/* Completed glow */}
-                {segCompleted && (
-                  <Path d={segPath} stroke="rgba(245,197,24,0.12)" strokeWidth="16" fill="none" strokeLinecap="round" />
+                {/* Glow */}
+                {(segCompleted || allCompleted) && (
+                  <Path d={segPath} stroke={allCompleted ? "rgba(255,215,0,0.22)" : "rgba(245,197,24,0.12)"} strokeWidth={allCompleted ? 22 : 16} fill="none" strokeLinecap="round" />
                 )}
               </G>
             );
@@ -707,17 +1201,21 @@ export default function MapScreen() {
             <SvgText x="-2" y="31" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="7">W</SvgText>
           </G>
 
-          {/* ── Sea serpent (upper-mid zone, right) ──────── */}
-          <Path
-            d={`M ${sw * 0.82} ${CANVAS_H * 0.22} Q ${sw * 0.88} ${CANVAS_H * 0.20} ${sw * 0.92} ${CANVAS_H * 0.23} Q ${sw * 0.96} ${CANVAS_H * 0.26} ${sw * 0.90} ${CANVAS_H * 0.28} Q ${sw * 0.84} ${CANVAS_H * 0.30} ${sw * 0.88} ${CANVAS_H * 0.32}`}
-            stroke="#1abc9c"
-            strokeWidth="4"
-            strokeLinecap="round"
-            fill="none"
-            opacity={0.18}
-          />
-          <Circle cx={sw * 0.82} cy={CANVAS_H * 0.22} r={4} fill="#1abc9c" opacity={0.22} />
-          <Circle cx={sw * 0.81} cy={CANVAS_H * 0.218} r={1.5} fill="#fff" opacity={0.3} />
+          {/* ── Sea serpent — hidden in victory (conquered!) ── */}
+          {!allCompleted && (
+            <>
+              <Path
+                d={`M ${sw * 0.82} ${CANVAS_H * 0.22} Q ${sw * 0.88} ${CANVAS_H * 0.20} ${sw * 0.92} ${CANVAS_H * 0.23} Q ${sw * 0.96} ${CANVAS_H * 0.26} ${sw * 0.90} ${CANVAS_H * 0.28} Q ${sw * 0.84} ${CANVAS_H * 0.30} ${sw * 0.88} ${CANVAS_H * 0.32}`}
+                stroke="#1abc9c"
+                strokeWidth="4"
+                strokeLinecap="round"
+                fill="none"
+                opacity={0.18}
+              />
+              <Circle cx={sw * 0.82} cy={CANVAS_H * 0.22} r={4} fill="#1abc9c" opacity={0.22} />
+              <Circle cx={sw * 0.81} cy={CANVAS_H * 0.218} r={1.5} fill="#fff" opacity={0.3} />
+            </>
+          )}
 
           {/* ── School of fish (upper-mid zone, left) ────── */}
           {[
@@ -881,31 +1379,131 @@ export default function MapScreen() {
             stroke="rgba(245,197,24,0.15)" strokeWidth="2" fill="none" strokeLinecap="round"
           />
 
-          {/* ── Parchment map border ─────────────────────── */}
-          <Rect
-            x="6" y="6" width={sw - 12} height={CANVAS_H + 48}
-            rx="12" fill="none"
-            stroke="rgba(212,184,150,0.15)" strokeWidth="1.5"
-          />
+          {/* ── Parchment map border — hidden in victory, subtle in dark mode ── */}
+          {!allCompleted && (
+            <Rect
+              x="6" y="6" width={sw - 12} height={CANVAS_H + 48}
+              rx="12" fill="none"
+              stroke="rgba(212,184,150,0.15)" strokeWidth="1.5"
+            />
+          )}
 
-          {/* ── Ghost text ("Here be dragons" etc.) ──────── */}
-          <SvgText x={sw * 0.08} y={CANVAS_H * 0.18} fontSize={9} fill="rgba(244,228,193,0.10)" fontStyle="italic">Here be dragons</SvgText>
-          <SvgText x={sw * 0.60} y={CANVAS_H * 0.52} fontSize={8} fill="rgba(244,228,193,0.08)" fontStyle="italic">Unknown waters</SvgText>
-          <SvgText x={sw * 0.15} y={CANVAS_H * 0.90} fontSize={9} fill="rgba(244,228,193,0.10)" fontStyle="italic">The Deep</SvgText>
+          {/* ── Ghost text — legendary inscriptions in victory ─────────────── */}
+          <SvgText x={sw * 0.08} y={CANVAS_H * 0.18} fontSize={9} fill={allCompleted ? "rgba(15,52,96,0.20)" : "rgba(244,228,193,0.10)"} fontStyle="italic">{allCompleted ? "All waters known" : "Here be dragons"}</SvgText>
+          <SvgText x={sw * 0.60} y={CANVAS_H * 0.52} fontSize={8} fill={allCompleted ? "rgba(15,52,96,0.18)" : "rgba(244,228,193,0.08)"} fontStyle="italic">{allCompleted ? "The Legend's Sea" : "Unknown waters"}</SvgText>
+          <SvgText x={sw * 0.15} y={CANVAS_H * 0.90} fontSize={9} fill={allCompleted ? "rgba(15,52,96,0.20)" : "rgba(244,228,193,0.10)"} fontStyle="italic">{allCompleted ? "The Conquered Deep" : "The Deep"}</SvgText>
 
-          {/* ── Island glow auras (behind nodes) ─────────── */}
+          {/* ── Colorful island-theme decorations ───────────── */}
+
+          {/* Palm tree A — upper-right open zone between islands 1 and 3 */}
+          <G transform={`translate(${Math.round(sw * 0.72)}, ${Math.round(CANVAS_H * 0.12)})`} opacity={0.55}>
+            <Path d="M8 52 Q6 36 10 20 Q12 10 8 0" stroke="#8B5E3C" strokeWidth="4" strokeLinecap="round" fill="none" />
+            <Path d="M8 8 Q-8 0 -14 -8" stroke="#2ECC40" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M8 8 Q10 -8 20 -12" stroke="#27AE60" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M8 8 Q22 4 28 -2" stroke="#2ECC40" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <Path d="M8 8 Q-4 10 -12 6" stroke="#27AE60" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <Circle cx="10" cy="12" r="3.5" fill="#D4823A" />
+            <Circle cx="4" cy="14" r="3" fill="#C47730" />
+          </G>
+
+          {/* Palm tree B — far-left between islands 2 and 4 */}
+          <G transform={`translate(${Math.round(sw * 0.03)}, ${Math.round(CANVAS_H * 0.34)})`} opacity={0.50}>
+            <Path d="M6 48 Q4 32 8 18 Q10 8 6 0" stroke="#7D5A3C" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+            <Path d="M6 6 Q-6 -2 -10 -10" stroke="#3CB371" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M6 6 Q8 -10 18 -14" stroke="#2ECC71" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M6 6 Q18 2 22 -4" stroke="#3CB371" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <Circle cx="8" cy="10" r="3" fill="#E8892A" />
+          </G>
+
+          {/* Palm tree C — right side between islands 5 and 7 */}
+          <G transform={`translate(${Math.round(sw * 0.88)}, ${Math.round(CANVAS_H * 0.70)})`} opacity={0.48}>
+            <Path d="M7 50 Q5 34 9 20 Q11 10 7 0" stroke="#8B6347" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+            <Path d="M7 6 Q-5 -2 -9 -9" stroke="#26D95A" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M7 6 Q9 -8 17 -12" stroke="#2ECC40" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <Path d="M7 6 Q-2 8 -8 4" stroke="#26D95A" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <Circle cx="9" cy="10" r="3" fill="#D48030" />
+            <Circle cx="4" cy="12" r="2.5" fill="#C07028" />
+          </G>
+
+          {/* Sandbar near Island 2 (upper-left) */}
+          <Ellipse cx={sw * 0.22} cy={CANVAS_H * 0.245} rx={42} ry={10} fill="#D4B483" opacity={0.28} />
+          <Ellipse cx={sw * 0.22} cy={CANVAS_H * 0.245} rx={34} ry={6} fill="#E8C87A" opacity={0.20} />
+
+          {/* Sandbar near Island 4 (mid-left) */}
+          <Ellipse cx={sw * 0.18} cy={CANVAS_H * 0.462} rx={38} ry={9} fill="#CBA86A" opacity={0.26} />
+          <Ellipse cx={sw * 0.18} cy={CANVAS_H * 0.462} rx={28} ry={5} fill="#DDB87A" opacity={0.18} />
+
+          {/* Sandbar near Island 6 (lower-left) */}
+          <Ellipse cx={sw * 0.20} cy={CANVAS_H * 0.678} rx={44} ry={10} fill="#D4A860" opacity={0.25} />
+          <Ellipse cx={sw * 0.20} cy={CANVAS_H * 0.678} rx={32} ry={5} fill="#E8C070" opacity={0.17} />
+
+          {/* Open treasure chest with spilling coins — near island 7, bottom-left */}
+          <G transform={`translate(${Math.round(sw * 0.32)}, ${Math.round(CANVAS_H * 0.87)})`}>
+            <Ellipse cx="0" cy="4" rx="36" ry="16" fill="rgba(245,197,24,0.10)" />
+            <Rect x="-20" y="0" width="40" height="22" rx="4" fill="#9B7520" stroke="#7D5E10" strokeWidth="2" opacity={0.90} />
+            <Path d="M -20 0 Q -10 -18 10 -18 Q 20 -18 20 0" fill="#B8882A" stroke="#7D5E10" strokeWidth="2" opacity={0.90} />
+            <Rect x="-18" y="1" width="36" height="10" rx="2" fill="rgba(0,0,0,0.4)" />
+            <Circle cx="0" cy="0" r="4" fill="#F5C518" stroke="#E67E22" strokeWidth="1.5" opacity={0.95} />
+            <Circle cx="-24" cy="18" r="5" fill="#F5C518" opacity={0.85} />
+            <Circle cx="-18" cy="24" r="4.5" fill="#FFD700" opacity={0.80} />
+            <Circle cx="22" cy="16" r="5" fill="#F5C518" opacity={0.80} />
+            <Circle cx="26" cy="22" r="4" fill="#FFD700" opacity={0.75} />
+            <Circle cx="0" cy="26" r="4.5" fill="#F5C518" opacity={0.78} />
+            <Circle cx="-10" cy="28" r="3.5" fill="#E8B414" opacity={0.72} />
+            <Circle cx="12" cy="28" r="3.5" fill="#FFD700" opacity={0.70} />
+          </G>
+
+          {/* Colored anchor — mid-center in gold */}
+          <G transform={`translate(${Math.round(sw * 0.45)}, ${Math.round(CANVAS_H * 0.455)})`} opacity={0.38}>
+            <Line x1="0" y1="0" x2="0" y2="28" stroke="#F5C518" strokeWidth="3" strokeLinecap="round" />
+            <Line x1="-10" y1="0" x2="10" y2="0" stroke="#F5C518" strokeWidth="3" strokeLinecap="round" />
+            <Circle cx="0" cy="-5" r="5" fill="none" stroke="#F5C518" strokeWidth="2.5" />
+            <Path d="M -14 24 Q -12 34 0 28 Q 12 34 14 24" stroke="#F5C518" strokeWidth="3" strokeLinecap="round" fill="none" />
+          </G>
+
+          {/* Colored anchor — right side in coral */}
+          <G transform={`translate(${Math.round(sw * 0.64)}, ${Math.round(CANVAS_H * 0.695)})`} opacity={0.32}>
+            <Line x1="0" y1="0" x2="0" y2="22" stroke="#E74C3C" strokeWidth="2.5" strokeLinecap="round" />
+            <Line x1="-8" y1="0" x2="8" y2="0" stroke="#E74C3C" strokeWidth="2.5" strokeLinecap="round" />
+            <Circle cx="0" cy="-4" r="4" fill="none" stroke="#E74C3C" strokeWidth="2" />
+            <Path d="M -11 19 Q -9 26 0 22 Q 9 26 11 19" stroke="#E74C3C" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          </G>
+
+          {/* Hibiscus flower cluster near island 6 */}
+          <G transform={`translate(${Math.round(sw * 0.35)}, ${Math.round(CANVAS_H * 0.655)})`} opacity={0.40}>
+            <Circle cx="0" cy="-7" r="5" fill="#FF4E78" />
+            <Circle cx="6" cy="-3" r="5" fill="#FF6B8A" />
+            <Circle cx="4" cy="5" r="5" fill="#E94560" />
+            <Circle cx="-4" cy="5" r="5" fill="#FF4E78" />
+            <Circle cx="-6" cy="-3" r="5" fill="#FF6B8A" />
+            <Circle cx="0" cy="0" r="4" fill="#FFD700" />
+          </G>
+
+          {/* Starfish near island 3 (upper-right zone) */}
+          <G transform={`translate(${Math.round(sw * 0.68)}, ${Math.round(CANVAS_H * 0.265)})`} opacity={0.45}>
+            <Path d="M10 0 L12 8 L20 8 L14 13 L16 21 L10 16 L4 21 L6 13 L0 8 L8 8 Z" fill="#E87722" />
+            <Circle cx="10" cy="10" r="3" fill="#F5A035" />
+          </G>
+
+          {/* Small starfish near island 1 */}
+          <G transform={`translate(${Math.round(sw * 0.38)}, ${Math.round(CANVAS_H * 0.115)})`} opacity={0.38}>
+            <Path d="M8 0 L10 6 L16 6 L11 10 L13 17 L8 13 L3 17 L5 10 L0 6 L6 6 Z" fill="#FF8C42" />
+            <Circle cx="8" cy="8" r="2.5" fill="#FFA560" />
+          </G>
+
+          {/* ── Island glow auras — brighter in victory ─────── */}
           {(islands as Island[]).map((island, idx) => {
             const pos = positions[idx];
-            if (!pos || island.isLocked) return null;
+            if (!pos || (island.isLocked && !allCompleted)) return null;
             const isCurrent = idx === currentIdx;
             return (
               <Circle
                 key={`glow-${idx}`}
                 cx={pos.x}
                 cy={pos.y}
-                r={NODE_R + 14}
+                r={NODE_R + (allCompleted ? 20 : 14)}
                 fill={LAND_COLORS[idx]}
-                opacity={isCurrent ? 0.20 : 0.10}
+                opacity={allCompleted ? 0.30 : isCurrent ? 0.20 : 0.10}
               />
             );
           })}
@@ -913,59 +1511,97 @@ export default function MapScreen() {
 
         {/* ── Animated overlays (outside main SVG) ───────── */}
 
-        {/* Animated wave bands */}
-        {[
+        {/* Animated wave bands — dark vs victory colours */}
+        {(allCompleted ? [
+          { yf: 0.12, amp: 14, period: 5000, color: V_WAVE_A },
+          { yf: 0.32, amp: 18, period: 6500, color: V_WAVE_B },
+          { yf: 0.52, amp: 12, period: 5500, color: V_WAVE_A },
+          { yf: 0.72, amp: 16, period: 7000, color: V_WAVE_B },
+          { yf: 0.92, amp: 14, period: 6000, color: V_WAVE_A },
+        ] : [
           { yf: 0.12, amp: 14, period: 5000, color: "rgba(52,152,219,0.08)" },
           { yf: 0.32, amp: 18, period: 6500, color: "rgba(255,255,255,0.05)" },
           { yf: 0.52, amp: 12, period: 5500, color: "rgba(52,152,219,0.06)" },
           { yf: 0.72, amp: 16, period: 7000, color: "rgba(255,255,255,0.05)" },
           { yf: 0.92, amp: 14, period: 6000, color: "rgba(52,152,219,0.07)" },
-        ].map(({ yf, amp, period, color }, i) => (
+        ]).map(({ yf, amp, period, color }, i) => (
           <AnimatedWave key={`awave-${i}`} yOffset={yf} amplitude={amp} period={period} color={color} sw={sw} canvasH={CANVAS_H} />
         ))}
 
-        {/* Caustic light patches */}
-        <CausticPulse cx={sw * 0.25} cy={CANVAS_H * 0.15} rx={60} ry={40} delay={0} />
-        <CausticPulse cx={sw * 0.75} cy={CANVAS_H * 0.35} rx={50} ry={35} delay={2} />
-        <CausticPulse cx={sw * 0.20} cy={CANVAS_H * 0.55} rx={55} ry={38} delay={4} />
-        <CausticPulse cx={sw * 0.70} cy={CANVAS_H * 0.75} rx={45} ry={30} delay={1} />
-        <CausticPulse cx={sw * 0.50} cy={CANVAS_H * 0.90} rx={60} ry={40} delay={3} />
+        {/* Dark-only overlays — hidden in victory */}
+        {!allCompleted && (
+          <>
+            <CausticPulse cx={sw * 0.25} cy={CANVAS_H * 0.15} rx={60} ry={40} delay={0} />
+            <CausticPulse cx={sw * 0.75} cy={CANVAS_H * 0.35} rx={50} ry={35} delay={2} />
+            <CausticPulse cx={sw * 0.20} cy={CANVAS_H * 0.55} rx={55} ry={38} delay={4} />
+            <CausticPulse cx={sw * 0.70} cy={CANVAS_H * 0.75} rx={45} ry={30} delay={1} />
+            <CausticPulse cx={sw * 0.50} cy={CANVAS_H * 0.90} rx={60} ry={40} delay={3} />
+            <RisingBubble x={sw * 0.30} startY={CANVAS_H * 0.50} size={3} delay={0} canvasH={CANVAS_H} />
+            <RisingBubble x={sw * 0.45} startY={CANVAS_H * 0.55} size={4} delay={1} canvasH={CANVAS_H} />
+            <RisingBubble x={sw * 0.60} startY={CANVAS_H * 0.48} size={2.5} delay={2} canvasH={CANVAS_H} />
+            <RisingBubble x={sw * 0.72} startY={CANVAS_H * 0.52} size={3.5} delay={3} canvasH={CANVAS_H} />
+            <RisingBubble x={sw * 0.18} startY={CANVAS_H * 0.58} size={3} delay={4} canvasH={CANVAS_H} />
+            <RisingBubble x={sw * 0.55} startY={CANVAS_H * 0.45} size={2} delay={5} canvasH={CANVAS_H} />
+            <SwayingSeaweed x={sw * 0.04} y={CANVAS_H * 0.68} height={40} delay={0} color="rgba(39,174,96,0.18)" />
+            <SwayingSeaweed x={sw * 0.92} y={CANVAS_H * 0.72} height={35} delay={1} color="rgba(26,188,156,0.16)" />
+            <SwayingSeaweed x={sw * 0.08} y={CANVAS_H * 0.78} height={30} delay={2} color="rgba(39,174,96,0.15)" />
+            <SwayingSeaweed x={sw * 0.88} y={CANVAS_H * 0.82} height={38} delay={3} color="rgba(46,204,113,0.14)" />
+          </>
+        )}
 
-        {/* Clouds */}
+        {/* Shared overlays — clouds, ship, whale */}
         <CloudDrift x={sw * 0.05} y={CANVAS_H * 0.01} w={70} h={30} delay={0} />
         <CloudDrift x={sw * 0.55} y={CANVAS_H * 0.005} w={60} h={25} delay={1} />
         <CloudDrift x={sw * 0.30} y={CANVAS_H * 0.03} w={50} h={22} delay={2} />
-
-        {/* Rocking ship */}
         <RockingShip x={sw * 0.35} y={CANVAS_H * 0.22} sw={sw} canvasH={CANVAS_H} />
-
-        {/* Whale spout */}
         <WhaleSpout x={sw * 0.06 + 20} y={CANVAS_H * 0.47 - 6} />
 
-        {/* Floating jellyfish bob */}
-        <FloatingElement x={sw * 0.85} y={CANVAS_H * 0.48} driftX={3} driftY={6} period={4000}>
-          <View style={{ width: 1, height: 1 }} />
-        </FloatingElement>
-
-        {/* Rising bubbles */}
-        <RisingBubble x={sw * 0.30} startY={CANVAS_H * 0.50} size={3} delay={0} canvasH={CANVAS_H} />
-        <RisingBubble x={sw * 0.45} startY={CANVAS_H * 0.55} size={4} delay={1} canvasH={CANVAS_H} />
-        <RisingBubble x={sw * 0.60} startY={CANVAS_H * 0.48} size={2.5} delay={2} canvasH={CANVAS_H} />
-        <RisingBubble x={sw * 0.72} startY={CANVAS_H * 0.52} size={3.5} delay={3} canvasH={CANVAS_H} />
-        <RisingBubble x={sw * 0.18} startY={CANVAS_H * 0.58} size={3} delay={4} canvasH={CANVAS_H} />
-        <RisingBubble x={sw * 0.55} startY={CANVAS_H * 0.45} size={2} delay={5} canvasH={CANVAS_H} />
-
-        {/* Twinkling stars (bottom zone) */}
+        {/* Twinkling stars — kept in both themes */}
         <TwinkleStar x={sw * 0.15} y={CANVAS_H * 0.78} size={7} delay={0} />
         <TwinkleStar x={sw * 0.82} y={CANVAS_H * 0.76} size={6} delay={1} />
         <TwinkleStar x={sw * 0.68} y={CANVAS_H * 0.83} size={8} delay={2} />
         <TwinkleStar x={sw * 0.38} y={CANVAS_H * 0.85} size={6} delay={3} />
 
-        {/* Swaying seaweed */}
-        <SwayingSeaweed x={sw * 0.04} y={CANVAS_H * 0.68} height={40} delay={0} color="rgba(39,174,96,0.18)" />
-        <SwayingSeaweed x={sw * 0.92} y={CANVAS_H * 0.72} height={35} delay={1} color="rgba(26,188,156,0.16)" />
-        <SwayingSeaweed x={sw * 0.08} y={CANVAS_H * 0.78} height={30} delay={2} color="rgba(39,174,96,0.15)" />
-        <SwayingSeaweed x={sw * 0.88} y={CANVAS_H * 0.82} height={38} delay={3} color="rgba(46,204,113,0.14)" />
+        {/* ── Victory-only overlays ─────────────────────────── */}
+        {allCompleted && (
+          <>
+            {/* God rays — diagonal light shafts across canvas */}
+            <GodRayShaft x={sw * 0.15} canvasH={CANVAS_H} angle={-8}  color="#FFD700" />
+            <GodRayShaft x={sw * 0.40} canvasH={CANVAS_H} angle={5}   color="#FFF3B0" />
+            <GodRayShaft x={sw * 0.65} canvasH={CANVAS_H} angle={-12} color="#FFD700" />
+            <GodRayShaft x={sw * 0.80} canvasH={CANVAS_H} angle={3}   color="#FFF3B0" />
+
+            {/* Rotating sun rays at top-right */}
+            <SunRays cx={sw * 0.85} cy={40} radius={130} />
+
+            {/* Flying birds across the sky */}
+            <FlyingBird sw={sw} startY={CANVAS_H * 0.030} speed={14000} delay={0}    />
+            <FlyingBird sw={sw} startY={CANVAS_H * 0.075} speed={18000} delay={3500} />
+            <FlyingBird sw={sw} startY={CANVAS_H * 0.052} speed={11000} delay={7000} />
+
+            {/* Golden sparkle rain */}
+            <GoldenSparkle x={sw * 0.10} y={CANVAS_H * 0.08} delay={0}    size={8}  />
+            <GoldenSparkle x={sw * 0.28} y={CANVAS_H * 0.04} delay={600}   size={6}  />
+            <GoldenSparkle x={sw * 0.47} y={CANVAS_H * 0.10} delay={1200}  size={10} />
+            <GoldenSparkle x={sw * 0.62} y={CANVAS_H * 0.06} delay={300}   size={7}  />
+            <GoldenSparkle x={sw * 0.78} y={CANVAS_H * 0.09} delay={900}   size={8}  />
+            <GoldenSparkle x={sw * 0.90} y={CANVAS_H * 0.12} delay={1500}  size={6}  />
+
+            {/* Confetti rain */}
+            {[
+              { x: 0.08, color: "#FFD700" }, { x: 0.18, color: "#FF6B6B" },
+              { x: 0.30, color: "#48CAE4" }, { x: 0.42, color: "#A8E6CF" },
+              { x: 0.55, color: "#FFD700" }, { x: 0.67, color: "#FF8E53" },
+              { x: 0.75, color: "#48CAE4" }, { x: 0.85, color: "#FF6B6B" },
+              { x: 0.93, color: "#FFD700" },
+            ].map(({ x, color }, i) => (
+              <ConfettiPiece key={`confetti-${i}`} x={sw * x} canvasH={CANVAS_H} delay={i * 700} color={color} />
+            ))}
+
+            {/* Legend wax seal — top-left */}
+            <LegendSeal x={sw * 0.12} y={CANVAS_H * 0.018} />
+          </>
+        )}
 
         {/* ── Island Nodes ───────────────────────────────── */}
         {(islands as Island[]).map((island, idx) => {
@@ -986,9 +1622,20 @@ export default function MapScreen() {
               isLocked={isLocked}
               isCurrent={isCurrent}
               completionPercent={island.cumulativeAccuracy}
+              allCompleted={allCompleted}
             />
           );
         })}
+
+        {/* ── Victory overlay — rendered AFTER island nodes so it sits on top ── */}
+        {allCompleted && (
+          <>
+            {/* Banner positioned below island 7's label (island 7 center = 80% + ~90px label) */}
+            <VictoryBanner sw={sw} canvasH={CANVAS_H} />
+            {/* Characters at very bottom */}
+            <WavingCharacters sw={sw} canvasH={CANVAS_H} />
+          </>
+        )}
       </View>
     </ScrollView>
     </View>
@@ -996,7 +1643,7 @@ export default function MapScreen() {
 }
 
 function IslandNode({
-  island, idx, x, y, isCompleted, isLocked, isCurrent, completionPercent,
+  island, idx, x, y, isCompleted, isLocked, isCurrent, completionPercent, allCompleted,
 }: {
   island: Island;
   idx: number;
@@ -1006,6 +1653,7 @@ function IslandNode({
   isLocked: boolean;
   isCurrent: boolean;
   completionPercent?: number | null;
+  allCompleted?: boolean;
 }) {
   // Inner pulse (fast)
   const pulseScale = useSharedValue(1);
@@ -1017,7 +1665,8 @@ function IslandNode({
   const shimmerOpacity = useSharedValue(0);
 
   useEffect(() => {
-    if (isCurrent) {
+    // No pulse when all islands conquered — every island is at peace
+    if (isCurrent && !allCompleted) {
       // Inner pulse
       pulseScale.value = withRepeat(
         withSequence(
@@ -1050,10 +1699,13 @@ function IslandNode({
       );
     }
     if (isCompleted) {
+      // Enhanced shimmer range in victory state
+      const hiOpacity = allCompleted ? 0.95 : 0.6;
+      const loOpacity = allCompleted ? 0.45 : 0.2;
       shimmerOpacity.value = withRepeat(
         withSequence(
-          withTiming(0.6, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-          withTiming(0.2, { duration: 1500, easing: Easing.inOut(Easing.sin) })
+          withTiming(hiOpacity, { duration: 1200, easing: Easing.inOut(Easing.sin) }),
+          withTiming(loOpacity, { duration: 1200, easing: Easing.inOut(Easing.sin) })
         ),
         -1, true
       );
@@ -1065,7 +1717,7 @@ function IslandNode({
       cancelAnimation(outerOpacity);
       cancelAnimation(shimmerOpacity);
     };
-  }, [isCurrent, isCompleted, pulseOpacity, pulseScale, outerScale, outerOpacity, shimmerOpacity]);
+  }, [isCurrent, isCompleted, allCompleted, pulseOpacity, pulseScale, outerScale, outerOpacity, shimmerOpacity]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],
@@ -1093,7 +1745,7 @@ function IslandNode({
       style={{
         position: "absolute",
         left: x - NODE_R - LPAD,
-        top: y - NODE_R,
+        top: y - NODE_R - (allCompleted ? 32 : 0),
         width: containerW,
         alignItems: "center",
       }}
@@ -1104,11 +1756,31 @@ function IslandNode({
         activeOpacity={0.7}
         style={{ alignItems: "center" }}
       >
+        {/* Victory crown — floats above island circle */}
+        {allCompleted && (
+          <View style={{
+            width: 36,
+            height: 28,
+            marginBottom: 4,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Svg width={36} height={28} viewBox="0 0 36 28">
+              <Path d="M4 24 L4 14 L10 20 L18 6 L26 20 L32 14 L32 24 Z" fill="#FFD700" />
+              <Path d="M4 24 L4 14 L10 20 L18 6 L26 20 L32 14 L32 24 Z" stroke="#C8A415" strokeWidth="1.5" fill="none" />
+              <Circle cx="18" cy="18" r="3" fill="#E74C3C" />
+              <Circle cx="9"  cy="22" r="2" fill="#3498DB" />
+              <Circle cx="27" cy="22" r="2" fill="#27AE60" />
+              <Line x1="4" y1="24" x2="32" y2="24" stroke="#C8A415" strokeWidth="2" />
+            </Svg>
+          </View>
+        )}
+
         {/* Island circle + pulse rings — all in an explicit fixed-size container so
             absolute positions are relative to the same 96×96 origin regardless of label width */}
         <View style={{ width: NODE_R * 2, height: NODE_R * 2 }}>
           {/* Outer pulse ring */}
-          {isCurrent && (
+          {isCurrent && !allCompleted && (
             <Animated.View
               style={[{
                 position: "absolute",
@@ -1123,8 +1795,8 @@ function IslandNode({
             />
           )}
 
-          {/* Inner pulse ring */}
-          {isCurrent && (
+          {/* Inner pulse ring — suppressed in victory */}
+          {isCurrent && !allCompleted && (
             <Animated.View
               style={[{
                 position: "absolute",
@@ -1151,6 +1823,23 @@ function IslandNode({
                 borderRadius: NODE_R + 3,
                 borderWidth: 2,
                 borderColor: "#f5c518",
+              }, shimmerStyle]}
+              pointerEvents="none"
+            />
+          )}
+
+          {/* Extra outer gold glow ring — victory state only */}
+          {allCompleted && (
+            <Animated.View
+              style={[{
+                position: "absolute",
+                top: -8,
+                left: -8,
+                width: NODE_R * 2 + 16,
+                height: NODE_R * 2 + 16,
+                borderRadius: NODE_R + 8,
+                borderWidth: 3,
+                borderColor: V_GOLD,
               }, shimmerStyle]}
               pointerEvents="none"
             />
@@ -1225,8 +1914,8 @@ function IslandNode({
           </Svg>
         </View>{/* end island circle + rings wrapper */}
 
-        {/* "YOU ARE HERE" arrow for current island */}
-        {isCurrent && (
+        {/* "YOU ARE HERE" arrow for current island — hidden in victory (no current) */}
+        {isCurrent && !allCompleted && (
           <View style={{ marginTop: -2, alignItems: "center" }}>
             <Svg width={14} height={10}>
               <Polygon points="7,0 0,10 14,10" fill={landColor} />
@@ -1234,36 +1923,50 @@ function IslandNode({
           </View>
         )}
 
-        {/* Island name label — parchment ribbon style */}
+        {/* Island name label — parchment in victory, naval ribbon normally */}
         <View
           style={{
-            marginTop: isCurrent ? 2 : 5,
+            marginTop: (isCurrent && !allCompleted) ? 2 : 5,
             flexDirection: "row",
             alignItems: "center",
-            backgroundColor: "rgba(22,33,62,0.92)",
+            backgroundColor: allCompleted ? "rgba(255,249,230,0.97)" : "rgba(22,33,62,0.92)",
             borderRadius: 8,
             maxWidth: containerW,
             borderWidth: 1.5,
-            borderColor: isCompleted
+            borderColor: allCompleted
+              ? "rgba(200,164,21,0.55)"
+              : isCompleted
               ? "rgba(245,197,24,0.4)"
               : isCurrent
               ? `${landColor}60`
               : "rgba(255,255,255,0.08)",
             overflow: "hidden",
+            shadowColor: allCompleted ? "#C8A415" : "transparent",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: allCompleted ? 0.35 : 0,
+            shadowRadius: 4,
           }}
         >
           {/* Accent stripe */}
           <View style={{
             width: 4,
             alignSelf: "stretch",
-            backgroundColor: isLocked ? "#3a3a4a" : isCompleted ? "#f5c518" : landColor,
+            backgroundColor: isLocked && !allCompleted ? "#3a3a4a" : isCompleted ? "#f5c518" : landColor,
             borderTopLeftRadius: 8,
             borderBottomLeftRadius: 8,
           }} />
           <View style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
             <Text
               style={{
-                color: isLocked ? "#4b5563" : isCompleted ? "#f5c518" : isCurrent ? landColor : "#f4e4c1",
+                color: allCompleted
+                  ? "#1a3a5c"
+                  : isLocked
+                  ? "#4b5563"
+                  : isCompleted
+                  ? "#f5c518"
+                  : isCurrent
+                  ? landColor
+                  : "#f4e4c1",
                 fontSize: 10,
                 fontWeight: "700",
                 textAlign: "center",
@@ -1274,7 +1977,7 @@ function IslandNode({
             </Text>
             {isCompleted && completionPercent != null && (
               <Text style={{
-                color: "#ffd700",
+                color: allCompleted ? "#7d5a00" : "#ffd700",
                 fontSize: 9,
                 fontWeight: "700",
                 textAlign: "center",

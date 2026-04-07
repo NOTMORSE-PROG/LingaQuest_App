@@ -109,6 +109,18 @@ export const apiClient = {
   submitProgress: (data: { pinId: string; accuracy: number }) =>
     request("/progress", { method: "POST", body: JSON.stringify(data) }),
 
+  // Dev-only (gated server-side by DEV_EMAILS)
+  markIslandComplete: (islandId: string) =>
+    request<{ ok: boolean; completed: number }>("/dev/island-complete", {
+      method: "POST",
+      body: JSON.stringify({ islandId }),
+    }),
+  markIslandUncomplete: (islandId: string) =>
+    request<{ ok: boolean; removed: number }>(
+      `/dev/island-complete?islandId=${encodeURIComponent(islandId)}`,
+      { method: "DELETE" }
+    ),
+
   // Badges
   getBadges: () => request<Badge[]>("/badges"),
 

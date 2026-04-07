@@ -17,9 +17,10 @@ const ISLAND_MUSIC: Record<number, string> = {
 interface Props {
   islandNumber: number;
   bgMusicUrl?: string | null;
+  volume?: number;
 }
 
-export function BackgroundMusic({ islandNumber, bgMusicUrl }: Props) {
+export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
   const { isMuted } = useAudioStore();
   const isMutedRef = useRef(isMuted);
   const playerRef = useRef<AudioPlayer | null>(null);
@@ -49,7 +50,7 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl }: Props) {
           if (cancelled) return;
           const p = createAudioPlayer({ uri: url });
           p.loop = true;
-          p.volume = 0.35;
+          p.volume = volume ?? 0.35;
           p.muted = isMutedRef.current;
           p.play();
           playerRef.current = p;
@@ -69,7 +70,7 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl }: Props) {
           p.remove();
         }
       };
-    }, [islandNumber, bgMusicUrl])
+    }, [islandNumber, bgMusicUrl, volume])
   );
 
   return null;

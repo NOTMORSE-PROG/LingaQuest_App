@@ -13,6 +13,7 @@ import { ShardClaimCinematic } from "@/components/scene/ShardClaimCinematic";
 import { CertificateModal } from "@/components/scene/CertificateModal";
 import { useAuthStore } from "@/stores/auth";
 import { MuteButton } from "@/components/audio/MuteButton";
+import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
 import { Challenge } from "@/types";
 
@@ -26,6 +27,10 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const LABELS = ["A", "B", "C", "D"] as const;
+
+// Soft ambient music for quest listening/answering phases — Mixkit "Rest Now" (5-min calm ambient)
+// Royalty-free, same CDN as island music. Alternatives: 444 (Yoga Song), 135 (Sleepy Cat lo-fi)
+const QUEST_AMBIENT_URL = "https://assets.mixkit.co/music/584/584.mp3";
 
 // Shuffle choices and reassign labels A→D in display order.
 // Also updates `answer` so it still points to the correct choice.
@@ -544,6 +549,55 @@ function EchoShockRing({ delay }: { delay: number }) {
   );
 }
 
+function QuestBonusTimer({ seconds }: { seconds: number }) {
+  const expired = seconds === 0;
+  const barColor =
+    expired         ? "#ef4444"
+    : seconds <= 10 ? "#ef4444"
+    : seconds <= 15 ? "#f97316"
+    : seconds <= 30 ? "#eab308"
+    : "#14b8a6";
+  const displaySec = seconds < 10 ? `0:0${seconds}` : `0:${seconds}`;
+  return (
+    <View style={{
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(10,14,26,0.88)",
+      borderRadius: 24,
+      borderWidth: 1.5,
+      borderColor: expired ? "rgba(239,68,68,0.7)" : "rgba(245,197,24,0.45)",
+      paddingHorizontal: 20,
+      paddingVertical: 8,
+      marginBottom: 14,
+      gap: 12,
+    }}>
+      <Text style={{
+        color: barColor,
+        fontSize: 20,
+        fontWeight: "800",
+        fontVariant: ["tabular-nums"],
+        letterSpacing: 1,
+      }}>
+        {expired ? "⏰" : "⏱"} {displaySec}
+      </Text>
+      <View style={{
+        flex: 1,
+        height: 6,
+        backgroundColor: "rgba(255,255,255,0.12)",
+        borderRadius: 3,
+        overflow: "hidden",
+      }}>
+        <View style={{
+          height: "100%",
+          width: `${Math.round((seconds / 60) * 100)}%` as unknown as number,
+          backgroundColor: barColor,
+          borderRadius: 3,
+        }} />
+      </View>
+    </View>
+  );
+}
+
 export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
   const [isResultMode, setIsResultMode] = useState(mode === "result");
@@ -556,6 +610,7 @@ export default function QuestScreen() {
   const [challengeIndex, setChallengeIndex] = useState(0);
   const [selected, setSelected] = useState<"A" | "B" | "C" | "D" | null>(null);
   const [showHint, setShowHint] = useState(false);
+  const [bonusTime, setBonusTime] = useState(60);
   const [correctCount, setCorrectCount] = useState(0);
   const [countdown, setCountdown] = useState(0);
   const [pinScore, setPinScore] = useState(0);
@@ -612,6 +667,7 @@ export default function QuestScreen() {
     setCorrectCount(0);
     setPinScore(0);
     setShowHint(false);
+    setBonusTime(60);
     setSubmitError(null);
     setSlowMode(false);
     wasAlreadyCompleted.current = false;
@@ -694,6 +750,22 @@ export default function QuestScreen() {
     const timer = setTimeout(() => setShowHint(true), 30000);
     return () => clearTimeout(timer);
   }, [phase, selected, showHint]);
+
+  // 60-second bonus timer — visual pressure during answering, non-blocking
+  useEffect(() => {
+    if (phase !== "answering") {
+      setBonusTime(60);
+      return;
+    }
+    setBonusTime(60);
+    const interval = setInterval(() => {
+      setBonusTime((t) => {
+        if (t <= 1) { clearInterval(interval); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [phase, challengeIndex]);
 
   // Island 1-7 — shake on wrong result, burst on correct
   useEffect(() => {
@@ -1328,6 +1400,12 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
     <SafeAreaView className="flex-1 bg-ocean-deep" style={questBg} edges={["top"]}>
       {/* Per-island curse effect overlay */}
       <QuestSceneOverlay islandNumber={islandNum} />
+      {/* Soft ambient music throughout quest — mounts with screen so useFocusEffect fires reliably */}
+      <BackgroundMusic
+        islandNumber={0}
+        bgMusicUrl={QUEST_AMBIENT_URL}
+        volume={0.25}
+      />
       {phase !== "listening" && <MuteButton />}
 
       {/* Island 1 — warm-to-ice gradient depth behind content */}
@@ -1889,7 +1967,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 2 ? (
             <View style={{
@@ -1908,7 +1986,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 3 ? (
             <View style={{
@@ -1927,7 +2005,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 4 ? (
             <View style={{
@@ -1946,7 +2024,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 5 ? (
             <View style={{
@@ -1966,7 +2044,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 6 ? (
             <View style={{
@@ -1985,7 +2063,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : islandNum === 7 ? (
             <View style={{
@@ -2004,10 +2082,10 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
                   }} />
                 ))}
               </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
             </View>
           ) : (
-            <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} />
+            <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
           )}
         </View>
       )}
@@ -2198,6 +2276,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
               <DagatCharacter state={dagatState} size={140} />
             </View>
           )}
+          {phase === "answering" && <QuestBonusTimer seconds={bonusTime} />}
 
           {islandNum === 1 ? (
             <View style={{

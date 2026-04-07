@@ -185,10 +185,22 @@ export default function DashboardScreen() {
         </View>
         <TouchableOpacity
           onPress={() => router.push("/(main)/profile")}
-          className="mt-1 p-2"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: "rgba(245,197,24,0.15)",
+            borderWidth: 2,
+            borderColor: "#f5c518",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 4,
+          }}
         >
-          <Text className="text-parchment-dark text-2xl">⚙</Text>
+          <Text style={{ color: "#f5c518", fontSize: 18, fontWeight: "800", lineHeight: 22 }}>
+            {(user?.username?.[0] ?? "?").toUpperCase()}
+          </Text>
         </TouchableOpacity>
       </View>
 

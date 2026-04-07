@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Text, Animated, Pressable } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer as ExpoAudioPlayer, AudioStatus } from "expo-audio";
@@ -16,9 +16,10 @@ interface AudioPlayerProps {
   autoPlay?: boolean;
   rate?: number;
   passage?: string;
+  allowSkip?: boolean;
 }
 
-export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, passage }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, passage, allowSkip = false }: AudioPlayerProps) {
   const [uiStatus, setUiStatus] = useState<"loading" | "playing" | "done" | "error">("loading");
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pulsationRef = useRef<Animated.CompositeAnimation | null>(null);
@@ -211,8 +212,23 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, pas
           </Text>
         </View>
       )}
-      {uiStatus !== "error" && (
+      {uiStatus !== "error" && !allowSkip && (
         <Text className="text-parchment-dark/50 text-xs mt-2">No pause. No replay.</Text>
+      )}
+      {allowSkip && uiStatus !== "done" && uiStatus !== "error" && (
+        <Pressable
+          onPress={() => {
+            if (hasEndedRef.current) return;
+            hasEndedRef.current = true;
+            try { playerRef.current?.pause(); } catch { /* ignore */ }
+            pulsationRef.current?.stop();
+            setUiStatus("done");
+            onEndRef.current();
+          }}
+          className="mt-3 px-4 py-2 rounded-full bg-gold/20 border border-gold"
+        >
+          <Text className="text-gold text-xs font-bold">Skip ▶▶ (dev)</Text>
+        </Pressable>
       )}
     </View>
   );

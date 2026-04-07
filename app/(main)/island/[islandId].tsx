@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Svg, { Path, Circle, Rect, Ellipse, Polygon, G, Text as SvgText, Defs, LinearGradient, RadialGradient, Stop, Line } from "react-native-svg";
 import Animated, {
   useSharedValue, useAnimatedStyle, cancelAnimation,
@@ -2265,6 +2265,37 @@ export default function IslandScreen() {
     queryFn: () => apiClient.getIsland(islandId),
     refetchOnMount: true,
   });
+  const queryClient = useQueryClient();
+  const [devBusy, setDevBusy] = useState(false);
+  const invalidateProgressQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["island", islandId] });
+    queryClient.invalidateQueries({ queryKey: ["islands"] });
+    queryClient.invalidateQueries({ queryKey: ["progress"] });
+  };
+  const handleDevComplete = async () => {
+    if (devBusy) return;
+    setDevBusy(true);
+    try {
+      await apiClient.markIslandComplete(islandId);
+      invalidateProgressQueries();
+    } catch (e) {
+      console.warn("[dev] markIslandComplete failed", e);
+    } finally {
+      setDevBusy(false);
+    }
+  };
+  const handleDevUncomplete = async () => {
+    if (devBusy) return;
+    setDevBusy(true);
+    try {
+      await apiClient.markIslandUncomplete(islandId);
+      invalidateProgressQueries();
+    } catch (e) {
+      console.warn("[dev] markIslandUncomplete failed", e);
+    } finally {
+      setDevBusy(false);
+    }
+  };
 
   // Set initial phase based on DB ingaySeen — runs once after island loads
   useEffect(() => {
@@ -2564,6 +2595,40 @@ export default function IslandScreen() {
             dialogue={`Your voyage across this island scored ${cumulativeAccuracy ?? 0}% — you need 70% to sail on. Replay any challenge to raise your average, sailor.`}
             size={110}
           />
+        </View>
+      )}
+
+      {isDevUser && (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: 16,
+            right: 16,
+            flexDirection: "row",
+            gap: 8,
+            padding: 10,
+            borderRadius: 12,
+            backgroundColor: "rgba(20,10,40,0.85)",
+            borderWidth: 1,
+            borderColor: "rgba(245,197,24,0.5)",
+          }}
+        >
+          <Text style={{ color: "#f5c518", fontSize: 10, fontWeight: "700", alignSelf: "center" }}>DEV</Text>
+          <TouchableOpacity
+            disabled={devBusy}
+            onPress={handleDevComplete}
+            style={{ flex: 1, backgroundColor: "#16a34a", paddingVertical: 8, borderRadius: 8, alignItems: "center", opacity: devBusy ? 0.5 : 1 }}
+          >
+            <Text style={{ color: "white", fontWeight: "700", fontSize: 12 }}>Mark Complete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={devBusy}
+            onPress={handleDevUncomplete}
+            style={{ flex: 1, backgroundColor: "#dc2626", paddingVertical: 8, borderRadius: 8, alignItems: "center", opacity: devBusy ? 0.5 : 1 }}
+          >
+            <Text style={{ color: "white", fontWeight: "700", fontSize: 12 }}>Mark Uncomplete</Text>
+          </TouchableOpacity>
         </View>
       )}
 
