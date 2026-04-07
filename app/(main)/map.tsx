@@ -420,115 +420,260 @@ function IslandArt({ idx }: { idx: number }) {
 
 // ─── Victory-only Animated Components ───────────────────────────────────────
 
-function CharacterFigure({ bodyColor, hatColor, skinColor, delay, label }: {
-  bodyColor: string; hatColor: string; skinColor: string; delay: number; label: string;
-}) {
+// ── Dagat (student hero) ──────────────────────────────────────────────────────
+function DagatWaving({ delay }: { delay: number }) {
   const armRot = useSharedValue(0);
   const bob = useSharedValue(0);
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      armRot.value = withRepeat(
-        withSequence(
-          withTiming(-55, { duration: 380, easing: Easing.inOut(Easing.sin) }),
-          withTiming(5,   { duration: 380, easing: Easing.inOut(Easing.sin) })
-        ),
-        -1, true
-      );
-      bob.value = withRepeat(
-        withSequence(
-          withTiming(-5, { duration: 550, easing: Easing.inOut(Easing.sin) }),
-          withTiming(0,  { duration: 550, easing: Easing.inOut(Easing.sin) })
-        ),
-        -1, true
-      );
+    const t = setTimeout(() => {
+      armRot.value = withRepeat(withSequence(
+        withTiming(-55, { duration: 350, easing: Easing.inOut(Easing.sin) }),
+        withTiming(5,   { duration: 350, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
+      bob.value = withRepeat(withSequence(
+        withTiming(-5, { duration: 520, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0,  { duration: 520, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
     }, delay);
-    return () => { clearTimeout(timeout); cancelAnimation(armRot); cancelAnimation(bob); };
+    return () => { clearTimeout(t); cancelAnimation(armRot); cancelAnimation(bob); };
   }, [delay, armRot, bob]);
-
-  const containerStyle = useAnimatedStyle(() => ({ transform: [{ translateY: bob.value }] }));
-  // Waving arm: rotates around shoulder pivot at (42, 42) in the 60×90 SVG
-  const armStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: 42 },
-      { translateY: 42 },
-      { rotate: `${armRot.value}deg` },
-      { translateX: -42 },
-      { translateY: -42 },
-    ],
+  const bodyStyle = useAnimatedStyle(() => ({ transform: [{ translateY: bob.value }] }));
+  const armStyle  = useAnimatedStyle(() => ({
+    transform: [{ translateX: 44 }, { translateY: 40 }, { rotate: `${armRot.value}deg` }, { translateX: -44 }, { translateY: -40 }],
   }));
-
   return (
-    <Animated.View style={[{ alignItems: "center" }, containerStyle]} pointerEvents="none">
-      {/* Static body */}
-      <Svg width={60} height={90}>
-        {/* Body */}
-        <Rect x="18" y="40" width="24" height="30" rx="6" fill={bodyColor} />
-        {/* Head */}
-        <Circle cx="30" cy="28" r="17" fill={skinColor} />
-        {/* Hat brim */}
-        <Rect x="14" y="15" width="32" height="6" rx="3" fill={hatColor} />
-        {/* Hat top */}
-        <Rect x="20" y="6" width="20" height="12" rx="3" fill={hatColor} />
-        {/* Happy squint eyes */}
-        <Path d="M22 25 Q25 22 28 25" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
-        <Path d="M32 25 Q35 22 38 25" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Big smile */}
-        <Path d="M21 33 Q30 42 39 33" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Rosy cheeks */}
-        <Circle cx="21" cy="31" r="4" fill="rgba(255,100,100,0.25)" />
-        <Circle cx="39" cy="31" r="4" fill="rgba(255,100,100,0.25)" />
-        {/* Left arm (down) */}
-        <Path d="M18 46 L8 60" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+    <Animated.View style={[{ alignItems: "center" }, bodyStyle]} pointerEvents="none">
+      <Svg width={70} height={100} viewBox="0 0 70 100">
         {/* Legs */}
-        <Path d="M22 70 L20 86" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
-        <Path d="M38 70 L40 86" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
+        <Rect x="22" y="68" width="10" height="24" rx="5" fill="#1a1a2e" />
+        <Rect x="36" y="68" width="10" height="24" rx="5" fill="#1a1a2e" />
+        {/* Boots */}
+        <Ellipse cx="27" cy="92" rx="9" ry="5" fill="#3d2b1f" />
+        <Ellipse cx="41" cy="92" rx="9" ry="5" fill="#3d2b1f" />
+        {/* Green jacket body */}
+        <Path d="M16 44 Q16 30 35 28 Q54 30 54 44 L56 72 Q35 78 14 72 Z" fill="#27ae60" />
+        {/* Lapels */}
+        <Path d="M35 30 L28 46 L35 43 L42 46 Z" fill="#2ecc71" />
+        {/* Gold buttons */}
+        <Circle cx="35" cy="52" r="3" fill="#f5c518" />
+        <Circle cx="35" cy="63" r="3" fill="#f5c518" />
+        {/* Left arm */}
+        <Path d="M16 40 Q6 52 8 66" stroke="#27ae60" strokeWidth="10" strokeLinecap="round" fill="none" />
+        <Circle cx="8" cy="67" r="7" fill="#f4a460" />
+        {/* Neck */}
+        <Rect x="28" y="22" width="14" height="10" rx="4" fill="#f4a460" />
+        {/* Head */}
+        <Ellipse cx="35" cy="16" rx="18" ry="18" fill="#f4a460" />
+        {/* Tricorn hat base band */}
+        <Rect x="18" y="4" width="34" height="7" rx="2" fill="#1a1a1a" />
+        {/* Gold band */}
+        <Rect x="18" y="7" width="34" height="3" fill="#f5c518" />
+        {/* Hat crown */}
+        <Path d="M24 4 Q35 -10 46 4 Z" fill="#1a1a1a" />
+        {/* Hat brims */}
+        <Path d="M18 4 Q8 2 10 10 Q14 14 22 11 Z" fill="#1a1a1a" />
+        <Path d="M52 4 Q62 2 60 10 Q56 14 48 11 Z" fill="#1a1a1a" />
+        {/* Happy squint eyes */}
+        <Path d="M24 14 Q27 11 30 14" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <Path d="M40 14 Q43 11 46 14" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Big smile */}
+        <Path d="M25 20 Q35 28 45 20" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Blush */}
+        <Ellipse cx="24" cy="18" rx="5" ry="3" fill="rgba(231,76,60,0.25)" />
+        <Ellipse cx="46" cy="18" rx="5" ry="3" fill="rgba(231,76,60,0.25)" />
+        {/* Celebration star */}
+        <Path d="M58 2 L59 -2 L60 2 L64 1 L61 4 L62 8 L59 5 L56 8 L57 4 L54 1 Z" fill="#f5c518" />
       </Svg>
-      {/* Right arm — waving (animated, layered on top) */}
+      {/* Waving right arm */}
       <Animated.View style={[{ position: "absolute", top: 0, left: 0 }, armStyle]} pointerEvents="none">
-        <Svg width={60} height={90}>
-          <Path d="M42 42 L56 26" stroke={bodyColor} strokeWidth="6" strokeLinecap="round" />
-          {/* Little hand wave */}
-          <Circle cx="56" cy="24" r="5" fill={skinColor} />
+        <Svg width={70} height={100} viewBox="0 0 70 100">
+          <Path d="M44 40 L60 22" stroke="#27ae60" strokeWidth="10" strokeLinecap="round" fill="none" />
+          <Circle cx="60" cy="20" r="7" fill="#f4a460" />
         </Svg>
       </Animated.View>
-      {/* Name */}
-      <Text style={{ color: "#1a3a5c", fontSize: 8, fontWeight: "800", textAlign: "center", marginTop: 2, letterSpacing: 0.3 }}>
-        {label}
-      </Text>
+      <Text style={{ color: "#1a3a5c", fontSize: 8, fontWeight: "900", textAlign: "center", marginTop: 2 }}>Dagat</Text>
+    </Animated.View>
+  );
+}
+
+// ── Captain Salita ────────────────────────────────────────────────────────────
+function CaptainWaving({ delay }: { delay: number }) {
+  const armRot = useSharedValue(0);
+  const bob = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      armRot.value = withRepeat(withSequence(
+        withTiming(-50, { duration: 420, easing: Easing.inOut(Easing.sin) }),
+        withTiming(8,   { duration: 420, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
+      bob.value = withRepeat(withSequence(
+        withTiming(-4, { duration: 600, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0,  { duration: 600, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(armRot); cancelAnimation(bob); };
+  }, [delay, armRot, bob]);
+  const bodyStyle = useAnimatedStyle(() => ({ transform: [{ translateY: bob.value }] }));
+  const armStyle  = useAnimatedStyle(() => ({
+    transform: [{ translateX: 44 }, { translateY: 40 }, { rotate: `${armRot.value}deg` }, { translateX: -44 }, { translateY: -40 }],
+  }));
+  return (
+    <Animated.View style={[{ alignItems: "center" }, bodyStyle]} pointerEvents="none">
+      <Svg width={70} height={100} viewBox="0 0 70 100">
+        {/* Legs */}
+        <Rect x="22" y="68" width="10" height="24" rx="5" fill="#2c3e50" />
+        <Rect x="36" y="68" width="10" height="24" rx="5" fill="#2c3e50" />
+        {/* Boots */}
+        <Ellipse cx="27" cy="92" rx="9" ry="5" fill="#1a1a1a" />
+        <Ellipse cx="41" cy="92" rx="9" ry="5" fill="#1a1a1a" />
+        {/* Navy captain coat */}
+        <Path d="M16 44 Q16 30 35 28 Q54 30 54 44 L56 72 Q35 78 14 72 Z" fill="#1a3a5c" />
+        {/* Lapels */}
+        <Path d="M35 30 L28 46 L35 43 L42 46 Z" fill="#f0e6d3" />
+        {/* Gold epaulettes */}
+        <Ellipse cx="16" cy="36" rx="7" ry="4" fill="#f5c518" />
+        <Ellipse cx="54" cy="36" rx="7" ry="4" fill="#f5c518" />
+        {/* Medal */}
+        <Circle cx="35" cy="52" r="5" fill="#f5c518" />
+        <Circle cx="35" cy="52" r="2.5" fill="#e74c3c" />
+        {/* Left arm */}
+        <Path d="M16 40 Q6 52 8 66" stroke="#1a3a5c" strokeWidth="10" strokeLinecap="round" fill="none" />
+        <Circle cx="8" cy="67" r="7" fill="#d4a574" />
+        {/* Neck */}
+        <Rect x="28" y="22" width="14" height="10" rx="4" fill="#d4a574" />
+        {/* Head */}
+        <Ellipse cx="35" cy="16" rx="18" ry="18" fill="#d4a574" />
+        {/* Bicorne hat body */}
+        <Path d="M18 8 Q35 -6 52 8 Q52 16 35 14 Q18 16 18 8 Z" fill="#1a3a5c" />
+        {/* Bicorne brims */}
+        <Path d="M18 8 Q8 6 10 14 Q16 18 24 14 Z" fill="#1a3a5c" />
+        <Path d="M52 8 Q62 6 60 14 Q54 18 46 14 Z" fill="#1a3a5c" />
+        {/* Gold trim */}
+        <Path d="M18 10 Q35 -3 52 10" stroke="#f5c518" strokeWidth="2" fill="none" />
+        {/* Ship emblem */}
+        <Path d="M31 3 L35 -3 L39 3 L35 1 Z" fill="#f5c518" />
+        {/* Eyes — kind */}
+        <Circle cx="27" cy="15" r="5" fill="white" />
+        <Circle cx="43" cy="15" r="5" fill="white" />
+        <Circle cx="28" cy="15" r="2.5" fill="#5d4037" />
+        <Circle cx="44" cy="15" r="2.5" fill="#5d4037" />
+        <Circle cx="28" cy="14" r="1" fill="white" />
+        <Circle cx="44" cy="14" r="1" fill="white" />
+        {/* Bushy eyebrows */}
+        <Path d="M21 9 Q27 6 33 9" stroke="#5d4037" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        <Path d="M37 9 Q43 6 49 9" stroke="#5d4037" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        {/* Warm smile */}
+        <Path d="M26 22 Q35 30 44 22" stroke="#5d4037" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Beard stubble */}
+        <Path d="M22 20 Q35 28 48 20 Q48 25 35 28 Q22 25 22 20 Z" fill="rgba(93,64,55,0.3)" />
+        {/* Scar */}
+        <Path d="M19 18 L21 22" stroke="#8b6914" strokeWidth="1.5" strokeLinecap="round" />
+      </Svg>
+      {/* Waving right arm */}
+      <Animated.View style={[{ position: "absolute", top: 0, left: 0 }, armStyle]} pointerEvents="none">
+        <Svg width={70} height={100} viewBox="0 0 70 100">
+          <Path d="M44 40 L60 22" stroke="#1a3a5c" strokeWidth="10" strokeLinecap="round" fill="none" />
+          <Circle cx="60" cy="20" r="7" fill="#d4a574" />
+        </Svg>
+      </Animated.View>
+      <Text style={{ color: "#1a3a5c", fontSize: 8, fontWeight: "900", textAlign: "center", marginTop: 2 }}>{"Captain\nSalita"}</Text>
+    </Animated.View>
+  );
+}
+
+// ── Ingay (antagonist — defeated, waving) ────────────────────────────────────
+function IngayWaving({ delay }: { delay: number }) {
+  const armRot = useSharedValue(0);
+  const bob = useSharedValue(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      armRot.value = withRepeat(withSequence(
+        withTiming(-45, { duration: 500, easing: Easing.inOut(Easing.sin) }),
+        withTiming(10,  { duration: 500, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
+      bob.value = withRepeat(withSequence(
+        withTiming(-6, { duration: 700, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0,  { duration: 700, easing: Easing.inOut(Easing.sin) })
+      ), -1, true);
+    }, delay);
+    return () => { clearTimeout(t); cancelAnimation(armRot); cancelAnimation(bob); };
+  }, [delay, armRot, bob]);
+  const bodyStyle = useAnimatedStyle(() => ({ transform: [{ translateY: bob.value }] }));
+  const armStyle  = useAnimatedStyle(() => ({
+    transform: [{ translateX: 44 }, { translateY: 40 }, { rotate: `${armRot.value}deg` }, { translateX: -44 }, { translateY: -40 }],
+  }));
+  return (
+    <Animated.View style={[{ alignItems: "center" }, bodyStyle]} pointerEvents="none">
+      <Svg width={70} height={100} viewBox="0 0 70 100">
+        {/* Storm cloak / robe */}
+        <Path d="M10 44 Q10 28 35 25 Q60 28 60 44 L64 92 Q35 98 6 92 Z" fill="#4a235a" />
+        {/* Cloak inner shadow */}
+        <Path d="M20 44 Q20 32 35 30 Q50 32 50 44 L52 88 Q35 93 18 88 Z" fill="#6c3483" />
+        {/* Lightning bolt emblem */}
+        <Path d="M38 42 L32 55 L37 55 L31 70 L39 55 L34 55 Z" fill="#f5c518" />
+        {/* Left arm (claw-like, down) */}
+        <Path d="M14 42 Q4 56 6 70" stroke="#4a235a" strokeWidth="10" strokeLinecap="round" fill="none" />
+        <Circle cx="6" cy="71" r="7" fill="#c39bd3" />
+        {/* Clawed fingers */}
+        <Path d="M3 68 L0 63" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+        <Path d="M6 72 L4 66" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+        <Path d="M9 71 L9 65" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+        {/* Neck */}
+        <Rect x="28" y="19" width="14" height="10" rx="4" fill="#c39bd3" />
+        {/* Head */}
+        <Ellipse cx="35" cy="13" rx="17" ry="17" fill="#c39bd3" />
+        {/* Wild spiked storm hair */}
+        <Path d="M18 8 L14 -2 L20 6" fill="#2c0a3a" />
+        <Path d="M23 4 L22 -5 L28 4" fill="#2c0a3a" />
+        <Path d="M32 2 L33 -7 L37 2" fill="#2c0a3a" />
+        <Path d="M42 4 L46 -4 L47 6" fill="#2c0a3a" />
+        <Path d="M50 8 L56 0 L54 10" fill="#2c0a3a" />
+        {/* Hair base */}
+        <Path d="M18 10 Q35 0 52 10 Q52 5 35 3 Q18 5 18 10 Z" fill="#2c0a3a" />
+        {/* Glowing eyes — softened in victory (no longer menacing) */}
+        <Ellipse cx="27" cy="13" rx="6" ry="5" fill="#f5c518" opacity="0.9" />
+        <Ellipse cx="43" cy="13" rx="6" ry="5" fill="#f5c518" opacity="0.9" />
+        <Circle cx="27" cy="13" r="3" fill="#8e44ad" />
+        <Circle cx="43" cy="13" r="3" fill="#8e44ad" />
+        <Circle cx="28" cy="12" r="1" fill="white" />
+        <Circle cx="44" cy="12" r="1" fill="white" />
+        {/* Defeated but sincere smile */}
+        <Path d="M26 20 Q35 27 44 20" stroke="#6c3483" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Purple glow aura */}
+        <Ellipse cx="35" cy="13" rx="20" ry="20" fill="rgba(142,68,173,0.12)" />
+      </Svg>
+      {/* Waving right arm */}
+      <Animated.View style={[{ position: "absolute", top: 0, left: 0 }, armStyle]} pointerEvents="none">
+        <Svg width={70} height={100} viewBox="0 0 70 100">
+          <Path d="M44 40 L60 22" stroke="#4a235a" strokeWidth="10" strokeLinecap="round" fill="none" />
+          <Circle cx="60" cy="20" r="7" fill="#c39bd3" />
+          {/* Claw fingers waving */}
+          <Path d="M57 16 L54 12" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+          <Path d="M61 15 L60 10" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+          <Path d="M64 18 L63 13" stroke="#8e44ad" strokeWidth="2" strokeLinecap="round" />
+        </Svg>
+      </Animated.View>
+      <Text style={{ color: "#4a235a", fontSize: 8, fontWeight: "900", textAlign: "center", marginTop: 2 }}>Ingay</Text>
     </Animated.View>
   );
 }
 
 function WavingCharacters({ sw, canvasH }: { sw: number; canvasH: number }) {
-  const chars = [
-    { xf: 0.12, bodyColor: "#1a3a5c", hatColor: "#C8A415", skinColor: "#FDBCB4", label: "Captain\nSalita", delay: 0   },
-    { xf: 0.35, bodyColor: "#27ae60", hatColor: "#f5c518", skinColor: "#D4A574", label: "Kali",             delay: 180 },
-    { xf: 0.65, bodyColor: "#8e44ad", hatColor: "#FF6B8A", skinColor: "#FDBCB4", label: "Mira",             delay: 360 },
-    { xf: 0.88, bodyColor: "#e74c3c", hatColor: "#f5c518", skinColor: "#C68642", label: "Riku",             delay: 540 },
-  ];
+  const top = canvasH * 1.005;
   return (
     <>
-      {chars.map(({ xf, bodyColor, hatColor, skinColor, label, delay }, i) => (
-        <View
-          key={`wchar-${i}`}
-          style={{
-            position: "absolute",
-            left: sw * xf - 30,
-            top: canvasH * 0.975,
-            width: 60,
-            alignItems: "center",
-          }}
-          pointerEvents="none"
-        >
-          <CharacterFigure
-            bodyColor={bodyColor}
-            hatColor={hatColor}
-            skinColor={skinColor}
-            delay={delay}
-            label={label}
-          />
-        </View>
-      ))}
+      {/* Dagat — student hero, left */}
+      <View style={{ position: "absolute", left: sw * 0.15 - 35, top, width: 70, alignItems: "center" }} pointerEvents="none">
+        <DagatWaving delay={0} />
+      </View>
+      {/* Captain Salita — mentor, center */}
+      <View style={{ position: "absolute", left: sw * 0.50 - 35, top, width: 70, alignItems: "center" }} pointerEvents="none">
+        <CaptainWaving delay={200} />
+      </View>
+      {/* Ingay — defeated antagonist, right */}
+      <View style={{ position: "absolute", left: sw * 0.82 - 35, top, width: 70, alignItems: "center" }} pointerEvents="none">
+        <IngayWaving delay={400} />
+      </View>
     </>
   );
 }
