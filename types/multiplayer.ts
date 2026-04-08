@@ -67,8 +67,12 @@ export interface ChatMessage {
   userName: string;
   text: string;
   createdAt: string;
+  // Frontend-only flags. The server never sends these — they exist purely so
+  // that optimistic sends can keep a stable React key when the server
+  // confirmation arrives (preventing a flicker from the row remounting).
   pending?: boolean; // optimistic send flag
   failed?: boolean;
+  serverId?: string; // real server id once confirmed; used for dedupe
 }
 
 export type ChatMessageEvent = ChatMessage;

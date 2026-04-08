@@ -88,11 +88,20 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
   setMessages: (messages) => set({ messages, unreadCount: 0 }),
   addMessage: (message) =>
     set((state) => {
-      // Dedupe by id (the same Pusher event may also be the response we already added)
-      if (state.messages.some((m) => m.id === message.id)) return state;
+      // Dedupe by server id — either we already added it, or we already
+      // confirmed an optimistic message and tagged it with this serverId.
+      if (
+        state.messages.some(
+          (m) => m.id === message.id || m.serverId === message.id
+        )
+      ) {
+        return state;
+      }
 
-      // If we have an optimistic temp from this user with the same text, swap it in place
-      // (Pusher delivered the real one before our POST response did).
+      // If we have an optimistic temp from this user with the same text, swap
+      // it IN PLACE — but preserve the temp's local id so the FlatList key
+      // stays stable and the row does not remount/flicker. The real server id
+      // is recorded in `serverId` for future dedupe.
       const tempIdx = state.messages.findIndex(
         (m) =>
           m.pending &&
@@ -101,7 +110,15 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
       );
       if (tempIdx !== -1) {
         const next = [...state.messages];
-        next[tempIdx] = message;
+        const existing = next[tempIdx];
+        next[tempIdx] = {
+          ...existing,
+          ...message,
+          id: existing.id,
+          serverId: message.id,
+          pending: false,
+          failed: false,
+        };
         return { messages: next };
       }
 
@@ -112,14 +129,29 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
     }),
   replaceMessage: (tempId, message) =>
     set((state) => {
-      // If Pusher already delivered the real message (raced ahead of the POST response),
-      // just drop the temp so we don't end up with duplicates.
-      const alreadyHasReal = state.messages.some((m) => m.id === message.id);
+      // If Pusher already delivered the real message (raced ahead of the POST
+      // response), it's already in state — drop the temp.
+      const alreadyHasReal = state.messages.some(
+        (m) => m.id === message.id || m.serverId === message.id
+      );
       if (alreadyHasReal) {
         return { messages: state.messages.filter((m) => m.id !== tempId) };
       }
+      // Otherwise: preserve the temp's local id so the React key stays stable,
+      // and tag it with the real server id for future Pusher dedupe.
       return {
-        messages: state.messages.map((m) => (m.id === tempId ? message : m)),
+        messages: state.messages.map((m) =>
+          m.id === tempId
+            ? {
+                ...m,
+                ...message,
+                id: m.id,
+                serverId: message.id,
+                pending: false,
+                failed: false,
+              }
+            : m
+        ),
       };
     }),
   markMessageFailed: (tempId) =>
@@ -129,7 +161,11 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
       ),
     })),
   clearMessages: () => set({ messages: [], unreadCount: 0, chatOpen: false }),
-  setChatOpen: (chatOpen) => set({ chatOpen, unreadCount: chatOpen ? 0 : 0 }),
+  setChatOpen: (chatOpen) =>
+    set((state) => ({
+      chatOpen,
+      unreadCount: chatOpen ? 0 : state.unreadCount,
+    })),
 
   reset: () => set(defaultState),
 }));

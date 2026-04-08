@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { memo, useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   FlatList,
+  ListRenderItem,
   Platform,
   ActivityIndicator,
   AccessibilityInfo,
@@ -52,7 +53,27 @@ function formatTime(iso: string): string {
   }
 }
 
-function MessageBubble({ msg, isMe }: { msg: ChatMessage; isMe: boolean }) {
+const keyExtractor = (m: ChatMessage) => m.id;
+
+// On Android, the system already resizes the modal window for the keyboard
+// (softwareKeyboardLayoutMode: "resize" is the Expo default). Wrapping the
+// drawer in KeyboardAvoidingView on top of that causes the panel to oscillate
+// up/down when the keyboard hides — both layers are racing to restore the
+// layout. So on Android we use a plain View and let the system do the work.
+// On iOS the system does NOT resize for the keyboard, so we keep KAV with
+// behavior="padding".
+function KeyboardWrapper({ children }: { children: ReactNode }) {
+  if (Platform.OS === "ios") {
+    return (
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        {children}
+      </KeyboardAvoidingView>
+    );
+  }
+  return <View style={{ flex: 1 }}>{children}</View>;
+}
+
+const MessageBubble = memo(function MessageBubble({ msg, isMe }: { msg: ChatMessage; isMe: boolean }) {
   const safeName = (msg.userName ?? "Sailor").replace(/[\r\n]/g, " ").slice(0, 24);
   return (
     <View
@@ -121,7 +142,7 @@ function MessageBubble({ msg, isMe }: { msg: ChatMessage; isMe: boolean }) {
       </View>
     </View>
   );
-}
+});
 
 export function CrewChat({ roomId }: CrewChatProps) {
   const insets = useSafeAreaInsets();
@@ -144,6 +165,7 @@ export function CrewChat({ roomId }: CrewChatProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   const listRef = useRef<FlatList<ChatMessage>>(null);
+  const prevMessageCountRef = useRef(0);
   const badgePulse = useSharedValue(1);
 
   useEffect(() => {
@@ -157,7 +179,12 @@ export function CrewChat({ roomId }: CrewChatProps) {
     apiClient
       .getChat(roomId, 50)
       .then(({ messages: msgs }) => {
-        if (!cancelled) setMessages(msgs);
+        if (!cancelled) {
+          setMessages(msgs);
+          // The next genuine new message should still trigger auto-scroll —
+          // pre-seed the ref to the loaded length so we don't double-scroll on history load.
+          prevMessageCountRef.current = msgs.length;
+        }
       })
       .catch(() => {
         // Non-fatal — chat just starts empty
@@ -186,19 +213,15 @@ export function CrewChat({ roomId }: CrewChatProps) {
     }
   }, [unreadCount, chatOpen, reduceMotion, badgePulse]);
 
-  // Auto-scroll to bottom on new messages when open
-  useEffect(() => {
-    if (chatOpen && messages.length > 0) {
-      const id = setTimeout(() => {
-        listRef.current?.scrollToEnd({ animated: !reduceMotion });
-      }, 50);
-      return () => clearTimeout(id);
-    }
-  }, [messages.length, chatOpen, reduceMotion]);
-
   const badgeStyle = useAnimatedStyle(() => ({
     transform: [{ scale: badgePulse.value }],
   }));
+
+  const myUserId = user?.id;
+  const renderItem = useCallback<ListRenderItem<ChatMessage>>(
+    ({ item }) => <MessageBubble msg={item} isMe={item.userId === myUserId} />,
+    [myUserId]
+  );
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -313,10 +336,7 @@ export function CrewChat({ roomId }: CrewChatProps) {
           edges={["bottom"]}
           style={{ flex: 1, backgroundColor: "transparent" }}
         >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
+        <KeyboardWrapper>
           {/* Backdrop — tap to dismiss */}
           <Pressable
             onPress={() => setChatOpen(false)}
@@ -420,15 +440,18 @@ export function CrewChat({ roomId }: CrewChatProps) {
                 <FlatList
                   ref={listRef}
                   data={messages}
-                  keyExtractor={(m) => m.id}
-                  renderItem={({ item }) => (
-                    <MessageBubble msg={item} isMe={item.userId === user?.id} />
-                  )}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderItem}
                   contentContainerStyle={{ paddingVertical: 8 }}
                   keyboardShouldPersistTaps="handled"
-                  onContentSizeChange={() =>
-                    listRef.current?.scrollToEnd({ animated: !reduceMotion })
-                  }
+                  onContentSizeChange={() => {
+                    // Only auto-scroll when a NEW message arrived — not on every layout
+                    // (keyboard show/hide also triggers this callback otherwise).
+                    if (messages.length > prevMessageCountRef.current) {
+                      listRef.current?.scrollToEnd({ animated: !reduceMotion });
+                      prevMessageCountRef.current = messages.length;
+                    }
+                  }}
                 />
               )}
             </View>
@@ -512,7 +535,7 @@ export function CrewChat({ roomId }: CrewChatProps) {
               </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardWrapper>
         </SafeAreaView>
       </Modal>
     </>
