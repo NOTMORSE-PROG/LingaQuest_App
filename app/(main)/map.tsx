@@ -15,6 +15,7 @@ import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
 import { Island, IslandProgress } from "@/types";
 import { MuteButton } from "@/components/audio/MuteButton";
+import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
 
 const NODE_R = 48;       // island circle radius (upgraded from 36)
 const LPAD = 32;         // extra horizontal padding for labels
@@ -1053,6 +1054,8 @@ export default function MapScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Vastness — calm cinematic ambient for map exploration */}
+      <BackgroundMusic islandNumber={0} bgMusicUrl="https://assets.mixkit.co/music/184/184.mp3" volume={0.2} />
       <MuteButton />
     <ScrollView
       className={!allCompleted ? "flex-1 bg-ocean-deep" : "flex-1"}

@@ -62,7 +62,7 @@ function FrostBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(13,30,53,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -140,7 +140,7 @@ function ElectricBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(20,10,40,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -211,7 +211,7 @@ function MistBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(8,14,28,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -281,7 +281,7 @@ function EmberBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(20,6,6,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -351,7 +351,7 @@ function BeamBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(22,10,0,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -421,7 +421,7 @@ function NarrativeBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(3,12,10,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -490,7 +490,7 @@ function EchoBorderCard({ children }: { children: ReactNode }) {
   }));
   return (
     <Animated.View style={[{
-      backgroundColor: "rgba(16,13,0,0.92)",
+      backgroundColor: "rgba(0,0,0,0.45)",
       borderRadius: 14, borderWidth: 1,
       paddingHorizontal: 18, paddingVertical: 14, marginBottom: 20,
     }, borderStyle]}>
@@ -937,13 +937,13 @@ export default function QuestScreen() {
   const npcAudioSuccess = (pin.island as any)?.npcAudioSuccess ?? undefined;
   const pinSortOrder: number = pin.sortOrder;
   const questBg =
-    islandNum === 1 ? { backgroundColor: "#0d1e35" } :
-    islandNum === 2 ? { backgroundColor: "#0f0a1e" } :
-    islandNum === 3 ? { backgroundColor: "#080e1c" } :
-    islandNum === 4 ? { backgroundColor: "#140808" } :
-    islandNum === 5 ? { backgroundColor: "#160c00" } :
-    islandNum === 6 ? { backgroundColor: "#031714" } :
-    islandNum === 7 ? { backgroundColor: "#100d00" } :
+    islandNum === 1 ? { backgroundColor: "#071a0b" } :
+    islandNum === 2 ? { backgroundColor: "#0d0519" } :
+    islandNum === 3 ? { backgroundColor: "#06101e" } :
+    islandNum === 4 ? { backgroundColor: "#180505" } :
+    islandNum === 5 ? { backgroundColor: "#180c00" } :
+    islandNum === 6 ? { backgroundColor: "#021512" } :
+    islandNum === 7 ? { backgroundColor: "#120f00" } :
     {};
 
   // Island 1 per-pin story intro cards (Dagat's POV moment before each challenge)
@@ -1408,10 +1408,10 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       />
       {phase !== "listening" && <MuteButton />}
 
-      {/* Island 1 — warm-to-ice gradient depth behind content */}
+      {/* Island 1 — green forest depth behind content */}
       {islandNum === 1 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#091d2e" }} />
+          <View style={{ flex: 1, backgroundColor: "#071a0b" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
             backgroundColor: "rgba(245,197,24,0.045)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1421,7 +1421,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 2 — purple storm gradient depth */}
       {islandNum === 2 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#0a0618" }} />
+          <View style={{ flex: 1, backgroundColor: "#0d0519" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
             backgroundColor: "rgba(142,68,173,0.04)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1431,7 +1431,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 3 — misty lagoon gradient depth */}
       {islandNum === 3 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#071018" }} />
+          <View style={{ flex: 1, backgroundColor: "#06101e" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
             backgroundColor: "rgba(52,152,219,0.04)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1441,7 +1441,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 4 — volcanic ember gradient depth */}
       {islandNum === 4 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#140808" }} />
+          <View style={{ flex: 1, backgroundColor: "#180505" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%",
             backgroundColor: "rgba(231,76,60,0.04)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1451,7 +1451,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 5 — harbour lighthouse gradient depth */}
       {islandNum === 5 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#160c00" }} />
+          <View style={{ flex: 1, backgroundColor: "#180c00" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40%",
             backgroundColor: "rgba(230,126,34,0.04)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1461,7 +1461,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 6 — scroll library gradient depth */}
       {islandNum === 6 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#031714" }} />
+          <View style={{ flex: 1, backgroundColor: "#021512" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
             backgroundColor: "rgba(26,188,156,0.03)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1471,7 +1471,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       {/* Island 7 — storm amphitheater gradient depth */}
       {islandNum === 7 && (
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
-          <View style={{ flex: 1, backgroundColor: "#100d00" }} />
+          <View style={{ flex: 1, backgroundColor: "#120f00" }} />
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: "35%",
             backgroundColor: "rgba(142,68,173,0.035)" }} />
           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
@@ -1735,138 +1735,21 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
             </View>
           )}
           {/* Per-island listening strategy prompt */}
-          {islandNum === 1 ? (
-            <View style={{
-              backgroundColor: "rgba(10,32,55,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(80,180,220,0.45)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(120,200,240,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                ❄ LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#daf0ff", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 2 ? (
-            <View style={{
-              backgroundColor: "rgba(20,10,40,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(142,68,173,0.50)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(195,155,211,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                ⚡ LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#e0d0f5", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 3 ? (
-            <View style={{
-              backgroundColor: "rgba(8,14,28,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(52,152,219,0.45)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(100,180,240,0.90)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                {"🌫"} LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#c8dff0", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 4 ? (
-            <View style={{
-              backgroundColor: "rgba(20,6,6,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(231,76,60,0.48)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(245,130,100,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                🔥 LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#f0c4b8", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 5 ? (
-            <View style={{
-              backgroundColor: "rgba(22,10,0,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(230,126,34,0.48)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(245,165,80,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                🔍 LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#f5ddb8", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 6 ? (
-            <View style={{
-              backgroundColor: "rgba(3,12,10,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(26,188,156,0.48)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(80,210,190,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                {"📜"} LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#b2ead8", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : islandNum === 7 ? (
-            <View style={{
-              backgroundColor: "rgba(16,13,0,0.88)",
-              borderRadius: 12, borderWidth: 1,
-              borderColor: "rgba(245,197,24,0.48)",
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
-            }}>
-              <Text style={{ color: "rgba(245,210,80,0.92)", fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                {"🌪️"} LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#f5e8b8", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          ) : (
-            <View style={{
-              backgroundColor: accentColor + "18",
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: accentColor + "55",
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              marginBottom: 20,
-            }}>
-              <Text style={{ color: accentColor, fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
-                LISTENING STRATEGY
-              </Text>
-              <Text style={{ color: "#e5e7eb", fontSize: 13, lineHeight: 20 }}>
-                {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
-                  ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
-                  : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
-              </Text>
-            </View>
-          )}
+          <View style={{
+            backgroundColor: "rgba(0,0,0,0.45)",
+            borderRadius: 12, borderWidth: 1,
+            borderColor: `${accentColor}55`,
+            paddingHorizontal: 16, paddingVertical: 12, marginBottom: 20,
+          }}>
+            <Text style={{ color: accentColor, fontSize: 10, fontWeight: "700", marginBottom: 4, letterSpacing: 1 }}>
+              {islandNum === 1 ? "❄" : islandNum === 2 ? "⚡" : islandNum === 3 ? "🌫" : islandNum === 4 ? "🔥" : islandNum === 5 ? "🔍" : islandNum === 6 ? "📜" : "🌪️"} LISTENING STRATEGY
+            </Text>
+            <Text style={{ color: "#e5e7eb", fontSize: 13, lineHeight: 20 }}>
+              {CHALLENGE_STRATEGY[islandNum]?.[pinSortOrder]?.[challengeIndex]?.trim()
+                ? CHALLENGE_STRATEGY[islandNum][pinSortOrder][challengeIndex]
+                : (ISLAND_STRATEGY[islandNum] ?? "Listen carefully and trust what you hear.")}
+            </Text>
+          </View>
           <View className="items-center">
           {characterMode ? (
             <>
@@ -1949,144 +1832,15 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
           {characterMode && (
             <DagatCharacter state="listening" size={160} />
           )}
-          {islandNum === 1 ? (
-            <View style={{
-              backgroundColor: "rgba(8,20,36,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(100,200,230,0.38)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Mini icicle row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 14 }}>
-                {[0.06, 0.04, 0.07, 0.05, 0.06, 0.04, 0.07, 0.05].map((hFrac, i) => (
-                  <View key={i} style={{
-                    width: 4, height: Math.round(14 * hFrac * 10),
-                    backgroundColor: "rgba(200,240,255,0.55)",
-                    borderBottomLeftRadius: 2, borderBottomRightRadius: 2,
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 2 ? (
-            <View style={{
-              backgroundColor: "rgba(16,8,32,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(142,68,173,0.42)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Mini spark dots at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[3, 2, 4, 2, 3, 2, 4, 3].map((s, i) => (
-                  <View key={i} style={{
-                    width: s, height: s, borderRadius: s / 2,
-                    backgroundColor: "rgba(195,155,211,0.55)",
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 3 ? (
-            <View style={{
-              backgroundColor: "rgba(8,14,28,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(52,152,219,0.38)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Mini fog dot row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[4, 3, 5, 3, 4, 3, 5, 4].map((s, i) => (
-                  <View key={i} style={{
-                    width: s, height: s, borderRadius: s / 2,
-                    backgroundColor: "rgba(168,200,224,0.45)",
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 4 ? (
-            <View style={{
-              backgroundColor: "rgba(20,6,6,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(231,76,60,0.40)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Mini ember dot row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[4, 3, 5, 3, 4, 3, 5, 4].map((s, i) => (
-                  <View key={i} style={{
-                    width: s, height: s, borderRadius: s / 2,
-                    backgroundColor: "rgba(231,120,100,0.48)",
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 5 ? (
-            <View style={{
-              backgroundColor: "rgba(22,10,0,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(230,126,34,0.40)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Diamond dot row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[3, 4, 3, 5, 3, 4, 3, 5].map((s, i) => (
-                  <View key={i} style={{
-                    width: s, height: s,
-                    backgroundColor: "rgba(245,165,80,0.48)",
-                    transform: [{ rotate: "45deg" }],
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 6 ? (
-            <View style={{
-              backgroundColor: "rgba(3,12,10,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(26,188,156,0.40)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Parchment strip fragment row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[10, 8, 12, 8, 10, 8, 12, 10].map((w, i) => (
-                  <View key={i} style={{
-                    width: w, height: 4, borderRadius: 1,
-                    backgroundColor: "rgba(26,188,156,0.50)",
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : islandNum === 7 ? (
-            <View style={{
-              backgroundColor: "rgba(16,13,0,0.82)",
-              borderRadius: 18, borderWidth: 1.5,
-              borderColor: "rgba(245,197,24,0.40)",
-              paddingHorizontal: 8, paddingVertical: 12,
-              marginTop: 12, overflow: "hidden", width: "100%",
-            }}>
-              {/* Echo pulse dot row at top */}
-              <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 4, height: 10 }}>
-                {[3, 4, 5, 4, 5, 4, 3, 5].map((s, i) => (
-                  <View key={i} style={{
-                    width: s, height: s, borderRadius: s / 2,
-                    backgroundColor: "rgba(245,197,24,0.50)",
-                  }} />
-                ))}
-              </View>
-              <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-            </View>
-          ) : (
+          <View style={{
+            backgroundColor: "rgba(0,0,0,0.45)",
+            borderRadius: 18, borderWidth: 1.5,
+            borderColor: `${accentColor}55`,
+            paddingHorizontal: 8, paddingVertical: 12,
+            marginTop: 12, overflow: "hidden", width: "100%",
+          }}>
             <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
-          )}
+          </View>
         </View>
       )}
 
