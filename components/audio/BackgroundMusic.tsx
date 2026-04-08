@@ -41,6 +41,8 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
 
       let cancelled = false;
 
+      let rampTimer: ReturnType<typeof setTimeout> | null = null;
+
       async function startMusic() {
         try {
           await setAudioModeAsync({
@@ -50,10 +52,19 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
           if (cancelled) return;
           const p = createAudioPlayer({ uri: url });
           p.loop = true;
-          p.volume = volume ?? 0.35;
+          // Start silent to prevent the initial volume spike that can occur
+          // while expo-audio is buffering before our volume assignment lands.
+          p.volume = 0;
           p.muted = isMutedRef.current;
           p.play();
           playerRef.current = p;
+          // Ramp to target volume after audio has had time to settle
+          const targetVolume = volume ?? 0.2;
+          rampTimer = setTimeout(() => {
+            if (!cancelled && playerRef.current === p) {
+              p.volume = targetVolume;
+            }
+          }, 250);
         } catch {
           // No music is fine — the UI must not break
         }
@@ -63,6 +74,7 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
 
       return () => {
         cancelled = true;
+        if (rampTimer !== null) clearTimeout(rampTimer);
         const p = playerRef.current;
         playerRef.current = null;
         if (p) {

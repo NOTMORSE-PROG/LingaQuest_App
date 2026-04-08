@@ -40,6 +40,16 @@ const ISLAND_COLORS = [
   "#f5c518", // 7 — Final, gold
 ];
 
+const ISLAND_PIN_BG = [
+  "#061a0d", // 1 — dark green
+  "#0f0619", // 2 — dark purple
+  "#05101d", // 3 — dark blue
+  "#1a0505", // 4 — dark red
+  "#1a0e03", // 5 — dark orange
+  "#031410", // 6 — dark teal
+  "#141002", // 7 — dark gold
+];
+
 function buildRopePath(pts: { x: number; y: number }[]) {
   if (pts.length < 2) return "";
   let d = `M ${pts[0].x.toFixed(0)} ${pts[0].y.toFixed(0)}`;
@@ -2727,7 +2737,7 @@ function PinNode({
           {/* Pin circle */}
           <Circle
             cx="32" cy="32" r="30"
-            fill={!pin.isUnlocked ? "#1c2a38" : "#0f1e30"}
+            fill={!pin.isUnlocked ? "#1c2a38" : ISLAND_PIN_BG[(islandNum - 1)] ?? "#0f1e30"}
             stroke={ringColor}
             strokeWidth={ringWidth}
             opacity={!pin.isUnlocked ? 0.5 : 1}
