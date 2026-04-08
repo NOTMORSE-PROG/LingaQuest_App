@@ -59,3 +59,16 @@ export interface GameEndEvent {
   correctCount: number;
   totalQuestions: number;
 }
+
+export interface ChatMessage {
+  id: string;
+  roomId: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: string;
+  pending?: boolean; // optimistic send flag
+  failed?: boolean;
+}
+
+export type ChatMessageEvent = ChatMessage;

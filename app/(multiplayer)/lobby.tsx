@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useNetInfo } from "@react-native-community/netinfo";
+import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { apiClient } from "@/lib/api";
 import { useMultiplayerStore, destroyPusher } from "@/stores/multiplayer";
 import Pusher from "pusher-js";
@@ -24,10 +25,12 @@ export default function LobbyScreen() {
   const [error, setError] = useState("");
   const { setRoom, reset } = useMultiplayerStore();
 
-  useEffect(() => {
-    destroyPusher();
-    reset();
-  }, [reset]);
+  useFocusEffect(
+    useCallback(() => {
+      destroyPusher();
+      reset();
+    }, [reset])
+  );
 
   if (!netInfo.isConnected) {
     return (
@@ -90,88 +93,185 @@ export default function LobbyScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-ocean-deep" edges={["top"]}>
-    <View className="flex-1 px-8 pt-4">
-      <TouchableOpacity onPress={() => router.back()} className="mb-8">
-        <Text className="text-gold text-base">← Back</Text>
-      </TouchableOpacity>
+      <View className="flex-1 px-8 pt-4">
+        <TouchableOpacity
+          onPress={() => (mode === "menu" ? router.back() : setMode("menu"))}
+          className="mb-6"
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+        >
+          <Text className="text-gold text-base">← Back</Text>
+        </TouchableOpacity>
 
-      <Text className="text-gold text-4xl font-bold mb-2">Treasure Hunt</Text>
-      <Text className="text-parchment-dark text-sm mb-10">
-        1–6 sailors · 5 audio clues · Find the treasure!
-      </Text>
-
-      {mode === "menu" && (
-        <View className="space-y-4">
-          <TouchableOpacity
-            onPress={() => setMode("create")}
-            className="bg-ocean-light rounded-2xl p-5 border border-gold/30"
-          >
-            <Text className="text-gold font-bold text-lg">Create Room</Text>
-            <Text className="text-parchment-dark text-sm mt-1">
-              Be the captain. Share the code with your crew.
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setMode("join")}
-            className="bg-ocean-mid rounded-2xl p-5 border border-ocean-light"
-          >
-            <Text className="text-parchment font-bold text-lg">Join Room</Text>
-            <Text className="text-parchment-dark text-sm mt-1">
-              Enter the room code from your captain.
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {mode === "create" && (
-        <View>
-          <Text className="text-parchment mb-6">
-            A room code will be generated. Share it with your crew. Solve 5 audio clues to find the treasure!
+        <Animated.View entering={FadeInDown.duration(360)}>
+          <Text style={{ fontSize: 64, marginBottom: 4 }}>🏴‍☠️</Text>
+          <Text className="text-gold text-4xl font-bold mb-2">Treasure Hunt</Text>
+          <Text className="text-parchment-dark text-sm mb-10">
+            1–6 sailors · 5 audio clues · Find the treasure!
           </Text>
+        </Animated.View>
 
-          {error ? <Text className="text-coral mb-4">{error}</Text> : null}
-          <TouchableOpacity
-            onPress={handleCreateRoom}
-            disabled={loading}
-            className="bg-gold rounded-xl py-4 items-center"
-          >
-            {loading ? (
-              <ActivityIndicator color="#1a1a2e" />
-            ) : (
-              <Text className="text-ocean-deep font-bold text-lg">Create Room</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
+        {mode === "menu" && (
+          <Animated.View entering={FadeIn.duration(320)} style={{ gap: 16 }}>
+            <TouchableOpacity
+              onPress={() => setMode("create")}
+              accessibilityRole="button"
+              accessibilityLabel="Create room"
+              activeOpacity={0.85}
+              style={{
+                backgroundColor: "#0f3460",
+                borderRadius: 20,
+                padding: 20,
+                borderWidth: 1.5,
+                borderColor: "rgba(245,197,24,0.4)",
+                shadowColor: "#f5c518",
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 4,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ fontSize: 32, marginRight: 14 }}>⚓</Text>
+                <View style={{ flex: 1 }}>
+                  <Text className="text-gold font-bold text-lg">Create Room</Text>
+                  <Text className="text-parchment-dark text-sm mt-1">
+                    Be the captain. Share the code with your crew.
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
 
-      {mode === "join" && (
-        <View>
-          <TextInput
-            className="bg-ocean-mid border border-ocean-light rounded-xl px-4 py-4 text-parchment text-2xl font-bold text-center tracking-widest mb-4"
-            placeholder="ROOM CODE"
-            placeholderTextColor="#6b7280"
-            value={roomCode}
-            onChangeText={(t) => setRoomCode(t.toUpperCase())}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            maxLength={6}
-          />
-          {error ? <Text className="text-coral mb-4 text-center">{error}</Text> : null}
-          <TouchableOpacity
-            onPress={handleJoinRoom}
-            disabled={loading}
-            className="bg-gold rounded-xl py-4 items-center"
-          >
-            {loading ? (
-              <ActivityIndicator color="#1a1a2e" />
-            ) : (
-              <Text className="text-ocean-deep font-bold text-lg">Join Crew</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+            <TouchableOpacity
+              onPress={() => setMode("join")}
+              accessibilityRole="button"
+              accessibilityLabel="Join room"
+              activeOpacity={0.85}
+              style={{
+                backgroundColor: "#16213e",
+                borderRadius: 20,
+                padding: 20,
+                borderWidth: 1.5,
+                borderColor: "#0f3460",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ fontSize: 32, marginRight: 14 }}>🧭</Text>
+                <View style={{ flex: 1 }}>
+                  <Text className="text-parchment font-bold text-lg">Join Room</Text>
+                  <Text className="text-parchment-dark text-sm mt-1">
+                    Enter the room code from your captain.
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {mode === "create" && (
+          <Animated.View entering={FadeIn.duration(280)}>
+            <View
+              style={{
+                backgroundColor: "rgba(244,228,193,0.06)",
+                borderColor: "rgba(245,197,24,0.3)",
+                borderWidth: 1,
+                borderRadius: 16,
+                padding: 18,
+                marginBottom: 24,
+              }}
+            >
+              <Text className="text-parchment leading-6">
+                A room code will be generated. Share it with your crew, then solve 5 audio clues to find the treasure!
+              </Text>
+            </View>
+
+            {error ? <Text className="text-coral mb-4">{error}</Text> : null}
+            <TouchableOpacity
+              onPress={handleCreateRoom}
+              disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel="Create room"
+              style={{
+                backgroundColor: "#f5c518",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                shadowColor: "#f5c518",
+                shadowOpacity: 0.5,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 6,
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator color="#1a1a2e" />
+              ) : (
+                <Text style={{ color: "#1a1a2e", fontWeight: "900", fontSize: 18 }}>
+                  ⚓  Create Room
+                </Text>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {mode === "join" && (
+          <Animated.View entering={FadeIn.duration(280)}>
+            <Text className="text-parchment-dark text-sm text-center mb-3">
+              Enter the 6-character code from your captain
+            </Text>
+            <TextInput
+              accessibilityLabel="Room code"
+              style={{
+                backgroundColor: "#16213e",
+                borderColor: "rgba(245,197,24,0.4)",
+                borderWidth: 2,
+                borderRadius: 16,
+                paddingHorizontal: 16,
+                paddingVertical: 18,
+                color: "#f5c518",
+                fontSize: 32,
+                fontWeight: "900",
+                textAlign: "center",
+                letterSpacing: 8,
+                marginBottom: 18,
+              }}
+              placeholder="ABC123"
+              placeholderTextColor="rgba(244,228,193,0.25)"
+              value={roomCode}
+              onChangeText={(t) => setRoomCode(t.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              maxLength={6}
+            />
+            {error ? <Text className="text-coral mb-4 text-center">{error}</Text> : null}
+            <TouchableOpacity
+              onPress={handleJoinRoom}
+              disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel="Join crew"
+              style={{
+                backgroundColor: "#f5c518",
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: "center",
+                shadowColor: "#f5c518",
+                shadowOpacity: 0.5,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 6,
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator color="#1a1a2e" />
+              ) : (
+                <Text style={{ color: "#1a1a2e", fontWeight: "900", fontSize: 18 }}>
+                  🧭  Join Crew
+                </Text>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

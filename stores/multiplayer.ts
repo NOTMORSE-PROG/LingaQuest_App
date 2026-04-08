@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MultiplayerRoom } from "@/types";
+import { MultiplayerRoom, ChatMessage } from "@/types";
 
 interface MultiplayerStore {
   room: MultiplayerRoom | null;
@@ -20,7 +20,12 @@ interface MultiplayerStore {
   } | null;
   questionIndex: number;
   correctCount: number;
-  questionResults: (boolean | null)[]; // [true, false, null, null, null]
+  questionResults: (boolean | null)[];
+
+  // Chat
+  messages: ChatMessage[];
+  unreadCount: number;
+  chatOpen: boolean;
 
   setRoom: (room: MultiplayerRoom) => void;
   setCurrentQuestion: (q: MultiplayerStore["currentQuestion"]) => void;
@@ -29,6 +34,14 @@ interface MultiplayerStore {
   setLastResult: (result: MultiplayerStore["lastResult"]) => void;
   setQuestionIndex: (idx: number) => void;
   addQuestionResult: (isCorrect: boolean) => void;
+
+  setMessages: (messages: ChatMessage[]) => void;
+  addMessage: (message: ChatMessage) => void;
+  replaceMessage: (tempId: string, message: ChatMessage) => void;
+  markMessageFailed: (tempId: string) => void;
+  clearMessages: () => void;
+  setChatOpen: (open: boolean) => void;
+
   reset: () => void;
 }
 
@@ -42,6 +55,9 @@ const defaultState = {
   questionIndex: 0,
   correctCount: 0,
   questionResults: [null, null, null, null, null] as (boolean | null)[],
+  messages: [] as ChatMessage[],
+  unreadCount: 0,
+  chatOpen: false,
 };
 
 export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
@@ -68,6 +84,53 @@ export const useMultiplayerStore = create<MultiplayerStore>((set) => ({
         correctCount: results.filter((r) => r === true).length,
       };
     }),
+
+  setMessages: (messages) => set({ messages, unreadCount: 0 }),
+  addMessage: (message) =>
+    set((state) => {
+      // Dedupe by id (the same Pusher event may also be the response we already added)
+      if (state.messages.some((m) => m.id === message.id)) return state;
+
+      // If we have an optimistic temp from this user with the same text, swap it in place
+      // (Pusher delivered the real one before our POST response did).
+      const tempIdx = state.messages.findIndex(
+        (m) =>
+          m.pending &&
+          m.userId === message.userId &&
+          m.text === message.text
+      );
+      if (tempIdx !== -1) {
+        const next = [...state.messages];
+        next[tempIdx] = message;
+        return { messages: next };
+      }
+
+      return {
+        messages: [...state.messages, message],
+        unreadCount: state.chatOpen ? 0 : state.unreadCount + 1,
+      };
+    }),
+  replaceMessage: (tempId, message) =>
+    set((state) => {
+      // If Pusher already delivered the real message (raced ahead of the POST response),
+      // just drop the temp so we don't end up with duplicates.
+      const alreadyHasReal = state.messages.some((m) => m.id === message.id);
+      if (alreadyHasReal) {
+        return { messages: state.messages.filter((m) => m.id !== tempId) };
+      }
+      return {
+        messages: state.messages.map((m) => (m.id === tempId ? message : m)),
+      };
+    }),
+  markMessageFailed: (tempId) =>
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m.id === tempId ? { ...m, pending: false, failed: true } : m
+      ),
+    })),
+  clearMessages: () => set({ messages: [], unreadCount: 0, chatOpen: false }),
+  setChatOpen: (chatOpen) => set({ chatOpen, unreadCount: chatOpen ? 0 : 0 }),
+
   reset: () => set(defaultState),
 }));
 

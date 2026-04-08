@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse, GoogleAuthResponse, User, IslandWithPins, IslandProgress, Badge, MultiplayerRoom } from "@/types";
+import { LoginRequest, LoginResponse, GoogleAuthResponse, User, IslandWithPins, IslandProgress, Badge, MultiplayerRoom, ChatMessage } from "@/types";
 import { useAuthStore } from "@/stores/auth";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000/api";
@@ -135,6 +135,11 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify({ code }),
     }),
+  leaveRoom: (roomId: string) =>
+    request<{ ok: boolean }>("/multiplayer/rooms/leave", {
+      method: "POST",
+      body: JSON.stringify({ roomId }),
+    }),
   submitVote: (roomId: string, answer: string) =>
     request("/multiplayer/vote", {
       method: "POST",
@@ -164,6 +169,17 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify({ roomId }),
     }),
+
+  // Chat
+  sendChat: (roomId: string, text: string) =>
+    request<{ ok: boolean; message: ChatMessage }>("/multiplayer/chat", {
+      method: "POST",
+      body: JSON.stringify({ roomId, text }),
+    }),
+  getChat: (roomId: string, limit = 50) =>
+    request<{ messages: ChatMessage[] }>(
+      `/multiplayer/chat?roomId=${encodeURIComponent(roomId)}&limit=${limit}`
+    ),
 
   // Account
   deleteAccount: () => request<{ ok: boolean }>("/user/delete", { method: "DELETE" }),

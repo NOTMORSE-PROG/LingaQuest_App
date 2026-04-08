@@ -1404,7 +1404,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       <BackgroundMusic
         islandNumber={0}
         bgMusicUrl={QUEST_AMBIENT_URL}
-        volume={0.08}
+        volume={0.15}
       />
       {phase !== "listening" && <MuteButton />}
 
@@ -1839,7 +1839,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
             paddingHorizontal: 8, paddingVertical: 12,
             marginTop: 12, overflow: "hidden", width: "100%",
           }}>
-            <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} passage={current.audioScript ?? undefined} allowSkip={(pin as any)?.isDevUser ?? false} />
+            <AudioPlayer audioUrl={current.audioUrl} onEnd={handleAudioEnd} autoPlay rate={slowMode ? 0.75 : 1.0} allowSkip={(pin as any)?.isDevUser ?? false} />
           </View>
         </View>
       )}

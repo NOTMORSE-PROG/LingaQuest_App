@@ -15,11 +15,10 @@ interface AudioPlayerProps {
   onEnd: () => void;
   autoPlay?: boolean;
   rate?: number;
-  passage?: string;
   allowSkip?: boolean;
 }
 
-export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, passage, allowSkip = false }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, allowSkip = false }: AudioPlayerProps) {
   const [uiStatus, setUiStatus] = useState<"loading" | "playing" | "done" | "error">("loading");
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pulsationRef = useRef<Animated.CompositeAnimation | null>(null);
@@ -148,20 +147,6 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, pas
   const progress = uiStatus === "done" ? 1.0 : (knownDuration > 0 ? status.currentTime / knownDuration : 0);
   const displayCurrentTime = uiStatus === "done" ? knownDuration : status.currentTime;
 
-  const sentences = passage?.split(/(?<=[.!?])\s+/).filter(Boolean) ?? [];
-  let sentIdx = 0;
-  if (sentences.length > 0) {
-    const totalChars = sentences.reduce((sum, s) => sum + s.length, 0);
-    if (totalChars > 0) {
-      let cumFraction = 0;
-      for (let i = 0; i < sentences.length; i++) {
-        cumFraction += sentences[i].length / totalChars;
-        if (progress < cumFraction) { sentIdx = i; break; }
-        sentIdx = i;
-      }
-    }
-  }
-
   const statusEmoji = uiStatus === "loading" ? "⏳" : uiStatus === "playing" ? "👂" : uiStatus === "error" ? "❌" : "✓";
 
   const statusText =
@@ -184,12 +169,6 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, pas
       <Text className={`text-sm mt-2 ${uiStatus === "error" ? "text-coral" : "text-parchment-dark"}`}>
         {statusText}
       </Text>
-      {uiStatus === "playing" && sentences.length > 0 && (
-        <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, fontStyle: "italic",
-          textAlign: "center", marginTop: 6, marginHorizontal: 16, lineHeight: 18 }}>
-          {sentences[sentIdx]}
-        </Text>
-      )}
       {(uiStatus === "playing" || uiStatus === "done") && knownDuration > 0 && (
         <View style={{ width: "80%", marginTop: 14 }}>
           <View style={{ height: 6, backgroundColor: "rgba(180,230,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
