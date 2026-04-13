@@ -928,7 +928,7 @@
           "challenges": [
             {
               "id": "cmnvekr1a001ovuuof8hvajy9",
-              "audioUrl": "https://assets.linguaquest.app/audio/i3-p4-q1.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmnvekr1a001ovuuof8hvajy9.mp3",
               "audioScript": "Pin 4 — the fog was at its thickest here, pressing in from all sides, Ingay working hardest to bury every clear thought under a flood of detail. Dagat could hear a port official somewhere ahead, speaking in long, careful sentences that piled fact upon fact. She slowed herself, breathed, and listened for the one thing the official kept returning to. Three years ago, a small group of island women began growing vegetables in an unused corner of Port Salita's eastern dock. What started as a side project became something larger. Today, the garden supplies fresh provisions to twelve vessels each week — reducing scurvy cases aboard ship by forty percent. Sailors from other ports have begun requesting seeds to bring home. What was once a corner of weeds has become one of the port's most valuable assets. The transformation. Start to finish. That was what the speech was really about.",
               "question": "What is the main idea of this passage?",
               "choices": [
@@ -1432,7 +1432,7 @@
           "challenges": [
             {
               "id": "cmnvel49z002ivuuos2yrsywu",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh7qx002iwoq0bplndyet.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075883/linguaquest/audio/challenge-cmnvel49z002ivuuos2yrsywu.mp3",
               "audioScript": "Four shards gleamed in Dagat's satchel as she stepped onto Isla ng Tanong. The island's air felt scattered — names darting past like startled fish, numbers floating up and dissolving before they could be caught. Ingay had jumbled everything: records, registries, facts, dates. A fleet health announcement drifted toward Dagat, and she steadied herself against a dock post and listened for the one precise number that mattered. Good tide, young crew. I'm Officer Catalan from the Fleet Health Office. According to the 1824 Maritime Sailors' Survey, one in three crew members on long voyages is considered dangerously undernourished by the halfway point. Iron deficiency affects approximately forty-two percent of sailors on journeys of six months or more. The Fleet Council recommends iron-rich provisions — especially dried legumes — at least four times per week. Start with a cup of monggo stew every other day. Two numbers, two different facts. She caught the right one.",
               "question": "What percentage of sailors on long voyages are affected by iron deficiency?",
               "choices": [
@@ -1456,12 +1456,12 @@
               "answer": "C",
               "explanation": "'Iron deficiency affects approximately forty-two percent.' Note: 'one in three' refers to undernourishment — a different statistic.",
               "hint": "The speaker gives two separate numbers. Listen for which one is tied specifically to 'iron deficiency.'",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyh7qx002iwoq0bplndyet.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075930/linguaquest/audio/challenge-explanation-cmnvel49z002ivuuos2yrsywu.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvel49z002jvuuog4ddk8pt",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh7qx002jwoq060mlf8vv.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075811/linguaquest/audio/challenge-cmnvel49z002jvuuog4ddk8pt.mp3",
               "audioScript": "The registry clerk on Isla ng Tanong was reading numbers — totals, subtotals, route breakdowns, season comparisons — while Ingay's scatter sent several wrong figures floating in the air around each correct one. Dagat planted herself in front of the clerk and listened for the specific number that answered the specific question she had been given. Good tide, fleet officers. This is the official crew registry for the current sailing season. Total registered crew across all vessels stands at one thousand two hundred forty-three sailors — six hundred eighty-two on merchant routes and five hundred sixty-one on patrol routes. Compared to last season's total of one thousand one hundred ninety-eight, we have seen an increase of forty-five sailors. Growth is projected to continue. Thank you. The increase. Not the total. The increase. She had it.",
               "question": "By how many sailors did the fleet registry increase compared to last season?",
               "choices": [
@@ -1485,7 +1485,7 @@
               "answer": "B",
               "explanation": "'Compared to last season, we have seen an increase of forty-five sailors.' The increase is forty-five — not the total count.",
               "hint": "Listen for the word 'increase' — what number follows directly after it?",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyh7qx002jwoq060mlf8vv.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075841/linguaquest/audio/challenge-explanation-cmnvel49z002jvuuog4ddk8pt.mp3",
               "sortOrder": 2
             }
           ]
@@ -1564,7 +1564,7 @@
           "challenges": [
             {
               "id": "cmnvel7vw002qvuuo2e3by8io",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhb3l002qwoq0kinfiwp9.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075727/linguaquest/audio/challenge-cmnvel7vw002qvuuo2e3by8io.mp3",
               "audioScript": "Four shards gleamed in Dagat's satchel as she pushed deeper into Isla ng Tanong — Ingay's scatter at its most relentless here, facts darting away mid-sentence. A port supply captain's voice cut through the noise with an update, and Dagat caught it with everything she had. Attention fleet crew — supply update for the week's long sail. We are leaving port with forty-two barrels of fresh water. That sounds like a lot. With a full crew of thirty-eight sailors drinking and cooking, we will have enough for exactly fourteen days at normal rations. Our scheduled resupply stop is at the Coral Station waypoint on the tenth day. I want every quartermaster to confirm their section's daily water log by this evening. If anything seems off, report it to me before we cast off. Fair winds and tight barrels. Dagat locked the two numbers that mattered most.",
               "question": "How many barrels of fresh water are they leaving port with?",
               "choices": [
@@ -1588,12 +1588,12 @@
               "answer": "D",
               "explanation": "'We are leaving port with forty-two barrels.' Thirty-eight is the crew count, fourteen is how long the water lasts, and ten is the resupply day — all different numbers with different meanings.",
               "hint": "Listen for the number that comes right after the words 'leaving port with.' That is the barrel count.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhb3l002qwoq0kinfiwp9.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075743/linguaquest/audio/challenge-explanation-cmnvel7vw002qvuuo2e3by8io.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvel7vw002rvuuoludwtrz0",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhb3l002rwoq03dkoqw18.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075654/linguaquest/audio/challenge-cmnvel7vw002rvuuoludwtrz0.mp3",
               "audioScript": "A maritime training announcement crackled through Isla ng Tanong — Ingay's scatter working hardest on the specific details, the facts darting away before Dagat could anchor them. She stopped, steadied herself, and caught the announcement as it reached a key correction. Attention all junior crew! The anchor-handling drill scheduled for this afternoon will be held at Dock Fourteen — not Dock Eleven as originally posted. Please note: the drill begins at two bells past noon, not at noon itself. Participants must bring their standard rigging harness and identification tag. Any junior crew member who arrives after the first exercise without a valid excuse will be required to repeat the full drill the following week. Questions should be directed to Watch Officer Reyes, stationed at the dock gate. Fair winds! She marked the two corrections before they could scatter.",
               "question": "What time does the anchor-handling drill begin?",
               "choices": [
@@ -1617,7 +1617,7 @@
               "answer": "C",
               "explanation": "The announcement corrected itself: 'two bells past noon, not at noon itself.' The word 'not' signals the wrong time — the right time follows the correction.",
               "hint": "Listen for the word 'not' — it signals a correction. The new time comes right after it.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhb3l002rwoq03dkoqw18.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075689/linguaquest/audio/challenge-explanation-cmnvel7vw002rvuuoludwtrz0.mp3",
               "sortOrder": 2
             }
           ]
@@ -1630,7 +1630,7 @@
           "challenges": [
             {
               "id": "cmnvel9w6002uvuuolrz647n6",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhcs2002uwoq0ekofemof.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075583/linguaquest/audio/challenge-cmnvel9w6002uvuuolrz647n6.mp3",
               "audioScript": "Isla ng Tanong's Maritime Museum of the Listening Sea — and Ingay's scatter was at its most relentless here, facts darting away mid-sentence, gallery numbers transposing themselves, rules attaching themselves to the wrong rooms. Dagat stepped through the entrance as the guide's welcome announcement crackled with interference, and she focused with everything she had. Welcome, sailors, to the Maritime Museum of the Listening Sea! Photography is permitted in all galleries EXCEPT Gallery Four — the Weapons Vault — and Gallery Seven — the Navigation Secrets Archive. Flash photography is not allowed anywhere in the building. The full tour takes approximately one hour and forty-five minutes. Restrooms are on the ground deck near the main gangway and on the upper deck near the chart room. The gift shop closes at four-thirty. Stay with your guide at all times. Fair winds! Two galleries. She made sure she had the right two.",
               "question": "In which galleries is photography NOT allowed?",
               "choices": [
@@ -1654,12 +1654,12 @@
               "answer": "C",
               "explanation": "'Photography is permitted EXCEPT Gallery Four and Gallery Seven.' Those two galleries are restricted.",
               "hint": "Listen for 'except' — the galleries named right after it are where photography is NOT allowed.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhcs2002uwoq0ekofemof.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075607/linguaquest/audio/challenge-explanation-cmnvel9w6002uvuuolrz647n6.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvel9w6002vvuuo4gkbna0o",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhcs2002vwoq08bw3v94s.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075484/linguaquest/audio/challenge-cmnvel9w6002vvuuo4gkbna0o.mp3",
               "audioScript": "Back at the port on Isla ng Tanong, the recruitment fair was loud — twenty-six vessels, dozens of sailors, and Ingay's scatter tumbling all the rules together into a blur of numbers and conditions. Vessel counts mixed with application limits; fee ranges overlapped with deadlines. Dagat listened for the one critical limit buried in the noise. Welcome to the Port Salita Crew Recruitment Fair! Twenty-six vessels are represented today. To apply, fill your name, sailing experience, and one specialty skill on each vessel's application sheet. You may apply to a maximum of two vessels only. Application processing fees range from fifty to one hundred fifty coppers per vessel. All fees are due by this Friday. May the best sailors find the best ships! Maximum. Two. Ingay had thrown a lot of numbers at her — but only one was the limit she needed.",
               "question": "What is the maximum number of vessels a sailor may apply to?",
               "choices": [
@@ -1683,7 +1683,7 @@
               "answer": "D",
               "explanation": "'You may apply to a maximum of two vessels only.' The limit is clearly stated as two.",
               "hint": "Listen for 'maximum' — the number right after it is the limit.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhcs2002vwoq08bw3v94s.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075526/linguaquest/audio/challenge-explanation-cmnvel9w6002vvuuo4gkbna0o.mp3",
               "sortOrder": 2
             }
           ]
@@ -1696,7 +1696,7 @@
           "challenges": [
             {
               "id": "cmnvelbp7002yvuuovy2jkgrw",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhega002ywoq0fizt2ygh.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075381/linguaquest/audio/challenge-cmnvelbp7002yvuuovy2jkgrw.mp3",
               "audioScript": "The Precision Shard was close — Dagat could feel it somewhere near the main harbormaster's post. But Ingay was desperate here, flooding the air with wrong pier numbers: four, four, four. The harbormaster's correction came through the interference, and Dagat braced herself and caught every word. Good tide, all hands! The harbormaster reminds all crew that the daily supply barge arrives at Pier Two — NOT Pier Four as listed on last week's schedule. The barge carries fresh provisions, clean water, and mail from home. It arrives at two bells in the afternoon and departs at four bells. Any crew member wishing to send letters home must have them sealed and addressed before two bells. Latecomers will miss the barge entirely. Two. Not four. Ingay had thrown the wrong number at her hard — but she had held the right one.",
               "question": "At which pier does the supply barge now arrive?",
               "choices": [
@@ -1720,12 +1720,12 @@
               "answer": "C",
               "explanation": "'The supply barge arrives at Pier Two — NOT Pier Four.' Pier Two is the correct arrival point; Pier Four was the old listing.",
               "hint": "Listen for 'NOT' — what comes before it was old information. What comes after is the correction.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhega002ywoq0fizt2ygh.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075406/linguaquest/audio/challenge-explanation-cmnvelbp7002yvuuovy2jkgrw.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvelbp7002zvuuoyw24u27s",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhegb002zwoq0dfqtvblc.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075294/linguaquest/audio/challenge-cmnvelbp7002zvuuoyw24u27s.mp3",
               "audioScript": "The final challenge of Isla ng Tanong — and when Dagat heard the subject of this intelligence report, her breath caught. It was about Isla ng Alingawngaw. The last island. The vault where this whole quest led. Ingay was scattering the numbers with frantic energy — paces transposing, key counts multiplying — because she knew this detail mattered. Dagat listened with everything she had. Maritime intelligence update to all fleet captains: The treasure vault at Isla Alingawngaw has been partially mapped. According to the recovered chart, the entrance lies exactly forty-two paces north of the large split rock near the eastern cove — not at the southern cove as previously believed. The vault door requires three specific keys — a gold key, a silver key, and a bone key — and opens only at low tide. The map was authenticated last Thursday by the Navigation Guild. Three keys. She held the number like a lifeline — because it was connected to where she was going.",
               "question": "How many keys are needed to open the vault door?",
               "choices": [
@@ -1749,7 +1749,7 @@
               "answer": "D",
               "explanation": "'The vault door requires three specific keys — a gold key, a silver key, and a bone key.' Three keys are required.",
               "hint": "Listen for how many specific items are listed. Count them.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhegb002zwoq0dfqtvblc.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075337/linguaquest/audio/challenge-explanation-cmnvelbp7002zvuuoyw24u27s.mp3",
               "sortOrder": 2
             }
           ]
@@ -1783,7 +1783,7 @@
           "challenges": [
             {
               "id": "cmnveldpf0033vuuouu8cwm0k",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhgi00033woq06pc8ffts.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075153/linguaquest/audio/challenge-cmnveldpf0033vuuouu8cwm0k.mp3",
               "audioScript": "Five shards, and Dagat stepped onto Isla ng Kwento to find it fractured — stories arriving without their middles, endings separated from their beginnings, storytellers frozen mid-tale with the thread broken somewhere she couldn't see. Ingay had shattered their memories. A storyteller near the dock was trying to reassemble a tale about young Nico, his mouth opening and closing as fragments surfaced and sank. Dagat sat beside him and listened to what came through. One afternoon, young sailor Nico found a brass compass on the dock near the market. It was a fine one — polished, needle still true. He picked it up, looked around, and slipped it into his coat pocket. On his way back to the ship, he passed an old navigator sitting on a crate, checking every fold of his coat, eyes red. The old man's hands trembled. Nico watched him for a moment, then turned around and handed back the compass without a word. The old man held his hand with both of his. 'Thank you,' he whispered. 'I've sailed with this compass for forty years.' The thread was intact. She had followed it all the way through.",
               "question": "Why did Nico decide to return the compass?",
               "choices": [
@@ -1807,12 +1807,12 @@
               "answer": "C",
               "explanation": "Nico was ready to keep it, then saw the old man's trembling hands and red eyes. That moment of empathy is what drove him to return it. No authority figure told him to.",
               "hint": "What CHANGED Nico's mind? What specific moment made him act differently?",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhgi00033woq06pc8ffts.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075169/linguaquest/audio/challenge-explanation-cmnveldpf0033vuuouu8cwm0k.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnveldpf0034vuuodi4tmt9z",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhgi00034woq0rqekgnaf.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068664/linguaquest/audio/challenge-cmnveldpf0034vuuodi4tmt9z.mp3",
               "audioScript": "Another storyteller, further into Isla ng Kwento — this one describing a new crew member aboard a ship Dagat recognized instantly. The Baybayin. Her ship. The beginning of Lena's story was there; what came after was broken away somewhere in Ingay's shattering. Dagat listened to what survived of the opening. When young Lena joined the crew of the Baybayin in October, she knew no one. She ate her meals at the far end of the galley and stood her watch at the stern, alone. She told herself she didn't mind — but she did. Every evening she watched her crewmates play cards and tell stories by the lamp, and she felt like she was watching them through a foggy porthole. She had been aboard three weeks and still hadn't said more than five words to anyone. Even broken, the story's beginning was complete enough. Dagat understood the problem before anyone spoke it aloud.",
               "question": "What problem did Lena face at the BEGINNING of the story?",
               "choices": [
@@ -1836,7 +1836,7 @@
               "answer": "B",
               "explanation": "The story opens with Lena being new to the crew, knowing nobody, and feeling invisible. Social isolation as the new crew member is the central problem.",
               "hint": "The problem is stated at the BEGINNING. What was Lena's situation when the story opened?",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhgi00034woq0rqekgnaf.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068818/linguaquest/audio/challenge-explanation-cmnveldpf0034vuuodi4tmt9z.mp3",
               "sortOrder": 2
             }
           ]
@@ -2134,7 +2134,7 @@
           "challenges": [
             {
               "id": "cmnveln4z003ovuuoooqrxbdn",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhp29003owoq0u9qlp3n6.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776076957/linguaquest/audio/challenge-cmnveln4z003ovuuoooqrxbdn.mp3",
               "audioScript": "Six shards, all six glowing in Dagat's satchel, and Isla ng Alingawngaw rose out of the sea ahead of the Baybayin like a wall of sound. This was Ingay's stronghold — and the moment Dagat stepped ashore, all six effects hit her at once. Words scrambled. Time blurring. Fog pressing in. Emotions stripped away. Facts scattering. Stories breaking mid-sentence. The chaos was total. Dagat closed her eyes and decided what to reach for first: the main idea. She applied everything she'd learned on Isla ng Diwa and pulled the thread from the noise. The waters of the Coral Triangle — home to the most diverse sea life known to sailors — are changing. Navigators have reported rising water temperatures, dying coral reefs, and shifting fish patterns. But what is causing the most visible damage is something far simpler: ship waste dumped at sea. Every season, thousands of barrels of bilge oil and refuse enter the ocean from passing vessels. Sea turtles swallow tar balls. Seabirds ingest rope shreds. Even at three thousand fathoms deep, diving bells have retrieved cloth and metal scraps. The sea is not a dump — but we treat it like one. The question is no longer whether this is a problem. It is whether we will act before it cannot be undone. One thread, through all the chaos. She had it.",
               "question": "What is the main idea of this passage?",
               "choices": [
@@ -2158,12 +2158,12 @@
               "answer": "A",
               "explanation": "The passage mentioned temperature and coral, but kept returning to ship waste — affected animals, statistics, a call to act. Ship waste pollution is the main idea.",
               "hint": "Which problem does the narrator return to AGAIN AND AGAIN? That is the main idea.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhp29003owoq0u9qlp3n6.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776076814/linguaquest/audio/challenge-explanation-cmnveln4z003ovuuoooqrxbdn.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnveln4z003pvuuoswiqr4i8",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhp29003pwoq0y4sz04nl.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077856/linguaquest/audio/challenge-cmnveln4z003pvuuoswiqr4i8.mp3",
               "audioScript": "Still on Isla ng Alingawngaw, the chaos unchanged — scrambled words, blurred time, fog, stripped emotion, scattered facts, broken stories, all of Ingay's weapons deployed at once. Dagat shifted her approach and reached now for something she had learned on Isla ng Damdamin: emotional tone. The words meant something — but how did the speaker feel about them? She listened past the chaos for that. Thank you all for coming to tonight's port council meeting. I want to be very clear: I am not opposed to expanding the commercial docks. More docks mean more ships, more trade, more work for this port — and I understand that. But — hear this carefully — the expansion would be built directly over the freshwater cistern that supplies our entire harbor district. Two engineers reviewed the plan: one says it is safe, one says it is not. I believe we need a third, independent opinion before we break ground. Trade is important. But so is the water our sailors drink. I am not saying no. I am saying: not yet. Let us be certain. The tone — careful, worried, not refusing but not ready — cut through the chaos like a compass needle.",
               "question": "What is the speaker's attitude toward the dock expansion?",
               "choices": [
@@ -2187,7 +2187,7 @@
               "answer": "B",
               "explanation": "The speaker acknowledges economic benefits but consistently adds 'but' and concern about the cistern. 'Not saying no — not yet' is the clearest sign of cautious concern.",
               "hint": "The speaker says some positive things AND some worried things. Which outweighs the other? How forceful is the tone?",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhp29003pwoq0y4sz04nl.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077739/linguaquest/audio/challenge-explanation-cmnveln4z003pvuuoswiqr4i8.mp3",
               "sortOrder": 2
             }
           ]
@@ -2266,7 +2266,7 @@
           "challenges": [
             {
               "id": "cmnvelqr1003wvuuo6cnstq4q",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhsld003wwoq02e3pa064.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077330/linguaquest/audio/challenge-cmnvelqr1003wvuuo6cnstq4q.mp3",
               "audioScript": "Six shards glowing, and the chaos of Isla ng Alingawngaw pressed on Dagat from every side — vocabulary scrambled, speed accelerating, fog pressing in, emotion draining, facts scattering, stories fracturing — all at once, Ingay's full arsenal. A voice cut through it all: a fleet surgeon delivering an urgent medical report, her tone deliberately calm against the chaos, every word chosen with precision. This is Surgeon Mana. We have treated fourteen sailors in the last six hours. None are critical. The injuries are minor — rope burns, sprains, one case of sea fever caught early. The crew's response time was exceptional. Not one injury worsened because help was delayed. What I want the crew to understand is this: the speed with which you helped each other today was not ordinary. It was admirable. That word — admirable — means you acted with a quality worth praising. Remember it. You will need it again before this island is done. Dagat caught three things at once: the word, the count, and the calm courage beneath the surgeon's voice.",
               "question": "What does 'admirable' mean as used by the surgeon?",
               "choices": [
@@ -2290,12 +2290,12 @@
               "answer": "C",
               "explanation": "The surgeon defines the word directly: 'a quality worth praising.' The context — no injuries worsened because the crew responded so well — confirms it means genuinely impressive.",
               "hint": "The surgeon gives the definition as she uses the word. Listen for the explanation that follows it.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhsld003wwoq02e3pa064.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077170/linguaquest/audio/challenge-explanation-cmnvelqr1003wvuuo6cnstq4q.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvelqr1003xvuuoa1dha7uq",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhsle003xwoq0dmewjmel.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077573/linguaquest/audio/challenge-cmnvelqr1003xvuuoa1dha7uq.mp3",
               "audioScript": "A story reached Dagat through the noise of Isla ng Alingawngaw — broken at its edges but clear at its center. It was told by a voice she didn't recognize, but one that carried the weight of someone who had been at sea a very long time. She followed the fragments from the first one she could catch. I don't remember the name of every port I've docked at. I don't remember the names of every sailor I've crewed with. But I remember the ones who listened. The ones who sat still while another sailor talked. The ones who asked a second question when they could have asked none. The ones who said 'tell me more' instead of 'I understand already.' Every good decision I've made at sea came from listening — not to charts, not to stars, but to the person beside me on the watch. If there's one thing I want you to carry off this island, it is that: listen to the person beside you. That is the whole of it. Dagat felt the words settle in her like a compass finding north.",
               "question": "What is the main message of the speaker?",
               "choices": [
@@ -2319,7 +2319,7 @@
               "answer": "C",
               "explanation": "The speaker's final statement says it plainly: 'listen to the person beside you. That is the whole of it.' Everything before that builds to this one point.",
               "hint": "What does the speaker say at the very end? The last line is the message they most want the listener to carry.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyhsle003xwoq0dmewjmel.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077479/linguaquest/audio/challenge-explanation-cmnvelqr1003xvuuoa1dha7uq.mp3",
               "sortOrder": 2
             }
           ]
