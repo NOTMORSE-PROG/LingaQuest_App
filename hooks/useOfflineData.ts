@@ -1,4 +1,4 @@
-import { useSQLiteContext } from "expo-sqlite";
+import { useSQLiteContext, SQLiteDatabase } from "expo-sqlite";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth";
 import { useIsOnline } from "./useIsOnline";
@@ -16,6 +16,40 @@ import { apiClient } from "@/lib/api";
 import { ISLAND_PASS_THRESHOLD } from "@/lib/constants";
 
 /**
+ * Read all completed local progress and return a lookup map.
+ * Used to overlay locally-saved completions onto server responses
+ * so the UI reflects progress immediately (before the server knows).
+ */
+async function getLocalProgressMap(db: SQLiteDatabase) {
+  const rows = await db.getAllAsync<{
+    pinId: string;
+    accuracy: number;
+    isCompleted: number;
+  }>("SELECT pinId, accuracy, isCompleted FROM local_progress WHERE isCompleted = 1");
+  return new Map(rows.map((r) => [r.pinId, r]));
+}
+
+/**
+ * Merge local progress into server pin data.
+ * For each pin, if local DB shows it completed but server doesn't,
+ * use the local state. Always take the higher accuracy.
+ */
+function mergePinsWithLocal(
+  pins: any[],
+  localMap: Map<string, { pinId: string; accuracy: number; isCompleted: number }>
+) {
+  return pins.map((pin: any) => {
+    const local = localMap.get(pin.id);
+    if (!local) return pin;
+    return {
+      ...pin,
+      isCompleted: pin.isCompleted || true,
+      accuracy: Math.max(pin.accuracy ?? 0, local.accuracy),
+    };
+  });
+}
+
+/**
  * Offline-aware hook for islands data.
  * When online + logged in: fetches from server (with local fallback on error).
  * Otherwise: reads from local SQLite.
@@ -30,7 +64,14 @@ export function useIslands() {
     queryFn: async () => {
       if (isOnline && token) {
         try {
-          return await apiClient.getIslands();
+          const serverData = await apiClient.getIslands();
+          // Merge local progress so locally-completed pins show immediately
+          const localMap = await getLocalProgressMap(db);
+          if (localMap.size === 0) return serverData;
+          return serverData.map((island: any) => ({
+            ...island,
+            pins: mergePinsWithLocal(island.pins ?? [], localMap),
+          }));
         } catch {
           return getIslandsLocal(db);
         }
@@ -56,7 +97,27 @@ export function useProgress() {
     queryFn: async () => {
       if (isOnline && token) {
         try {
-          return await apiClient.getProgress();
+          const serverData = await apiClient.getProgress();
+          // Merge local progress so locally-completed pins are counted
+          const localMap = await getLocalProgressMap(db);
+          if (localMap.size === 0) return serverData;
+          // Read pin→island mapping to adjust per-island counts
+          const pins = await db.getAllAsync<{ id: string; islandId: string }>(
+            "SELECT id, islandId FROM pins"
+          );
+          const pinsByIsland = new Map<string, string[]>();
+          for (const p of pins) {
+            const list = pinsByIsland.get(p.islandId) ?? [];
+            list.push(p.id);
+            pinsByIsland.set(p.islandId, list);
+          }
+          return serverData.map((island: any) => {
+            const islandPinIds = pinsByIsland.get(island.islandId) ?? [];
+            const localCompleted = islandPinIds.filter((id) => localMap.has(id)).length;
+            const completedPins = Math.max(island.completedPins ?? 0, localCompleted);
+            const isCompleted = completedPins >= island.totalPins;
+            return { ...island, completedPins, isCompleted };
+          });
         } catch {
           return getProgressLocal(db);
         }
@@ -129,7 +190,27 @@ export function useIsland(islandId: string) {
     queryFn: async () => {
       if (isOnline && token) {
         try {
-          return await apiClient.getIsland(islandId);
+          const serverData = await apiClient.getIsland(islandId);
+          // Merge local progress so locally-completed pins show immediately
+          const localMap = await getLocalProgressMap(db);
+          if (localMap.size === 0) return serverData;
+          const mergedPins = mergePinsWithLocal(serverData.pins ?? [], localMap);
+          const completedPins = mergedPins.filter((p: any) => p.isCompleted);
+          const allPinsCompleted = completedPins.length === mergedPins.length && mergedPins.length > 0;
+          const cumulativeAccuracy =
+            completedPins.length > 0
+              ? Math.round(
+                  completedPins.reduce((sum: number, p: any) => sum + (p.accuracy ?? 0), 0) /
+                    completedPins.length
+                )
+              : null;
+          return {
+            ...serverData,
+            pins: mergedPins,
+            allPinsCompleted,
+            cumulativeAccuracy,
+            islandPassed: allPinsCompleted && (cumulativeAccuracy ?? 0) >= ISLAND_PASS_THRESHOLD,
+          };
         } catch {
           return getIslandLocal(db, islandId);
         }

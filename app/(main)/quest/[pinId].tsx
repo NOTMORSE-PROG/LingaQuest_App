@@ -1400,7 +1400,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
       <BackgroundMusic
         islandNumber={0}
         bgMusicUrl={QUEST_AMBIENT_URL}
-        volume={0.05}
+        volume={0.005}
       />
       {phase !== "listening" && <MuteButton />}
 
