@@ -152,8 +152,42 @@ export async function initDatabase(db: SQLiteDatabase) {
     await db.execAsync("PRAGMA user_version = 1");
   }
 
-  // Future migrations:
-  // if (currentVersion === 1) { ... await db.execAsync("PRAGMA user_version = 2"); }
+  // Migration v1 → v2: refresh island audio URLs from bundled content.json
+  // (Users who installed before NPC audio was added had NULL for npcAudioIntro/Success/Fail)
+  if (currentVersion < 2) {
+    const contentData = require("@/assets/data/content.json") as {
+      islands: {
+        id: string;
+        npcAudioIntro?: string | null;
+        npcAudioSuccess?: string | null;
+        npcAudioFail?: string | null;
+        ingayAudioUrl?: string | null;
+        bgMusicUrl?: string | null;
+      }[];
+    };
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      for (const island of contentData.islands) {
+        await txn.runAsync(
+          `UPDATE islands SET
+            npcAudioIntro = ?,
+            npcAudioSuccess = ?,
+            npcAudioFail = ?,
+            ingayAudioUrl = ?,
+            bgMusicUrl = ?
+           WHERE id = ?`,
+          [
+            island.npcAudioIntro ?? null,
+            island.npcAudioSuccess ?? null,
+            island.npcAudioFail ?? null,
+            island.ingayAudioUrl ?? null,
+            island.bgMusicUrl ?? null,
+            island.id,
+          ]
+        );
+      }
+    });
+    await db.execAsync("PRAGMA user_version = 2");
+  }
 }
 
 // ---------------------------------------------------------------------------
