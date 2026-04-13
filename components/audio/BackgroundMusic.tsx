@@ -5,6 +5,19 @@ import type { AudioPlayer } from "expo-audio";
 import { useAudioStore } from "@/stores/audio";
 import { resolveAudioSource } from "@/lib/audio-assets";
 
+// Module-level singleton — ensures only ONE background music player is ever active.
+// Prevents overlap during async tab transitions (e.g. island music bleeding into quest).
+let _activeBgPlayer: AudioPlayer | null = null;
+
+function stopActiveBgPlayer() {
+  const p = _activeBgPlayer;
+  _activeBgPlayer = null;
+  if (p) {
+    try { p.pause(); } catch { /* ignore */ }
+    try { p.remove(); } catch { /* ignore */ }
+  }
+}
+
 const ISLAND_MUSIC: Record<number, string> = {
   1: "https://assets.mixkit.co/music/188/188.mp3",   // Echoes — slow ethereal ice ambience
   2: "https://assets.mixkit.co/music/167/167.mp3",   // Brainiac — fast electronic urgency
@@ -42,6 +55,11 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
 
       let cancelled = false;
 
+      // Synchronously stop any other screen's music before starting ours.
+      // This eliminates the overlap window that occurs when the previous screen's
+      // async startMusic() hadn't yet assigned playerRef.current before cleanup ran.
+      stopActiveBgPlayer();
+
       async function startMusic() {
         try {
           await setAudioModeAsync({
@@ -55,6 +73,7 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
           p.volume = volume ?? 0.35;
           p.muted = isMutedRef.current;
           p.play();
+          _activeBgPlayer = p;
           playerRef.current = p;
         } catch {
           // No music is fine — the UI must not break
@@ -67,6 +86,7 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
         cancelled = true;
         const p = playerRef.current;
         playerRef.current = null;
+        _activeBgPlayer = null;
         if (p) {
           p.pause();
           p.remove();

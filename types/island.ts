@@ -15,6 +15,7 @@ export interface Island {
   npcAudioSuccess?: string;
   npcAudioFail?: string;
   ingayAudioUrl?: string;
+  ingayDialogue?: string;
   bgMusicUrl?: string | null;
   shardItemName?: string;
   shardDescription?: string;

@@ -12,7 +12,6 @@ import Animated, {
   withRepeat, withSequence, withTiming, Easing,
 } from "react-native-reanimated";
 import { apiClient } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth";
 import { useIsland, useMarkIngaySeen } from "@/hooks/useOfflineData";
 import { IngayWarning } from "@/components/characters/IngayWarning";
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
@@ -2257,8 +2256,7 @@ export default function IslandScreen() {
   const CANVAS_H = Math.round(sw * 2.46); // proportional to design reference (960 / 390)
 
   const { islandId } = useLocalSearchParams<{ islandId: string }>();
-  const { user } = useAuthStore();
-  const characterMode = user?.characterModeEnabled ?? false;
+  const characterMode = true;
   const [phase, setPhase] = useState<"ingay" | "captain" | "map">("map");
 
   const { data: island, isLoading } = useIsland(islandId);

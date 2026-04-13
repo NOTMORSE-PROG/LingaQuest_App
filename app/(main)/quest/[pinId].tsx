@@ -601,7 +601,7 @@ export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
   const [isResultMode, setIsResultMode] = useState(mode === "result");
   const { user } = useAuthStore();
-  const characterMode = user?.characterModeEnabled ?? false;
+  const characterMode = true;
   const { playCorrect, playWrong } = useSoundEffect();
 
   const [phase, setPhase] = useState<Phase>("intro");
