@@ -4,13 +4,13 @@ import { Text } from "react-native";
 import { useAuthStore } from "@/stores/auth";
 
 export default function MainLayout() {
-  const { token, user, isInitialized } = useAuthStore();
+  const { token, user, isInitialized, isGuest } = useAuthStore();
 
   useEffect(() => {
-    if (isInitialized && !token && !user) {
+    if (isInitialized && !token && !user && !isGuest) {
       router.replace("/(auth)/login");
     }
-  }, [token, user, isInitialized]);
+  }, [token, user, isInitialized, isGuest]);
 
   return (
     <Tabs

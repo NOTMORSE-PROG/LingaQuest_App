@@ -9,9 +9,11 @@ interface AuthStore {
   token: string | null;
   user: User | null;
   isInitialized: boolean;
+  isGuest: boolean;
   initialize: () => Promise<void>;
   setAuth: (token: string, user: User) => Promise<void>;
   updateUser: (partial: Partial<User>) => Promise<void>;
+  enterGuestMode: () => void;
   logout: () => Promise<void>;
 }
 
@@ -19,6 +21,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   token: null,
   user: null,
   isInitialized: false,
+  isGuest: false,
 
   initialize: async () => {
     const token = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -46,7 +49,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
       // Storage failure (full, biometric invalidated) — still update memory so session works
       console.warn("[auth] SecureStore.setItemAsync failed — session will not persist:", err);
     }
-    set({ token, user });
+    set({ token, user, isGuest: false });
+  },
+
+  enterGuestMode: () => {
+    set({ isGuest: true, isInitialized: true });
   },
 
   updateUser: async (partial) => {
@@ -68,6 +75,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } catch {
       // Ignore storage errors on logout — clearing memory state is what matters
     }
-    set({ token: null, user: null });
+    set({ token: null, user: null, isGuest: false });
   },
 }));

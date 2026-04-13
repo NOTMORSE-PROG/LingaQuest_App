@@ -162,6 +162,28 @@ export default function LoginScreen() {
             </>
           )}
         </TouchableOpacity>
+
+        {/* Guest mode — play story offline without login */}
+        <View className="mt-6 items-center w-full">
+          <View className="flex-row items-center w-full mb-4">
+            <View className="flex-1 h-px bg-ocean-light" />
+            <Text className="text-parchment-dark mx-4 text-sm">or</Text>
+            <View className="flex-1 h-px bg-ocean-light" />
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              useAuthStore.getState().enterGuestMode();
+              router.replace("/(main)/dashboard");
+            }}
+            disabled={loading || googleLoading}
+            className="w-full border border-gold/30 rounded-xl py-4 items-center"
+          >
+            <Text className="text-gold font-bold text-base">Start Adventure</Text>
+            <Text className="text-parchment-dark text-xs mt-1">
+              Play offline without an account
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

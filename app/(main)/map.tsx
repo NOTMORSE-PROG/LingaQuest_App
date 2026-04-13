@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
 import { createAudioPlayer } from "expo-audio";
 import Svg, {
   Path, Circle, Ellipse, Rect, Polygon, G, Line,
@@ -11,11 +10,10 @@ import Animated, {
   useSharedValue, useAnimatedStyle,
   withRepeat, withSequence, withTiming, Easing, cancelAnimation,
 } from "react-native-reanimated";
-import { apiClient } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth";
 import { Island, IslandProgress } from "@/types";
 import { MuteButton } from "@/components/audio/MuteButton";
 import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
+import { useIslands, useProgress } from "@/hooks/useOfflineData";
 
 const NODE_R = 48;       // island circle radius (upgraded from 36)
 const LPAD = 32;         // extra horizontal padding for labels
@@ -969,25 +967,14 @@ export default function MapScreen() {
   const { width: sw } = useWindowDimensions();
   const CANVAS_H = Math.round(sw * 3.0); // slightly taller for breathing room with bigger islands
 
-  const { user } = useAuthStore();
-
   const {
     data: islands,
     isLoading,
     isError: isIslandsError,
     refetch: refetchIslands,
-  } = useQuery({
-    queryKey: ["islands"],
-    queryFn: () => apiClient.getIslands(),
-    refetchOnMount: true,
-  });
+  } = useIslands();
 
-  const { data: progress, isError: isProgressError } = useQuery({
-    queryKey: ["progress", user?.id],
-    queryFn: () => apiClient.getProgress(),
-    enabled: !!user,
-    refetchOnMount: true,
-  });
+  const { data: progress, isError: isProgressError } = useProgress();
 
   // ── Victory sound — hook must live before early returns (Rules of Hooks) ──
   const victorySoundFiredRef = useRef(false);

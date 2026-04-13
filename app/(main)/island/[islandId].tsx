@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import Svg, { Path, Circle, Rect, Ellipse, Polygon, G, Text as SvgText, Defs, LinearGradient, RadialGradient, Stop, Line } from "react-native-svg";
 import Animated, {
   useSharedValue, useAnimatedStyle, cancelAnimation,
@@ -13,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { apiClient } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth";
+import { useIsland, useMarkIngaySeen } from "@/hooks/useOfflineData";
 import { IngayWarning } from "@/components/characters/IngayWarning";
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
 import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
@@ -2260,12 +2261,9 @@ export default function IslandScreen() {
   const characterMode = user?.characterModeEnabled ?? false;
   const [phase, setPhase] = useState<"ingay" | "captain" | "map">("map");
 
-  const { data: island, isLoading } = useQuery({
-    queryKey: ["island", islandId],
-    queryFn: () => apiClient.getIsland(islandId),
-    refetchOnMount: true,
-  });
+  const { data: island, isLoading } = useIsland(islandId);
   const queryClient = useQueryClient();
+  const markIngaySeenMutation = useMarkIngaySeen();
   const [devBusy, setDevBusy] = useState(false);
   const invalidateProgressQueries = () => {
     queryClient.invalidateQueries({ queryKey: ["island", islandId] });
@@ -2338,7 +2336,7 @@ export default function IslandScreen() {
         skillFocus={island.skillFocus}
         dialogue={(island as any).ingayDialogue}
         onDismiss={() => {
-          apiClient.markIngaySeen(islandId).catch(() => {});
+          markIngaySeenMutation.mutate(islandId);
           setPhase("captain");
         }}
         audioUrl={island.ingayAudioUrl}

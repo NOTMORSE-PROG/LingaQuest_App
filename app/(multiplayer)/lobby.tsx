@@ -12,12 +12,14 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { apiClient } from "@/lib/api";
 import { useMultiplayerStore, destroyPusher } from "@/stores/multiplayer";
+import { useAuthStore } from "@/stores/auth";
 import Pusher from "pusher-js";
 
 const PUSHER_KEY = process.env.EXPO_PUBLIC_PUSHER_KEY ?? "";
 const PUSHER_CLUSTER = process.env.EXPO_PUBLIC_PUSHER_CLUSTER ?? "ap1";
 
 export default function LobbyScreen() {
+  const { token } = useAuthStore();
   const netInfo = useNetInfo();
   const [mode, setMode] = useState<"menu" | "create" | "join">("menu");
   const [roomCode, setRoomCode] = useState("");
@@ -31,6 +33,26 @@ export default function LobbyScreen() {
       reset();
     }, [reset])
   );
+
+  if (!token) {
+    return (
+      <View className="flex-1 bg-ocean-deep items-center justify-center px-8">
+        <Text className="text-6xl mb-6">🔐</Text>
+        <Text className="text-gold text-xl font-bold text-center mb-4">
+          Login Required
+        </Text>
+        <Text className="text-parchment text-base text-center mb-8">
+          Treasure Hunt is a multiplayer adventure. Log in to sail with your crew!
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push("/(auth)/login")}
+          className="bg-gold rounded-xl px-8 py-4"
+        >
+          <Text className="text-ocean-deep font-bold">Log In</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (!netInfo.isConnected) {
     return (

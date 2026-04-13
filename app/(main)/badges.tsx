@@ -1,10 +1,8 @@
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth";
 import { MuteButton } from "@/components/audio/MuteButton";
 import { Badge, BadgeType } from "@/types";
+import { useBadges } from "@/hooks/useOfflineData";
 
 const BADGE_META: Record<BadgeType, { label: string; emoji: string; desc: string }> = {
   first_steps: { label: "First Steps", emoji: "👣", desc: "Complete your first quest" },
@@ -21,12 +19,7 @@ const BADGE_META: Record<BadgeType, { label: string; emoji: string; desc: string
 };
 
 export default function BadgesScreen() {
-  const { user } = useAuthStore();
-  const { data: badges, isLoading, isError, refetch } = useQuery({
-    queryKey: ["badges", user?.id],
-    queryFn: () => apiClient.getBadges(),
-    enabled: !!user,
-  });
+  const { data: badges, isLoading, isError, refetch } = useBadges();
 
   const earnedTypes = new Set(badges?.map((b: Badge) => b.badgeType) ?? []);
 

@@ -3,9 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, useWindowDimensions, Activity
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useAuthStore } from "@/stores/auth";
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api";
 import { Island, IslandProgress } from "@/types";
+import { useIslands, useProgress, useBadges } from "@/hooks/useOfflineData";
 import Svg, { Path, Ellipse, Rect, Circle, Polygon, Line } from "react-native-svg";
 import Animated, {
   useSharedValue, useAnimatedStyle,
@@ -135,27 +134,11 @@ function PirateShip() {
 }
 
 export default function DashboardScreen() {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
 
-  const { data: islands, isLoading: islandsLoading, isError: isIslandsError } = useQuery({
-    queryKey: ["islands"],
-    queryFn: () => apiClient.getIslands(),
-    refetchOnMount: true,
-  });
-
-  const { data: progress, isError: isProgressError } = useQuery({
-    queryKey: ["progress", user?.id],
-    queryFn: () => apiClient.getProgress(),
-    enabled: !!user,
-    refetchOnMount: true,
-  });
-
-  const { data: badges, isError: isBadgesError } = useQuery({
-    queryKey: ["badges", user?.id],
-    queryFn: () => apiClient.getBadges(),
-    enabled: !!user,
-    refetchOnMount: true,
-  });
+  const { data: islands, isLoading: islandsLoading, isError: isIslandsError } = useIslands();
+  const { data: progress, isError: isProgressError } = useProgress();
+  const { data: badges, isError: isBadgesError } = useBadges();
 
   const hasDataError = isIslandsError || isProgressError || isBadgesError;
 
@@ -181,7 +164,7 @@ export default function DashboardScreen() {
       <View className="px-6 pt-4 pb-2 flex-row items-start justify-between">
         <View>
           <Text className="text-parchment text-base">Welcome back,</Text>
-          <Text className="text-gold text-3xl font-bold">{user?.username} ⚓</Text>
+          <Text className="text-gold text-3xl font-bold">{user?.username ?? "Explorer"} ⚓</Text>
         </View>
         <TouchableOpacity
           onPress={() => router.push("/(main)/profile")}
@@ -199,7 +182,7 @@ export default function DashboardScreen() {
           }}
         >
           <Text style={{ color: "#f5c518", fontSize: 18, fontWeight: "800", lineHeight: 22 }}>
-            {(user?.username?.[0] ?? "?").toUpperCase()}
+            {(user?.username?.[0] ?? "E").toUpperCase()}
           </Text>
         </TouchableOpacity>
       </View>
@@ -302,15 +285,23 @@ export default function DashboardScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push("/(multiplayer)/lobby")}
+          onPress={() => {
+            if (token) {
+              router.push("/(multiplayer)/lobby");
+            } else {
+              router.push("/(auth)/login");
+            }
+          }}
           className="bg-ocean-light rounded-2xl p-5 flex-row items-center justify-between border border-gold/30"
           activeOpacity={0.85}
         >
           <View>
             <Text className="text-gold font-bold text-lg">Treasure Hunt</Text>
-            <Text className="text-parchment-dark text-sm">5 audio clues · Crew wins together</Text>
+            <Text className="text-parchment-dark text-sm">
+              {token ? "5 audio clues · Crew wins together" : "Login to play multiplayer"}
+            </Text>
           </View>
-          <Text className="text-3xl">💰</Text>
+          <Text className="text-3xl">{token ? "💰" : "🔐"}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

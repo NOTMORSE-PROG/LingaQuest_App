@@ -3,6 +3,7 @@ import { View, Text, Animated, Pressable } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer as ExpoAudioPlayer, AudioStatus } from "expo-audio";
+import { resolveAudioSource } from "@/lib/audio-assets";
 
 function formatSec(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -63,7 +64,8 @@ export function AudioPlayer({ audioUrl, onEnd, autoPlay = false, rate = 1.0, all
 
   // Own the full player lifecycle manually so cleanup runs pause() before any expo-audio teardown
   useEffect(() => {
-    const p = createAudioPlayer({ uri: audioUrl }, { updateInterval: 100 });
+    const source = resolveAudioSource(audioUrl);
+    const p = createAudioPlayer(source, { updateInterval: 100 });
     playerRef.current = p;
     const sub = p.addListener("playbackStatusUpdate", (s: AudioStatus) => {
       setStatus(s);

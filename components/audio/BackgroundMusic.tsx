@@ -3,6 +3,7 @@ import { useFocusEffect } from "expo-router";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer } from "expo-audio";
 import { useAudioStore } from "@/stores/audio";
+import { resolveAudioSource } from "@/lib/audio-assets";
 
 const ISLAND_MUSIC: Record<number, string> = {
   1: "https://assets.mixkit.co/music/188/188.mp3",   // Echoes — slow ethereal ice ambience
@@ -48,7 +49,8 @@ export function BackgroundMusic({ islandNumber, bgMusicUrl, volume }: Props) {
             shouldPlayInBackground: false,
           });
           if (cancelled) return;
-          const p = createAudioPlayer({ uri: url });
+          const source = resolveAudioSource(url);
+          const p = createAudioPlayer(source);
           p.loop = true;
           p.volume = volume ?? 0.35;
           p.muted = isMutedRef.current;

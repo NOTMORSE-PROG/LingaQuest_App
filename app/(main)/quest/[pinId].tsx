@@ -3,8 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Alert } fr
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withSpring, cancelAnimation, Easing } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api";
+import { usePin, useSubmitProgress } from "@/hooks/useOfflineData";
 import { AudioPlayer } from "@/components/audio/AudioPlayer";
 import { DagatCharacter, DagatState } from "@/components/characters/DagatCharacter";
 import { CaptainSalita } from "@/components/characters/CaptainSalita";
@@ -601,7 +600,6 @@ function QuestBonusTimer({ seconds }: { seconds: number }) {
 export default function QuestScreen() {
   const { pinId, mode, nextPinId } = useLocalSearchParams<{ pinId: string; mode?: string; nextPinId?: string }>();
   const [isResultMode, setIsResultMode] = useState(mode === "result");
-  const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const characterMode = user?.characterModeEnabled ?? false;
   const { playCorrect, playWrong } = useSoundEffect();
@@ -674,31 +672,29 @@ export default function QuestScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pinId]);
 
-  const { data: pin, isLoading, isError: isPinError, error: pinError, refetch: refetchPin } = useQuery({
-    queryKey: ["pin", pinId],
-    queryFn: () => apiClient.getPin(pinId),
-  });
+  const { data: pin, isLoading, isError: isPinError, error: pinError, refetch: refetchPin } = usePin(pinId);
   const isPinLocked = isPinError && (pinError as Error)?.message?.includes("permission");
 
-  const submitMutation = useMutation({
-    mutationFn: (data: { pinId: string; accuracy: number }) =>
-      apiClient.submitProgress(data),
-    retry: 3,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
-    onSuccess: () => {
-      setSubmitError(null);
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
-      queryClient.invalidateQueries({ queryKey: ["island"] });
-      queryClient.invalidateQueries({ queryKey: ["islands"] });
-      setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
-    },
-    onError: (err: unknown) => {
-      setSubmitError(
-        err instanceof Error ? err.message : "Progress could not be saved. Please retry."
-      );
-      setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
-    },
-  });
+  const submitMutation = useSubmitProgress();
+  // Wire up phase transitions that the original onSuccess/onError handled
+  const originalSubmitMutate = submitMutation.mutate;
+  submitMutation.mutate = ((data: { pinId: string; accuracy: number }, options?: any) => {
+    originalSubmitMutate(data, {
+      ...options,
+      onSuccess: (...args: any[]) => {
+        setSubmitError(null);
+        setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
+        options?.onSuccess?.(...args);
+      },
+      onError: (err: unknown, ...rest: any[]) => {
+        setSubmitError(
+          err instanceof Error ? err.message : "Progress could not be saved. Please retry."
+        );
+        setPhase((prev) => (prev === "submitting" ? "pinComplete" : prev));
+        options?.onError?.(err, ...rest);
+      },
+    });
+  }) as typeof submitMutation.mutate;
 
   // Shuffle challenges and choices once per pin load
   useEffect(() => {

@@ -109,6 +109,12 @@ export const apiClient = {
   submitProgress: (data: { pinId: string; accuracy: number }) =>
     request("/progress", { method: "POST", body: JSON.stringify(data) }),
 
+  submitProgressBatch: (items: { pinId: string; accuracy: number }[]) =>
+    request<{ results: { pinId: string; accuracy: number; isPassed: boolean }[] }>(
+      "/progress/batch",
+      { method: "POST", body: JSON.stringify({ items }) }
+    ),
+
   // Dev-only (gated server-side by DEV_EMAILS)
   markIslandComplete: (islandId: string) =>
     request<{ ok: boolean; completed: number }>("/dev/island-complete", {
