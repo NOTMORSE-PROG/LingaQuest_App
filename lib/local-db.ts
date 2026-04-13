@@ -699,12 +699,16 @@ export async function mergeServerProgress(
 ) {
   await db.withExclusiveTransactionAsync(async (txn) => {
     for (const item of serverItems) {
+      // If local row has needsSync=1 (un-pushed local work): keep MAX to preserve local data
+      // If local row has needsSync=0 (already synced) or doesn't exist: REPLACE with server value
       await txn.runAsync(
         `INSERT INTO local_progress (pinId, accuracy, isCompleted, completedAt, needsSync)
          VALUES (?, ?, 1, datetime('now'), 0)
          ON CONFLICT(pinId) DO UPDATE SET
-           accuracy = MAX(accuracy, excluded.accuracy),
-           needsSync = CASE WHEN accuracy < excluded.accuracy THEN 0 ELSE needsSync END`,
+           accuracy = CASE WHEN needsSync = 1 THEN MAX(accuracy, excluded.accuracy) ELSE excluded.accuracy END,
+           isCompleted = 1,
+           completedAt = datetime('now'),
+           needsSync = CASE WHEN needsSync = 1 THEN 1 ELSE 0 END`,
         [item.pinId, item.accuracy]
       );
     }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer } from "expo-audio";
+import { resolveAudioSource } from "@/lib/audio-assets";
 import Svg, { Circle, Ellipse, Path, Rect, Defs, RadialGradient, Stop, Polygon } from "react-native-svg";
 import Animated, {
   useSharedValue,
@@ -33,7 +34,7 @@ export function IngayWarning({ islandName, skillFocus, dialogue, onDismiss, audi
       try {
         await setAudioModeAsync({ playsInSilentMode: true });
         if (!mounted) return;
-        const p = createAudioPlayer({ uri: audioUrl });
+        const p = createAudioPlayer(resolveAudioSource(audioUrl));
         if (!mounted) { p.remove(); return; }
         soundRef.current = p;
         p.play();

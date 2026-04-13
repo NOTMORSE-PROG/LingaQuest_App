@@ -115,6 +115,12 @@ export const apiClient = {
       { method: "POST", body: JSON.stringify({ items }) }
     ),
 
+  getSyncData: () =>
+    request<{
+      progress: { pinId: string; accuracy: number }[];
+      badges: { type: string; earnedAt: string }[];
+    }>("/progress/sync"),
+
   // Dev-only (gated server-side by DEV_EMAILS)
   markIslandComplete: (islandId: string) =>
     request<{ ok: boolean; completed: number }>("/dev/island-complete", {

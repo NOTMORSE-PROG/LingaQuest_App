@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GoogleSignin, statusCodes } from "@/lib/google-signin";
 import { useAuthStore } from "@/stores/auth";
 import { apiClient } from "@/lib/api";
+import { syncProgress } from "@/lib/sync-engine";
 
 function navigateAfterAuth(isOnboarded: boolean) {
   if (!isOnboarded) {
@@ -42,6 +43,7 @@ export default function LoginScreen() {
     try {
       const data = await apiClient.login({ username, password });
       await setAuth(data.token, data.user);
+      syncProgress(); // fire-and-forget: push local + pull server data
       navigateAfterAuth(data.user.isOnboarded);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : undefined;
@@ -62,6 +64,7 @@ export default function LoginScreen() {
 
       const data = await apiClient.googleAuth(idToken);
       await setAuth(data.token, data.user);
+      syncProgress(); // fire-and-forget: push local + pull server data
       navigateAfterAuth(data.user.isOnboarded);
     } catch (e: unknown) {
       const code = (e as any)?.code;

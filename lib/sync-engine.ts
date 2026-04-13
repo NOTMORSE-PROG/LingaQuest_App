@@ -14,7 +14,12 @@ import { AppState } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { useAuthStore } from "@/stores/auth";
 import { apiClient } from "@/lib/api";
-import { getUnsyncedProgress, markProgressSynced } from "@/lib/local-db";
+import {
+  getUnsyncedProgress,
+  markProgressSynced,
+  mergeServerProgress,
+  mergeServerBadges,
+} from "@/lib/local-db";
 
 let syncInProgress = false;
 
@@ -36,11 +41,10 @@ export async function syncProgress() {
   try {
     const db = SQLite.openDatabaseSync("linguaquest.db");
 
-    // PUSH: Send unsynced progress to server
+    // === PUSH: Send unsynced progress to server ===
     const unsynced = await getUnsyncedProgress(db);
-    if (unsynced.length === 0) return;
 
-    try {
+    if (unsynced.length > 0) try {
       await apiClient.submitProgressBatch(unsynced);
       // Mark all as synced
       await markProgressSynced(
@@ -51,15 +55,29 @@ export async function syncProgress() {
       // Leave needsSync = 1, will retry next cycle
     }
 
-    // Badge sync is handled server-side during progress batch submission
-    // (checkAndAwardBadges runs after batch upsert), so no separate push needed.
-    // Mark local badges as synced since server now has the progress data.
+    // Mark local badges as synced (server awards badges during progress batch)
     try {
       await db.runAsync(
         "UPDATE local_badges SET needsSync = 0 WHERE needsSync = 1"
       );
     } catch {
       // Non-critical
+    }
+
+    // === PULL: Fetch server progress + badges and merge into local DB ===
+    try {
+      const { progress, badges } = await apiClient.getSyncData();
+      if (progress.length > 0) {
+        await mergeServerProgress(db, progress);
+      }
+      if (badges.length > 0) {
+        await mergeServerBadges(
+          db,
+          badges.map((b) => ({ badgeType: b.type, earnedAt: b.earnedAt }))
+        );
+      }
+    } catch {
+      // Pull failed — not critical, local data still works
     }
   } finally {
     syncInProgress = false;
