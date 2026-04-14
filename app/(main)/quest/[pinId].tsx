@@ -12,7 +12,6 @@ import { ShardClaimCinematic } from "@/components/scene/ShardClaimCinematic";
 import { CertificateModal } from "@/components/scene/CertificateModal";
 import { useAuthStore } from "@/stores/auth";
 import { MuteButton } from "@/components/audio/MuteButton";
-import { BackgroundMusic } from "@/components/audio/BackgroundMusic";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
 import { Challenge } from "@/types";
 
@@ -27,9 +26,6 @@ function shuffle<T>(arr: T[]): T[] {
 
 const LABELS = ["A", "B", "C", "D"] as const;
 
-// Soft ambient music for quest listening/answering phases — Mixkit "Rest Now" (5-min calm ambient)
-// Royalty-free, same CDN as island music. Alternatives: 444 (Yoga Song), 135 (Sleepy Cat lo-fi)
-const QUEST_AMBIENT_URL = "https://assets.mixkit.co/music/584/584.mp3";
 
 // Shuffle choices and reassign labels A→D in display order.
 // Also updates `answer` so it still points to the correct choice.
@@ -1396,12 +1392,6 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
     <SafeAreaView className="flex-1 bg-ocean-deep" style={questBg} edges={["top"]}>
       {/* Per-island curse effect overlay */}
       <QuestSceneOverlay islandNumber={islandNum} />
-      {/* Soft ambient music throughout quest — mounts with screen so useFocusEffect fires reliably */}
-      <BackgroundMusic
-        islandNumber={0}
-        bgMusicUrl={QUEST_AMBIENT_URL}
-        volume={0.005}
-      />
       {phase !== "listening" && <MuteButton />}
 
       {/* Island 1 — green forest depth behind content */}
