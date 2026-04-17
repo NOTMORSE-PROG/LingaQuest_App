@@ -7,6 +7,7 @@
       "name": "Isla ng Salita",
       "skillFocus": "Vocabulary in Context",
       "description": "The villagers here are frozen in silence. Ingay scrambled their words and no one can understand each other. Listen carefully to the words around the unfamiliar ones — context is your compass.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "These villagers are frozen, young sailor. Ingay scrambled their words — turned meaning to noise. Listen to what surrounds the strange words. Context is your compass. It always has been. This is where your journey begins.",
       "npcDialogueSuccess": "The villagers breathe again! You unfroze them with your ears. The Vocabulary Shard is yours — first of seven. Sail on, Dagat. The sea is watching.",
@@ -22,12 +23,14 @@
       "pins": [
         {
           "id": "cmmzrbbax0005worszuonxups",
+          "islandId": "cmmzrb9s70003worsslmytuf1",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnvek2gj0006vuuo1uujg9xb",
+              "pinId": "cmmzrbbax0005worszuonxups",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyg8qo0006woq02k2ehe37.mp3",
               "audioScript": "Dagat stepped onto Isla ng Salita for the first time, no shards in her satchel, the salt still wet on her boots. The first frozen villager she found was an old navigator — mouth open, mid-sentence, eyes fixed on a map that no longer moved. Ingay's spell had scrambled his words, but Dagat leaned close and let his fractured voice wash over her. The old navigator unrolled a remarkably elaborate map of the hidden sea. Every current was charted, every reef marked with a red warning stroke, every favorable wind illustrated with delicate arrows. The crew gathered around in silence — none of them had ever seen something so precisely and carefully drawn. She stayed with the word until the sentence around it gave her everything she needed.",
               "question": "What does 'elaborate' most likely mean as used in this passage?",
@@ -57,6 +60,7 @@
             },
             {
               "id": "cmnvek2gj0007vuuoh3eieui3",
+              "pinId": "cmmzrbbax0005worszuonxups",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyg8qo0007woq0j0ujbbyl.mp3",
               "audioScript": "Still on Isla ng Salita, Dagat moved deeper into the frozen village, following the sound of a voice that flickered in and out like a dying lamp. A sailor stood at the dock's edge, frozen mid-story about a voyage that had gone long and hard. Ingay had sealed the words, but Dagat listened through the static. After three weeks at sea with no port in sight, fresh water had become scarce aboard the Baybayin. The cook was rationing half a cup per sailor each day. The captain scanned the horizon from the crow's nest every hour, hoping to spot an island with a freshwater spring. What had once flowed freely from barrels now felt like gold. Dagat felt the weight of the word before she had a name for it.",
               "question": "What does 'scarce' most likely mean as used in the passage?",
@@ -88,12 +92,14 @@
         },
         {
           "id": "cmmzrbdyr0009wors90m8pn6q",
+          "islandId": "cmmzrb9s70003worsslmytuf1",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnvek4ha000avuuoesv51o7b",
+              "pinId": "cmmzrbdyr0009wors90m8pn6q",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygalz000awoq0uht2xokm.mp3",
               "audioScript": "The frozen village went deeper than Dagat had expected. She found a young sailor at the far end of the market square, suspended mid-word, his hands curved as if still holding an invisible rope. He had been telling someone about a sailor named Mando — and the story pressed through Ingay's spell in fragments. Young Mando had failed his navigation test three times. The older sailors laughed and called him 'lost at sea.' But he kept going back to the star charts every night, tracing constellations with his finger until his eyes burned. Two months later, he guided the ship through the treacherous Straits of Alingaso on his own — flawlessly. The captain simply said: 'Those who persevere find their course.' Dagat whispered the last word back to herself, like a compass bearing she intended to keep.",
               "question": "What does 'persevere' mean based on the story?",
@@ -123,6 +129,7 @@
             },
             {
               "id": "cmnvek4ha000bvuuoazua5izl",
+              "pinId": "cmmzrbdyr0009wors90m8pn6q",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygalz000bwoq0yy7ecdpp.mp3",
               "audioScript": "Another frozen villager, farther along the same dock — this one a first mate, caught in the posture of grief. His back was to the road, shoulders caved inward, as if Ingay had stopped the world at his worst moment. The story seeping through was quiet and heavy. When the first mate realized the compass had gone overboard in the storm, he walked to the stern alone. He stood with his back to the crew, shoulders curved, staring at the empty sea. He did not speak at dinner. He did not join the card game as he usually did. He just stared at the horizon like a man carrying something no one else could see. Dagat watched his frozen face and felt she understood the word already — before it was spoken.",
               "question": "When the passage describes the first mate as 'dejected,' what does it most likely mean?",
@@ -154,12 +161,14 @@
         },
         {
           "id": "cmmzrbfo2000dworsf9mp2twa",
+          "islandId": "cmmzrb9s70003worsslmytuf1",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvek6ab000evuuog3tt19yq",
+              "pinId": "cmmzrbfo2000dworsf9mp2twa",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygcab000ewoq0ke3yq64t.mp3",
               "audioScript": "Dagat pressed deeper into Isla ng Salita — past the first dock, past the market stalls, into the quieter middle of the village where Ingay's spell felt thicker. A fisherman stood frozen at the center of the market square, one hand raised mid-gesture, his face set in the expression of someone who had finally made up his mind about something he had resisted for a long time. The story seeped through the interference slowly, like water through cracked timber. Old Isko had not wanted to lend his boat. Everyone in the village knew it. He had crossed his arms and said 'no' twice, and the second time he said it he turned his back on them entirely. But the storm was coming and the crew had no other vessel, and in the end, old Isko's feet walked him back to the dock before his mind had made up its decision. He threw the rope to them without a word. He sat on the dock wall and watched them sail out. When they returned safely, someone asked him why he changed his mind. He didn't answer. He just coiled the rope. Dagat watched his frozen face and understood the word before she found it.",
               "question": "What does 'reluctant' most likely mean as used in the passage?",
@@ -189,6 +198,7 @@
             },
             {
               "id": "cmnvek6ab000fvuuoqtbnkqvo",
+              "pinId": "cmmzrbfo2000dworsf9mp2twa",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygcab000fwoq0ck1d3ih7.mp3",
               "audioScript": "Another frozen figure at the edge of the market square — a very young sailor, too new to have calluses yet, caught mid-sentence in some kind of quiet plea to an older officer. The words came through jagged but the picture they painted was clear. Twelve-year-old Tomas had asked the boatswain every morning for two months if he could practice the helm. The boatswain always said 'not yet.' Tomas began arriving an hour before every drill, ropes already coiled, station already set. He stayed after each session to re-clean what had already been cleaned. He wrote the sixteen knots on paper and taped them to the inside of his sea bag and read them before every watch. He never complained. He just tried, quietly and completely, every single day. On the forty-third morning, the boatswain handed him the wheel without a word. Dagat held that picture in her mind — the forty-three mornings — and the word came with it.",
               "question": "What does 'earnest' most likely mean as used in this passage?",
@@ -220,12 +230,14 @@
         },
         {
           "id": "cmmzyy3e5000fwol02lmc994o",
+          "islandId": "cmmzrb9s70003worsslmytuf1",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvek847000ivuuogjye7stt",
+              "pinId": "cmmzyy3e5000fwol02lmc994o",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygdyk000iwoq02oj455a9.mp3",
               "audioScript": "Ingay's hold was getting stronger here — the air near the market district crackled and hissed with interference. A group of sailors were frozen mid-gesture in a tight circle, all of them staring toward the horizon, mouths open. The story crackling through them was urgent and strange. The lookout spotted a peculiar ship drifting at the edge of the fog. It flew no flag. Its sails were patched with mismatched cloth — purple, orange, and deep green. The figurehead at the bow was carved as a crowing rooster, not the usual mermaid. Even the hull was painted in alternating black and white stripes. Every sailor on deck stopped and stared. Dagat pressed her ear toward the sound and held on to the word they kept circling back to.",
               "question": "What does 'peculiar' most likely mean as used in the passage?",
@@ -255,6 +267,7 @@
             },
             {
               "id": "cmnvek847000jvuuo4gb7do8t",
+              "pinId": "cmmzyy3e5000fwol02lmc994o",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygdyk000jwoq03wbgwdjd.mp3",
               "audioScript": "The market of Isla ng Salita was almost completely silent under Ingay's spell — only the hiss of scrambled words and the distant sound of the sea. A frozen dockworker was trying to finish an account of something that had happened to old Kulas, his expression one of bewildered sympathy. Ingay's interference crackled between each word, but Dagat stood still and listened through it. Old Kulas had been to Port Bagyo a dozen times. But that morning the fog was so thick he could barely see his own hands. He wandered the dock for an hour, utterly bewildered. He could not find the harbormaster's office, could not remember which pier the Baybayin was docked at, and was no longer sure whether the sound he heard was a bell or just the wind. The word came through with everything it needed around it.",
               "question": "The passage says Kulas was 'utterly bewildered.' What does this mean?",
@@ -286,12 +299,14 @@
         },
         {
           "id": "cmmzyy59b000jwol03lndrt70",
+          "islandId": "cmmzrb9s70003worsslmytuf1",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnveka4h000mvuuooucr2m5z",
+              "pinId": "cmmzyy59b000jwol03lndrt70",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygftg000mwoq0uwqdmhbs.mp3",
               "audioScript": "The last corner of Isla ng Salita was quieter than the rest — a hushed kind of cold, as if even Ingay was holding her breath. The Vocabulary Shard was close; Dagat could feel it pulsing somewhere ahead. One more frozen storyteller stood at the village's edge — a veteran sailor, weathered and still, mid-way through a legend she had clearly told a hundred times. Ingay was pushing back hardest here. But Dagat pressed in and listened. Everyone said the eastern passage was impossible in typhoon season. The old captains refused to sail it. But young Captain Hana was tenacious. She mapped the route three times. She studied six months of wind records. She ran two test sails through the outer storm belt. On the day of the crossing, she held the wheel steady for sixteen hours straight — and brought every sailor home. The word rang out like a bell through all the noise.",
               "question": "What does 'tenacious' most likely mean?",
@@ -321,6 +336,7 @@
             },
             {
               "id": "cmnveka4h000nvuuormlzbx3y",
+              "pinId": "cmmzyy59b000jwol03lndrt70",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygftg000nwoq0mdfhcnjr.mp3",
               "audioScript": "And there he was — the very last frozen villager on Isla ng Salita. Dagat recognized the face before she reached him: old Mang Berto, the island's most legendary navigator, caught mid-story near a lantern that had gone cold. Ingay had frozen him at his most alive moment. Dagat leaned close, close enough to feel the faint warmth still caught in the spell, and his voice broke through in fragments. Old Mang Berto would tell the story every night near the lantern. 'When the Alingawngaw storm hit,' he would say, 'the waves were ferocious — towering walls of black water that swallowed the horizon. Three ships were capsized in a single hour. We tied ourselves to the mast and prayed. I have sailed forty years. I have never seen the sea wear that face again.' Every young sailor listened without a word. Dagat listened the same way now — without a word — until the shard began to glow.",
               "question": "What does 'ferocious' mean as used in the passage?",
@@ -358,6 +374,7 @@
       "name": "Isla ng Bilis",
       "skillFocus": "Rapid Speech Comprehension",
       "description": "Ingay sped up time on this island. Everyone speaks too fast to follow. Still your mind, breathe slowly, and let the words land where they will.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "The Vocabulary Shard brought you this far — your ears already sharper for it. But Ingay sped up time on Bilis. Everyone speaks too fast to follow. The first shard taught you to hear meaning. Now learn to hear at speed.",
       "npcDialogueSuccess": "You matched the current! Two shards now — the Swift Shard shines. Ingay sped up the world and you kept pace. Five islands left, young sailor.",
@@ -373,12 +390,14 @@
       "pins": [
         {
           "id": "cmmzrbhk4000gworslyhueleh",
+          "islandId": "cmmzrbgm3000eworsjthu3nc6",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnvekc54000rvuuowvus6xe4",
+              "pinId": "cmmzrbhk4000gworslyhueleh",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyghoh000rwoq02o9vpwwt.mp3",
               "audioScript": "The Vocabulary Shard glowed in Dagat's satchel as the Baybayin dropped anchor at Isla ng Bilis. The moment her boots touched the dock, she felt it — time lurching forward at an unnatural pace, everything spoken at the speed of a panicked heart. Ingay had sped up the island's clock, and the words of every announcement blurred past like water off a tilting hull. Dagat braced herself and caught a fragment from the harbormaster's tower above: Ahoy, crew of the Baybayin! The quartermaster reminds all deckhands that rope-rigging drills will be held this Thursday and Friday — NOT Tuesday as previously posted. Report to the main deck at dawn. Bring your standard kit: gloves, harness line, and climbing hook. Sailors without full kit will not be permitted to drill. Dismissed! She held the correction in her mind like a fixed star.",
               "question": "On which days are the rope-rigging drills now scheduled?",
@@ -408,7 +427,8 @@
             },
             {
               "id": "cmnvekc54000svuuo3r3yo6bo",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyghoh000swoq00ihi8tw0.mp3",
+              "pinId": "cmmzrbhk4000gworslyhueleh",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776435441/linguaquest/audio/challenge-cmnvekc54000svuuo3r3yo6bo.mp3",
               "audioScript": "Dagat moved through the harbor district of Isla ng Bilis, watching sailors flinch at announcements that came and went in the space of a breath. Everything on this island moved at Ingay's unnatural pace — even the dockmaster's voice streaked past like a ship in full sail. Another notice crackled through the air from the dockmaster's post, and Dagat planted her feet and listened. Port Alingawngaw dockmaster's notice! The supply depot opens weekdays — Monday through Friday — at six bells morning and closes at four bells evening. On weekends — Saturday and Sunday — the depot opens two hours later at eight bells and closes early at two bells afternoon. The depot will be fully sealed during storm warnings. Fair winds! The weekend times were the ones that mattered — she pinned them in place.",
               "question": "What time does the supply depot close on weekends?",
               "choices": [
@@ -432,19 +452,21 @@
               "answer": "B",
               "explanation": "'On weekends... closes early at two bells afternoon.' The weekend closing time is two bells in the afternoon.",
               "hint": "Listen specifically for 'weekends' — what closing time follows those words?",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndyghoh000swoq00ihi8tw0.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776435466/linguaquest/audio/challenge-explanation-cmnvekc54000svuuo3r3yo6bo.mp3",
               "sortOrder": 2
             }
           ]
         },
         {
           "id": "cmmzrbjg8000kworskye4w2a5",
+          "islandId": "cmmzrbgm3000eworsjthu3nc6",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnvekdy4000vvuuo1ek4i6gp",
+              "pinId": "cmmzrbjg8000kworskye4w2a5",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygjcp000vwoq0ul2a5yz1.mp3",
               "audioScript": "Farther into Isla ng Bilis, Ingay's time-acceleration thickened — announcements arriving half-finished, officers mid-sprint between posts. Dagat's ears were sharper now than when she'd landed, but the blur was still fierce. She caught a fleet officer's urgent announcement as the woman ran past, words spilling at an inhuman pace. Attention all officers! The afternoon crew briefing scheduled for three bells today has been cancelled. A broken mainmast on Pier Seven requires all senior riggers to respond immediately. The briefing is rescheduled for tomorrow, same time, same location. Inform your junior deckhands. Move swiftly! Dagat caught the reason before it vanished.",
               "question": "Why was the afternoon crew briefing cancelled?",
@@ -474,6 +496,7 @@
             },
             {
               "id": "cmnvekdy4000wvuuo7zal12vb",
+              "pinId": "cmmzrbjg8000kworskye4w2a5",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygjcp000wwoq0bemionrw.mp3",
               "audioScript": "A dispatch runner on Isla ng Bilis came skidding around a corner, speaking so fast she could barely breathe between words — Ingay's time-blur at its most relentless. Dagat stepped directly into the runner's path, steadied her own breathing, and caught the fleet intelligence report mid-delivery. Breaking dispatch from the Coral Triangle lookout post: A scout vessel has identified a previously uncharted island at bearing forty-seven degrees northeast, approximately three days' sail from Port Alingawngaw. The island shows freshwater streams and timber stands. The discovery was reported by helmsman Reyes during last week's scouting run. Fleet commanders are urged to review updated sea charts immediately. The island. Northeast. Three days. She held each detail like a rope in fast water.",
               "question": "What did the scout vessel discover?",
@@ -505,12 +528,14 @@
         },
         {
           "id": "cmmzrbl5k000owors17c2xlox",
+          "islandId": "cmmzrbgm3000eworsjthu3nc6",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvekfr3000zvuuovagwuudy",
+              "pinId": "cmmzrbl5k000owors17c2xlox",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygl0x000zwoq0xncoiciu.mp3",
               "audioScript": "Dagat pressed further into the Bilis harbor district, the time-blur now constant — every announcement a blur of sound that she had to slow in her own mind to catch. A fleet assignment officer's voice crackled from a message post ahead, the words overlapping themselves at Ingay's unnatural pace. Attention all crew of the Balisang and the Salabid! Change to pier assignments effective immediately. The Balisang — previously assigned to Pier Four, north side — is now reassigned to Pier Six, south side. Berth space at Pier Four has been taken by an emergency resupply vessel. The Salabid remains at Pier Three as originally posted. All cargo handlers and rigging crew should adjust their positions accordingly. Dock supervisor Mana confirms the change. Fair winds and steady moorings! She caught the number before it vanished.",
               "question": "Where is the Balisang now assigned to dock?",
@@ -540,6 +565,7 @@
             },
             {
               "id": "cmnvekfr30010vuuoxhmxzdy5",
+              "pinId": "cmmzrbl5k000owors17c2xlox",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygl0x0010woq0yfg58pfe.mp3",
               "audioScript": "A medical supply courier on Isla ng Bilis was reciting an inventory update, speaking at the pace Ingay forced on everything — syllables colliding, pauses removed. Dagat planted her feet and listened for the specific item that mattered. Port Alingawngaw medical depot update! Effective this morning: fresh bandage wraps are now restocked — full supply available. Fever tonic remains out of stock and is not expected until next port call. Surgical thread is available in limited quantities — officers only. Drinking salts are fully restocked. The splint boards ordered three weeks ago have arrived and are available at Counter Two. Report any urgent medical needs to the duty nurse at the Red Anchor station immediately. She had exactly one item on the list to hold: the one still missing.",
               "question": "Which medical supply is still out of stock?",
@@ -571,12 +597,14 @@
         },
         {
           "id": "cmmzyybl6000ywol0ipeimgn6",
+          "islandId": "cmmzrbgm3000eworsjthu3nc6",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvekhk50013vuuop55m5dqv",
+              "pinId": "cmmzyybl6000ywol0ipeimgn6",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygmp50013woq0nyhx6bhd.mp3",
               "audioScript": "Dagat was deeper into Isla ng Bilis now, and the time-blur was worse than it had been at the harbor — words piling on top of each other, syllables compressed until they were nearly unrecognizable. Ingay was fighting harder here. A harbormaster's bell notice came screaming through the air, so fast the words nearly tripped over each other, and Dagat braced against a dock post and caught what she could. Good tide, sailors! The harbormaster announces that the cannon inspection originally set for this Wednesday, the fourteenth, has been moved to next Wednesday, the twenty-first. The armory yard remains the same venue. All gunners and powder keepers must attend. Absence without signed medical leave from the ship's surgeon will be recorded. Notify your watch partners. Fair winds! The date had changed. She made herself note what had not.",
               "question": "Why was the cannon inspection rescheduled?",
@@ -606,6 +634,7 @@
             },
             {
               "id": "cmnvekhk50014vuuojmllau2s",
+              "pinId": "cmmzyybl6000ywol0ipeimgn6",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygmp60014woq000xhy6zk.mp3",
               "audioScript": "At the supply barge on Isla ng Bilis, the quartermaster was reeling off changes at Ingay's unnatural pace — each figure arriving and disappearing before it could properly land. Dagat stood at the barge's edge and slowed her mind against the rush, letting the numbers come as they would. Attention all crew at the supply barge! Starting at next port call, ration prices have changed. A full salt-fish portion now costs two coppers. Hardtack biscuits are one copper per bundle. Fresh water flasks remain free. The daily hot stew — previously three coppers — has been reduced to two coppers. All prices effective beginning Monday. The word 'reduced' was the anchor she needed.",
               "question": "How much does the daily hot stew cost under the new prices?",
@@ -637,12 +666,14 @@
         },
         {
           "id": "cmmzyyd9c0012wol08rprwh7t",
+          "islandId": "cmmzrbgm3000eworsjthu3nc6",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnvekjd70017vuuokvw5npna",
+              "pinId": "cmmzyyd9c0012wol08rprwh7t",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygode0017woq0pgo7qe4c.mp3",
               "audioScript": "The Swift Shard was close — Dagat could feel it the way she had felt the first shard, a warmth pulling at the edge of the air. But Ingay was pouring everything into this island now, and the fleet commander's announcement was nearly unintelligible, the words compressed to a blur of urgent sound. Dagat closed her eyes, slowed her breath, and listened with everything she had. Fast news from the fleet commander! The joint fleet maneuvers originally planned for this Friday have been postponed to the following Friday. All ship positions and formations remain the same. The drill route is unchanged. Participation is required for all captains and first mates. No late arrivals will be excused. Signal your fleet neighbors. Dismissed! She caught the most important absence in the whole announcement: the reason no one gave.",
               "question": "Why were the joint fleet maneuvers postponed?",
@@ -672,6 +703,7 @@
             },
             {
               "id": "cmnvekjd70018vuuonxtwfq59",
+              "pinId": "cmmzyyd9c0012wol08rprwh7t",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygode0018woq0su3fjx1f.mp3",
               "audioScript": "The final challenge on Isla ng Bilis — and this was where Ingay almost won. The maritime report flew past in a blur so complete that even the numbers seemed to vibrate. Dagat thought of Captain Hana, whose fleet had sailed the Eastern Passage through sixteen hours of storm, and she slowed her mind the same way she imagined Hana steadying the wheel. Maritime dispatch: A new survey by the Coral Sea Navigation Council confirms that crews sailing the Eastern Passage with fewer than six hours of night watch rest perform at three times the error rate of crews resting eight or more hours. The survey tracked two hundred vessels over two full sailing seasons. Council officials recommend all fleet captains mandate minimum rest schedules before entering the passage. The number that mattered sat quiet at the center of the blur — and she caught it.",
               "question": "How many hours of rest does the survey associate with better performance?",
@@ -709,6 +741,7 @@
       "name": "Isla ng Diwa",
       "skillFocus": "Main Idea and Details",
       "description": "Ingay covered this island in thick fog. The main idea is buried beneath layers of detail and misdirection. Find what the speaker keeps returning to — that is the heart of it.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "Two shards already in your satchel. Ingay's answer to your speed is fog — she buried the main idea under layers of detail on Isla ng Diwa. Ask yourself: what point does the speaker return to most? That thread is your lantern.",
       "npcDialogueSuccess": "The fog lifts! Three shards now — the Clarity Shard is yours. You are halfway through the Listening Sea, Dagat. Halfway home.",
@@ -724,12 +757,14 @@
       "pins": [
         {
           "id": "cmmzrbn1m000rworsig81ja6l",
+          "islandId": "cmmzrbm3l000pwors37a8xnsb",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnveklln001cvuuo0rq8t8ae",
+              "pinId": "cmmzrbn1m000rworsig81ja6l",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygq8d001cwoq05gr3mppr.mp3",
               "audioScript": "Two shards in her satchel now, and Isla ng Diwa swallowed Dagat the moment she stepped ashore — the fog was total, white and close, pressing against her skin like damp cloth. Somewhere ahead in the fog, a voice was speaking. She recognized the cadence before she understood the words: it was the old navigator she'd met frozen on Isla ng Salita, somehow here ahead of her, giving a speech to an invisible audience. She pushed through the mist and listened for the thread. Every experienced sailor knows what the young ones forget: the most dangerous thing on a ship is not the storm or the reef — it is a tired navigator. Studies from the Maritime Safety Guild show that navigators who sleep fewer than six hours make three times as many course errors. Your charts, your compass, your eyes — none of them work if the brain behind them is exhausted. Rest is not laziness. It is the foundation of safe sailing. Dagat found the main point before the fog swallowed the voice again.",
               "question": "What is the main idea of this passage?",
@@ -759,6 +794,7 @@
             },
             {
               "id": "cmnveklln001dvuuogsm7w1va",
+              "pinId": "cmmzrbn1m000rworsig81ja6l",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygq8d001dwoq0r8w5mazi.mp3",
               "audioScript": "The fog deepened further into Isla ng Diwa, and the voice Dagat caught now belonged to a ship's captain — lecturing her crew somewhere in the white, the sound dampened and muffled by Ingay's mist. Details arrived first: names of storms, dates, geography. The main idea kept slipping beneath them. Dagat reached through the layers and followed the thread. Most sailors fear storms — and rightly so. But storms have shaped these islands as much as any calm current. The great typhoon of 1714 carved the natural harbor at Port Salita. The seasonal squalls push nutrient-rich water up from the depths, feeding the fish that feed the fleet. The Eastern Passage itself — the most direct trade route in the region — was discovered by a crew blown off course in a storm. Storms do not only destroy. Sometimes, they reveal. She let the final line land like an anchor.",
               "question": "What is the main point of this passage?",
@@ -790,12 +826,14 @@
         },
         {
           "id": "cmmzrboqx000vwors02ghyvvl",
+          "islandId": "cmmzrbm3l000pwors37a8xnsb",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnveknex001gvuuod57ewtpk",
+              "pinId": "cmmzrboqx000vwors02ghyvvl",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygs3k001gwoq0nbccq01d.mp3",
               "audioScript": "Still in the fog, Dagat found that the voice now belonged to the Baybayin's own captain — addressing her own crew, somewhere nearby in the white. Ingay's fog buried the point under practical details: rope counts, canvas weights, timber tallies. But Dagat listened past the numbers for what connected them all. Every season, fleets across the Listening Sea throw away enough rope, canvas, and timber to outfit five new vessels. Today I want to share three habits for the Baybayin's crew. First: before requesting new supplies, inspect what you already have. Second: repair before replacing — a sailor who can splice rope is worth twice his weight in gold. Third: repurpose what you cannot repair. Old sail canvas makes excellent cargo covers. Small changes in how we manage ship's materials add up to a large difference. Three habits. One goal. She had it.",
               "question": "What is the passage mainly about?",
@@ -825,6 +863,7 @@
             },
             {
               "id": "cmnveknex001hvuuom69un9oe",
+              "pinId": "cmmzrboqx000vwors02ghyvvl",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygs3k001hwoq0rf4j3fvt.mp3",
               "audioScript": "Deeper into the fog, two voices rose from opposite directions — a debate between sailors, their words wrapping around each other as Ingay's mist tangled the sound. One said one thing, one said another, and the argument seemed to go on and on. But then one voice rose above it — clearer, steadier, aimed at the heart of the matter. Dagat listened to it alone. Some captains say new navigation tools have ruined the old art of reading stars and currents. Others say they are the future of the fleet. I say both sides are missing the point. A sextant, a compass, a new chart — these are tools. The question is not whether to use them, but whether you understand the sea well enough to know when they are right and when they are wrong. Instruments used well make better sailors. That was the point. Not which side — what lay between them.",
               "question": "What is the speaker's main argument?",
@@ -856,12 +895,14 @@
         },
         {
           "id": "cmmzrbqg7000zworsean5bkw0",
+          "islandId": "cmmzrbm3l000pwors37a8xnsb",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvekp89001kvuuo7h95vxpi",
+              "pinId": "cmmzrbqg7000zworsean5bkw0",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygtrv001kwoq07tgrdwx9.mp3",
               "audioScript": "Still in the fog of Isla ng Diwa — thicker now at Pin 3, pressing in from all sides. A voice rose from somewhere to Dagat's left, unhurried and tired, full of complaints she had to push past to find what the speaker really wanted. A dock officer, it sounded like, addressing a restless crew. The morning gale delayed us by six hours. The supply barge from the northern islands still hasn't arrived. Three of our best riggers are down with sea fever. The charts we requested from Port Salita haven't been corrected yet. I know you're frustrated. I know the dock is crowded and the timeline has slipped. But I need you all to do one thing: wait. Hold your stations. Let the situation resolve itself. These things always do. The fog always lifts. The barge always comes. Our job right now is to stay steady and trust the process. Dagat found it — underneath every complaint, just one thing the officer wanted from the crew.",
               "question": "What is the main point of the officer's speech?",
@@ -891,6 +932,7 @@
             },
             {
               "id": "cmnvekp89001lvuuoeosrj2cs",
+              "pinId": "cmmzrbqg7000zworsean5bkw0",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygtrv001lwoq0toa624ts.mp3",
               "audioScript": "Deeper into the fog, a captain's voice reached Dagat — measured and deliberate, listing many things but clearly building toward one. Dagat breathed slowly and followed the thread from detail to detail until she found where it led. We have checked every hatch and sealed the ones showing wear. The bilge pumps have been tested — all working. Each sailor has been assigned their storm station. The safety ropes have been doubled along the main deck. The cook has prepared cold provisions in sealed tins in case the galley fire must be put out. We have done what we can with the time we have. There is only one thing that matters now: every decision we make from this point forward must put the safety of this crew first. Nothing else. No schedule, no cargo, no reputation — only the crew. Dagat followed it from beginning to end and saw exactly where it landed.",
               "question": "What is the main message of the captain's speech?",
@@ -922,12 +964,14 @@
         },
         {
           "id": "cmmzyyjkn001hwol0zgj4hdss",
+          "islandId": "cmmzrbm3l000pwors37a8xnsb",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvekr1a001ovuuof8hvajy9",
+              "pinId": "cmmzyyjkn001hwol0zgj4hdss",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmnvekr1a001ovuuof8hvajy9.mp3",
               "audioScript": "Pin 4 — the fog was at its thickest here, pressing in from all sides, Ingay working hardest to bury every clear thought under a flood of detail. Dagat could hear a port official somewhere ahead, speaking in long, careful sentences that piled fact upon fact. She slowed herself, breathed, and listened for the one thing the official kept returning to. Three years ago, a small group of island women began growing vegetables in an unused corner of Port Salita's eastern dock. What started as a side project became something larger. Today, the garden supplies fresh provisions to twelve vessels each week — reducing scurvy cases aboard ship by forty percent. Sailors from other ports have begun requesting seeds to bring home. What was once a corner of weeds has become one of the port's most valuable assets. The transformation. Start to finish. That was what the speech was really about.",
               "question": "What is the main idea of this passage?",
@@ -952,11 +996,12 @@
               "answer": "B",
               "explanation": "The passage traces the garden from a side project to a resource other ports want to replicate. Its growth and impact is the main idea.",
               "hint": "Follow the story from start to finish. What did the garden become? That transformation is the main idea.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndygvg6001owoq01rw6n8fv.mp3",
+              "explanationAudioUrl": null,
               "sortOrder": 1
             },
             {
               "id": "cmnvekr1a001pvuuocerj19pc",
+              "pinId": "cmmzyyjkn001hwol0zgj4hdss",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygvg6001pwoq062w24bcv.mp3",
               "audioScript": "Still deep in the fog of Isla ng Diwa, a harbormaster's voice carried from somewhere near the water — a long historical account of Port Dagat's waterway, told with careful dates and species names and decade-by-decade statistics. Ingay's fog kept burying the most important point under the flood of facts. Dagat let the details wash past and listened only for the thread that connected them. The channel into Port Dagat once ran dark with bilge waste and dye from the dockside cloth works. Fish had vanished. Fishermen abandoned their boats. Then, in the 1990s, a gradual cleanup effort began. Waste controls were enforced. Industrial dumping was banned. Today, over thirty species of fish have returned to the channel. Sea birds nest along the banks once more. The channel is not fully restored — but it breathes again. Recovery — slow, real, incomplete — was the heart of it.",
               "question": "What is the main point of this passage?",
@@ -988,12 +1033,14 @@
         },
         {
           "id": "cmmzyyl8r001lwol0oy42de0v",
+          "islandId": "cmmzrbm3l000pwors37a8xnsb",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnveksu8001svuuorgu4mvt7",
+              "pinId": "cmmzyyl8r001lwol0oy42de0v",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygx4m001swoq0man5z9jz.mp3",
               "audioScript": "The Clarity Shard was close — Dagat could feel it humming somewhere beyond the thickest wall of fog she had faced yet. A fleet commander's voice reached her from the far side, each word muffled and pressed flat by Ingay's mist. She pushed toward the sound and dragged the meaning out word by word, refusing to let the fog win. Surveys show that sailors who choose their voyages freely — picking routes they genuinely want to sail — perform better, stay healthier, and remain with their fleet longer. Yet many young sailors drift to whatever ship will take them. The reasons vary: desperation for work, no knowledge of options, or simply not believing they deserve a choice. The answer is not to lecture sailors about their worth. It is to find them the voyage they cannot wait to begin. The final line landed clear as sunlight through a break in the clouds.",
               "question": "What is the speaker's main argument?",
@@ -1023,6 +1070,7 @@
             },
             {
               "id": "cmnveksu8001tvuuo5kyt0bm0",
+              "pinId": "cmmzyyl8r001lwol0oy42de0v",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygx4m001twoq0ho1w3h4e.mp3",
               "audioScript": "The last speech before the fog broke — and it was the hardest one yet. Dagat reached toward a Maritime Scholars' voice through what felt like a wall of white wool, the sound reduced to a near-whisper by Ingay's mist. She extended every part of her attention toward it, and the words came through slowly, one layer at a time. Research by the Maritime Scholars' Guild shows that sailors who train in traditional sea chants and oral navigation songs for two or more years develop sharper memory for sequences, better distance estimation, and stronger focus during long watches. These effects persist for the rest of their careers. Sea chant training is not entertainment — it is a core investment in how a navigator's mind works. Fleets that have cut chant training to save time may be cutting the very thing that sharpens everything else. The Clarity Shard pulsed bright the moment she had it.",
               "question": "What is the speaker's main point?",
@@ -1060,6 +1108,7 @@
       "name": "Isla ng Damdamin",
       "skillFocus": "Emotional Tone and Inference",
       "description": "Ingay drained all emotion from this island. Everyone speaks in the same flat voice. But feelings hide in pauses, in speed, in word choice — listen for the heart, not just the words.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "Three shards. Ingay tried scrambled words, blinding speed, and smothering fog — and you answered every one. Now she drains emotion. Words on this island are flat and colorless. But feelings hide in pauses, in pitch, in the spaces between syllables. Listen for them.",
       "npcDialogueSuccess": "You heard the heart behind the voice! The Empathy Shard glows warm in your hands — four shards now. Ingay's tricks grow crueler. And your ears grow sharper.",
@@ -1075,12 +1124,14 @@
       "pins": [
         {
           "id": "cmmzrbsce0012worsmg5xsji1",
+          "islandId": "cmmzrbred0010worsowy508pu",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnvekuun001xvuuog0m60j54",
+              "pinId": "cmmzrbsce0012worsmg5xsji1",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygyzj001xwoq07tviany5.mp3",
               "audioScript": "Three shards now — and Isla ng Damdamin was unlike anything Dagat had faced before. The island wasn't loud or fast or foggy. It was simply flat. Every voice she heard arrived in the same grey, colorless register, as if Ingay had drained every drop of feeling from the air. A navigator's voice reached her first — the words were all there, technically correct, but something essential was missing. Dagat forced herself to listen past the surface. I've been charting this route for three weeks and I'm still not sure it's right. What if we hit the reef at low tide? What if the current shifts? I ran the numbers ten times last night and I still feel like I'm missing something. I hope this crossing works. I really do. But every time I look at the chart, I find another line I want to redraw. I just — I don't know. I really don't know. The tone was buried — but the words, she realized, carried it anyway.",
               "question": "What is the overall tone of the speaker?",
@@ -1110,6 +1161,7 @@
             },
             {
               "id": "cmnvekuun001yvuuomefn38yc",
+              "pinId": "cmmzrbsce0012worsmg5xsji1",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygyzj001ywoq0hlihcih5.mp3",
               "audioScript": "Another voice on Isla ng Damdamin — a sailor recounting a rough morning — arrived in the same flat, colorless register that Ingay's drain produced. The words described something that had clearly started badly and turned around, but the feeling of that turn was invisible. Dagat traced the arc of the story anyway, feeling for where it shifted. The morning started terribly. The anchor chain jammed, the bilge pump failed, and rain soaked my chart bag before I could cover it. I thought the whole day was ruined. But then my crewmate brought me dried fish and a warm blanket without saying a word, and another sailor stayed up to help me redraw the soaked charts. By the time we set sail, I realized — it wasn't such a bad day after all. Some things fix themselves, if you let your crew help. She felt the shift from bad to better — even through the drain.",
               "question": "What can you infer about how the speaker feels at the END?",
@@ -1141,12 +1193,14 @@
         },
         {
           "id": "cmmzrbu1v0016wors1j7e4b8g",
+          "islandId": "cmmzrbred0010worsowy508pu",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnvekwnl0021vuuob9u9gnqe",
+              "pinId": "cmmzrbu1v0016wors1j7e4b8g",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh0nt0021woq0ndma1fek.mp3",
               "audioScript": "At the port's edge on Isla ng Damdamin, a festival was frozen mid-celebration — streamers limp, drums unbeaten, the port captain mid-speech before a crowd that could no longer feel what she was saying. Under Ingay's full emotional drain, the pride in her voice was invisible. Every grand word arrived flat. Dagat stood at the back of the silent crowd and listened past the flatness for the feeling the captain was trying to make the crowd feel. This port has been running for one hundred and forty years. Captains come back from distant seas — from trading routes far beyond the horizon — just to dock here during the Alingawngaw Festival. This is not just a celebration. This is proof of who we are. Our grandfathers built these piers. Our children will sail from them. We carry their courage in our hands when we haul the rigging. We honor them every time we leave and every time we return. This harbor is ours, and we are proud. The pride was there. She found it in the words themselves.",
               "question": "What feeling does the speaker most want to create in the listener?",
@@ -1176,6 +1230,7 @@
             },
             {
               "id": "cmnvekwnl0022vuuok4yqx4dr",
+              "pinId": "cmmzrbu1v0016wors1j7e4b8g",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh0nt0022woq09na8hy1f.mp3",
               "audioScript": "A ship's log entry read aloud — a captain's quiet account of a moment of decision at sea. Under Ingay's drain, even this exchange of quiet strength sounded empty, mechanical, as if the words were just words and nothing more. Dagat closed her eyes and reached for the attitude beneath them. I told the first mate to change the heading. He said it was too late to turn. I said we had no choice. He looked at me for a long time, then nodded slowly. 'Right,' he said. 'If that's how the wind blows — it blows.' He didn't argue after that. He just took the wheel, made the correction, and said nothing more. No complaints, no second-guessing. Just quiet acceptance of the sea's decision. The posture of the first mate — that nod, that single phrase — told her everything.",
               "question": "What does 'if that's how the wind blows — it blows' reveal about the first mate's attitude?",
@@ -1207,12 +1262,14 @@
         },
         {
           "id": "cmmzrbvxx001aworss3b4jfnw",
+          "islandId": "cmmzrbred0010worsowy508pu",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvekynp0025vuuogbp7czau",
+              "pinId": "cmmzrbvxx001aworss3b4jfnw",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh2c30025woq0yzqg3f4o.mp3",
               "audioScript": "A sailor's report on Isla ng Damdamin — flat as everything else here, every trace of emotion stripped by Ingay's drain. But Dagat had learned to read the shape of words even without their feeling. This one described a hard moment at the dock. I tried to bring the Baybayin in at the south berth during the squall. The wind shifted twice while I was on approach. The first attempt, I had to abort when the swell pushed us sideways. Second attempt, we got within twenty meters and lost the line. I radioed the harbormaster to let him know we'd try again at first light. Got some rest. Went back. Third attempt worked. We were six hours behind schedule. But we docked. Dagat found the tone beneath the flat report — not complaint, not sorrow, not defeat. Something quieter and harder than any of those.",
               "question": "What is the overall tone of the speaker's report?",
@@ -1242,6 +1299,7 @@
             },
             {
               "id": "cmnvekynp0026vuuo7956zi9s",
+              "pinId": "cmmzrbvxx001aworss3b4jfnw",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh2c30026woq0ynwic5c1.mp3",
               "audioScript": "A veteran navigator was giving directions to a young sailor on Isla ng Damdamin — her voice completely stripped of warmth by Ingay's drain, arriving as flat instruction, technical and dry. Dagat stood nearby and listened for what was hidden underneath. The current here pulls northeast at six knots when the tide shifts. You'll feel it in the wheel before you see it in the water. Correct early — don't wait until the bow is already moving. When you start feeling that pull, put in the adjustment now. Most sailors your age overcorrect and end up worse than they started. You don't do that. You've got a quiet hand. I've seen it. That is going to serve you a very long time at sea. The words were mostly technical — but one thing was not technical at all. Dagat heard what the flatness was trying to hide.",
               "question": "Which phrase reveals that the navigator has a positive view of the young sailor?",
@@ -1273,12 +1331,14 @@
         },
         {
           "id": "cmmzyyrdk0020wol014h4ji8s",
+          "islandId": "cmmzrbred0010worsowy508pu",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvel0gv0029vuuo8dyh0jwk",
+              "pinId": "cmmzyyrdk0020wol014h4ji8s",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh46z0029woq0y0bqdzf6.mp3",
               "audioScript": "Dagat found a training dock on Isla ng Damdamin where a captain was addressing a young sailor. Under Ingay's full emotional drain, the captain's words sounded almost cold — each sentence arriving without warmth, without the firmness that Dagat could tell was supposed to be there. She stood at the edge of the dock and listened past the flatness, reaching for the warmth she knew must exist somewhere behind the words. You dropped the anchor too late. I know. But I want you to remember something: the sailor who gets it right every time is not the one I am looking for. I am looking for the sailor who gets it wrong, goes below, figures out why, and comes back to the wheel before anyone else is awake. That is the sailor who goes somewhere. You dropped it too late. Good. Now show me what you do with that. There it was — encouragement, pressed tight under the surface, firm and alive.",
               "question": "What is the overall tone of the speaker?",
@@ -1308,6 +1368,7 @@
             },
             {
               "id": "cmnvel0gv002avuuoeamf0fn1",
+              "pinId": "cmmzyyrdk0020wol014h4ji8s",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh46z002awoq0qkp2tfy3.mp3",
               "audioScript": "An awards ceremony on Isla ng Damdamin — a fleet captain speaking before the assembled crew, the gratitude in her voice stripped to nothing by Ingay's drain. Each image she offered arrived like a flat report rather than a tribute. Dagat stood among the motionless sailors and listened for the weight that should have been there. When I look at all of you today, I don't see sailors. I see years of early mornings at the dock, of families waving from the shore, of riggers who stayed through the night to patch a sail before dawn. I see navigators who recalculated the course three times and still got us home. I see a crew who has carried each other through storms no one should have to sail through. You didn't complete this voyage alone. Every person in this harbor completed it with you. The gratitude was embedded in every image — she just had to be willing to feel it.",
               "question": "What emotion is the speaker most trying to create?",
@@ -1339,12 +1400,14 @@
         },
         {
           "id": "cmmzyyt1p0024wol0pchimkzp",
+          "islandId": "cmmzrbred0010worsowy508pu",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnvel29r002dvuuoop137oaq",
+              "pinId": "cmmzyyt1p0024wol0pchimkzp",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh5vd002dwoq0sq7ph7vn.mp3",
               "audioScript": "The Empathy Shard was close — Dagat could feel it, a warmth at the edge of the cold drain. Ingay's power over this island was total now: even tenderness arrived without texture, even hope sounded like a ledger entry. Dagat found a letter, handwritten, that someone had been reading aloud when the drain hit them. She took it in her own hands and read the words aloud herself, trying to find the warmth beneath the emotionless voice. The letter was from a navigator named Marina — someone who sailed far, whose warmth crossed great distances through these few written lines. I am writing this from a port you may never visit. I don't know what seas you are sailing now, or what storms you are carrying. But I want you to know that the sailor who wrote these words believed in you — not the perfect crossing, not the flawless charts, not the unblemished logbook. You. The one who gets back up when the wave knocks them down. I left a little of my courage here between these lines. Take as much as you need. Dagat felt it — warmth, quiet and sure, between every line.",
               "question": "What is the tone of this passage?",
@@ -1374,6 +1437,7 @@
             },
             {
               "id": "cmnvel29r002evuuoywxh6dqf",
+              "pinId": "cmmzyyt1p0024wol0pchimkzp",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh5vd002ewoq0999o3s1f.mp3",
               "audioScript": "The final challenge of Isla ng Damdamin — and Ingay's drain reached its peak here, stripping even this moment of every feeling it deserved. The story Dagat heard was a farewell — sailors at the end of a long voyage, standing on the dock together — and it should have been bittersweet and full. Under the drain, it sounded matter-of-fact. Dagat closed her eyes and reached for the feeling beneath the flat words, refusing to let Ingay take it. The dock felt different the morning the voyage ended. No one was in a hurry to disembark. Sailors who had barely spoken for months were exchanging port addresses, helping each other with their sea bags. Someone chalked on the hull: 'We were here.' The captain had it washed off before anyone could stop her, then turned around and said, 'You'll always be here.' No one really knew what to say after that. So they just stood on the dock together, for a while. There — in the silence, in the standing together — was everything Ingay had tried to take.",
               "question": "What feeling does the passage create most powerfully?",
@@ -1411,6 +1475,7 @@
       "name": "Isla ng Tanong",
       "skillFocus": "Listening for Specific Information",
       "description": "Ingay scattered the island's records — names, dates, numbers, all jumbled. Listen for the exact detail and hold it in your mind. The facts are there. You just have to catch them.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "Four shards. Ingay scattered the island's records — names, dates, numbers, all jumbled and lost. You have learned to hear meaning, speed, main ideas, and feeling. Now hold a single precise fact like a compass needle in your mind. Do not let it slip.",
       "npcDialogueSuccess": "You caught the exact detail Ingay tried to scatter! Five shards, young sailor. One island of preparation before the last.",
@@ -1426,12 +1491,14 @@
       "pins": [
         {
           "id": "cmmzrbxu0001dworsncray8vi",
+          "islandId": "cmmzrbwvy001bworsn5emltoi",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnvel49z002ivuuos2yrsywu",
+              "pinId": "cmmzrbxu0001dworsncray8vi",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075883/linguaquest/audio/challenge-cmnvel49z002ivuuos2yrsywu.mp3",
               "audioScript": "Four shards gleamed in Dagat's satchel as she stepped onto Isla ng Tanong. The island's air felt scattered — names darting past like startled fish, numbers floating up and dissolving before they could be caught. Ingay had jumbled everything: records, registries, facts, dates. A fleet health announcement drifted toward Dagat, and she steadied herself against a dock post and listened for the one precise number that mattered. Good tide, young crew. I'm Officer Catalan from the Fleet Health Office. According to the 1824 Maritime Sailors' Survey, one in three crew members on long voyages is considered dangerously undernourished by the halfway point. Iron deficiency affects approximately forty-two percent of sailors on journeys of six months or more. The Fleet Council recommends iron-rich provisions — especially dried legumes — at least four times per week. Start with a cup of monggo stew every other day. Two numbers, two different facts. She caught the right one.",
               "question": "What percentage of sailors on long voyages are affected by iron deficiency?",
@@ -1461,6 +1528,7 @@
             },
             {
               "id": "cmnvel49z002jvuuog4ddk8pt",
+              "pinId": "cmmzrbxu0001dworsncray8vi",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075811/linguaquest/audio/challenge-cmnvel49z002jvuuog4ddk8pt.mp3",
               "audioScript": "The registry clerk on Isla ng Tanong was reading numbers — totals, subtotals, route breakdowns, season comparisons — while Ingay's scatter sent several wrong figures floating in the air around each correct one. Dagat planted herself in front of the clerk and listened for the specific number that answered the specific question she had been given. Good tide, fleet officers. This is the official crew registry for the current sailing season. Total registered crew across all vessels stands at one thousand two hundred forty-three sailors — six hundred eighty-two on merchant routes and five hundred sixty-one on patrol routes. Compared to last season's total of one thousand one hundred ninety-eight, we have seen an increase of forty-five sailors. Growth is projected to continue. Thank you. The increase. Not the total. The increase. She had it.",
               "question": "By how many sailors did the fleet registry increase compared to last season?",
@@ -1492,12 +1560,14 @@
         },
         {
           "id": "cmmzrbzj8001hworso8xigfvx",
+          "islandId": "cmmzrbwvy001bworsn5emltoi",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnvel62x002mvuuoyylfbjpi",
+              "pinId": "cmmzrbzj8001hworso8xigfvx",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh9fd002mwoq0m6arr4mk.mp3",
               "audioScript": "A competition announcement on Isla ng Tanong — and Ingay's scatter meant names were flying everywhere, third place tangling with first, wrong ships attached to wrong sailors. Dagat heard a familiar name mentioned — the Baybayin — and leaned in sharply. Good tide! I am pleased to announce the results of the Fleet Navigation Challenge. We received forty-three entries this season — our highest number ever. Third place goes to helmsman Lorenzo Bautista of the Makisig. Second place goes to navigator Reina Flores of the Hamon. And first prize — and I am proud to say this — goes to junior navigator Ana Reyes of the Baybayin. Congratulations to all competitors! Her ship. First prize. She had to make sure she caught the right name and the right place — the scatter was designed to confuse exactly this.",
               "question": "Who won the Fleet Navigation Challenge?",
@@ -1527,6 +1597,7 @@
             },
             {
               "id": "cmnvel62x002nvuuo6kle5ryc",
+              "pinId": "cmmzrbzj8001hworso8xigfvx",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyh9fd002nwoq0ra16mq2f.mp3",
               "audioScript": "The fleet surgeon on Isla ng Tanong was addressing a crowd gathered near the medical dock, and Ingay's scatter kept snatching the exact recommendation away before it could land cleanly. Wrong numbers drifted in at the edges — four flasks, six flasks, ten flasks — designed to confuse. Dagat listened past the interference for the one number the surgeon had actually said. Good tide. I'm the fleet surgeon, and I want to talk about hydration on long voyages. Many of you are not drinking enough water. At sea, the body loses water faster — through sweat, sun, and wind. The recommendation for all active crew: at least eight flasks of fresh water every day. Not brine water, not grog — fresh water. Your navigation depends on a clear mind. A clear mind depends on water. Eight. She held it like a compass needle pointed true north.",
               "question": "How many flasks of fresh water per day does the fleet surgeon recommend?",
@@ -1558,12 +1629,14 @@
         },
         {
           "id": "cmmzrc18j001lworsy6ppym9e",
+          "islandId": "cmmzrbwvy001bworsn5emltoi",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvel7vw002qvuuo2e3by8io",
+              "pinId": "cmmzrc18j001lworsy6ppym9e",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075727/linguaquest/audio/challenge-cmnvel7vw002qvuuo2e3by8io.mp3",
               "audioScript": "Four shards gleamed in Dagat's satchel as she pushed deeper into Isla ng Tanong — Ingay's scatter at its most relentless here, facts darting away mid-sentence. A port supply captain's voice cut through the noise with an update, and Dagat caught it with everything she had. Attention fleet crew — supply update for the week's long sail. We are leaving port with forty-two barrels of fresh water. That sounds like a lot. With a full crew of thirty-eight sailors drinking and cooking, we will have enough for exactly fourteen days at normal rations. Our scheduled resupply stop is at the Coral Station waypoint on the tenth day. I want every quartermaster to confirm their section's daily water log by this evening. If anything seems off, report it to me before we cast off. Fair winds and tight barrels. Dagat locked the two numbers that mattered most.",
               "question": "How many barrels of fresh water are they leaving port with?",
@@ -1593,6 +1666,7 @@
             },
             {
               "id": "cmnvel7vw002rvuuoludwtrz0",
+              "pinId": "cmmzrc18j001lworsy6ppym9e",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075654/linguaquest/audio/challenge-cmnvel7vw002rvuuoludwtrz0.mp3",
               "audioScript": "A maritime training announcement crackled through Isla ng Tanong — Ingay's scatter working hardest on the specific details, the facts darting away before Dagat could anchor them. She stopped, steadied herself, and caught the announcement as it reached a key correction. Attention all junior crew! The anchor-handling drill scheduled for this afternoon will be held at Dock Fourteen — not Dock Eleven as originally posted. Please note: the drill begins at two bells past noon, not at noon itself. Participants must bring their standard rigging harness and identification tag. Any junior crew member who arrives after the first exercise without a valid excuse will be required to repeat the full drill the following week. Questions should be directed to Watch Officer Reyes, stationed at the dock gate. Fair winds! She marked the two corrections before they could scatter.",
               "question": "What time does the anchor-handling drill begin?",
@@ -1624,12 +1698,14 @@
         },
         {
           "id": "cmmzyyzdb002jwol0wym2rngb",
+          "islandId": "cmmzrbwvy001bworsn5emltoi",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvel9w6002uvuuolrz647n6",
+              "pinId": "cmmzyyzdb002jwol0wym2rngb",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075583/linguaquest/audio/challenge-cmnvel9w6002uvuuolrz647n6.mp3",
               "audioScript": "Isla ng Tanong's Maritime Museum of the Listening Sea — and Ingay's scatter was at its most relentless here, facts darting away mid-sentence, gallery numbers transposing themselves, rules attaching themselves to the wrong rooms. Dagat stepped through the entrance as the guide's welcome announcement crackled with interference, and she focused with everything she had. Welcome, sailors, to the Maritime Museum of the Listening Sea! Photography is permitted in all galleries EXCEPT Gallery Four — the Weapons Vault — and Gallery Seven — the Navigation Secrets Archive. Flash photography is not allowed anywhere in the building. The full tour takes approximately one hour and forty-five minutes. Restrooms are on the ground deck near the main gangway and on the upper deck near the chart room. The gift shop closes at four-thirty. Stay with your guide at all times. Fair winds! Two galleries. She made sure she had the right two.",
               "question": "In which galleries is photography NOT allowed?",
@@ -1659,6 +1735,7 @@
             },
             {
               "id": "cmnvel9w6002vvuuo4gkbna0o",
+              "pinId": "cmmzyyzdb002jwol0wym2rngb",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075484/linguaquest/audio/challenge-cmnvel9w6002vvuuo4gkbna0o.mp3",
               "audioScript": "Back at the port on Isla ng Tanong, the recruitment fair was loud — twenty-six vessels, dozens of sailors, and Ingay's scatter tumbling all the rules together into a blur of numbers and conditions. Vessel counts mixed with application limits; fee ranges overlapped with deadlines. Dagat listened for the one critical limit buried in the noise. Welcome to the Port Salita Crew Recruitment Fair! Twenty-six vessels are represented today. To apply, fill your name, sailing experience, and one specialty skill on each vessel's application sheet. You may apply to a maximum of two vessels only. Application processing fees range from fifty to one hundred fifty coppers per vessel. All fees are due by this Friday. May the best sailors find the best ships! Maximum. Two. Ingay had thrown a lot of numbers at her — but only one was the limit she needed.",
               "question": "What is the maximum number of vessels a sailor may apply to?",
@@ -1690,12 +1767,14 @@
         },
         {
           "id": "cmmzyz11k002nwol0iq5qm0oo",
+          "islandId": "cmmzrbwvy001bworsn5emltoi",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnvelbp7002yvuuovy2jkgrw",
+              "pinId": "cmmzyz11k002nwol0iq5qm0oo",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075381/linguaquest/audio/challenge-cmnvelbp7002yvuuovy2jkgrw.mp3",
               "audioScript": "The Precision Shard was close — Dagat could feel it somewhere near the main harbormaster's post. But Ingay was desperate here, flooding the air with wrong pier numbers: four, four, four. The harbormaster's correction came through the interference, and Dagat braced herself and caught every word. Good tide, all hands! The harbormaster reminds all crew that the daily supply barge arrives at Pier Two — NOT Pier Four as listed on last week's schedule. The barge carries fresh provisions, clean water, and mail from home. It arrives at two bells in the afternoon and departs at four bells. Any crew member wishing to send letters home must have them sealed and addressed before two bells. Latecomers will miss the barge entirely. Two. Not four. Ingay had thrown the wrong number at her hard — but she had held the right one.",
               "question": "At which pier does the supply barge now arrive?",
@@ -1725,6 +1804,7 @@
             },
             {
               "id": "cmnvelbp7002zvuuoyw24u27s",
+              "pinId": "cmmzyz11k002nwol0iq5qm0oo",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075294/linguaquest/audio/challenge-cmnvelbp7002zvuuoyw24u27s.mp3",
               "audioScript": "The final challenge of Isla ng Tanong — and when Dagat heard the subject of this intelligence report, her breath caught. It was about Isla ng Alingawngaw. The last island. The vault where this whole quest led. Ingay was scattering the numbers with frantic energy — paces transposing, key counts multiplying — because she knew this detail mattered. Dagat listened with everything she had. Maritime intelligence update to all fleet captains: The treasure vault at Isla Alingawngaw has been partially mapped. According to the recovered chart, the entrance lies exactly forty-two paces north of the large split rock near the eastern cove — not at the southern cove as previously believed. The vault door requires three specific keys — a gold key, a silver key, and a bone key — and opens only at low tide. The map was authenticated last Thursday by the Navigation Guild. Three keys. She held the number like a lifeline — because it was connected to where she was going.",
               "question": "How many keys are needed to open the vault door?",
@@ -1762,6 +1842,7 @@
       "name": "Isla ng Kwento",
       "skillFocus": "Narrative Comprehension",
       "description": "Ingay fragmented the storytellers' memories. The narratives are broken and out of order. Follow every character from beginning to end — do not let go of the thread.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "Five shards. Ingay's final trick before her stronghold: she shattered the storytellers' memories. The narrative is broken. You must follow every event — beginning to end — without letting go of the thread. Stories, Dagat, are how sailors find their way home.",
       "npcDialogueSuccess": "You followed the story all the way home! Six shards — every one earned through your own listening. The last island awaits. Ingay's stronghold. But look at what you carry.",
@@ -1777,12 +1858,14 @@
       "pins": [
         {
           "id": "cmmzrc34m001oworstir4mtn5",
+          "islandId": "cmmzrc26k001mworsjlh61q4o",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnveldpf0033vuuouu8cwm0k",
+              "pinId": "cmmzrc34m001oworstir4mtn5",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776075153/linguaquest/audio/challenge-cmnveldpf0033vuuouu8cwm0k.mp3",
               "audioScript": "Five shards, and Dagat stepped onto Isla ng Kwento to find it fractured — stories arriving without their middles, endings separated from their beginnings, storytellers frozen mid-tale with the thread broken somewhere she couldn't see. Ingay had shattered their memories. A storyteller near the dock was trying to reassemble a tale about young Nico, his mouth opening and closing as fragments surfaced and sank. Dagat sat beside him and listened to what came through. One afternoon, young sailor Nico found a brass compass on the dock near the market. It was a fine one — polished, needle still true. He picked it up, looked around, and slipped it into his coat pocket. On his way back to the ship, he passed an old navigator sitting on a crate, checking every fold of his coat, eyes red. The old man's hands trembled. Nico watched him for a moment, then turned around and handed back the compass without a word. The old man held his hand with both of his. 'Thank you,' he whispered. 'I've sailed with this compass for forty years.' The thread was intact. She had followed it all the way through.",
               "question": "Why did Nico decide to return the compass?",
@@ -1812,6 +1895,7 @@
             },
             {
               "id": "cmnveldpf0034vuuodi4tmt9z",
+              "pinId": "cmmzrc34m001oworstir4mtn5",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068664/linguaquest/audio/challenge-cmnveldpf0034vuuodi4tmt9z.mp3",
               "audioScript": "Another storyteller, further into Isla ng Kwento — this one describing a new crew member aboard a ship Dagat recognized instantly. The Baybayin. Her ship. The beginning of Lena's story was there; what came after was broken away somewhere in Ingay's shattering. Dagat listened to what survived of the opening. When young Lena joined the crew of the Baybayin in October, she knew no one. She ate her meals at the far end of the galley and stood her watch at the stern, alone. She told herself she didn't mind — but she did. Every evening she watched her crewmates play cards and tell stories by the lamp, and she felt like she was watching them through a foggy porthole. She had been aboard three weeks and still hadn't said more than five words to anyone. Even broken, the story's beginning was complete enough. Dagat understood the problem before anyone spoke it aloud.",
               "question": "What problem did Lena face at the BEGINNING of the story?",
@@ -1843,12 +1927,14 @@
         },
         {
           "id": "cmmzrc4tv001sworsqk593cmk",
+          "islandId": "cmmzrc26k001mworsjlh61q4o",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnvelfic0037vuuo5kno2z2r",
+              "pinId": "cmmzrc4tv001sworsqk593cmk",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhi680037woq0zmvcu9p5.mp3",
               "audioScript": "Isla ng Kwento's folktale keeper stood frozen at the center of the village square, one hand raised mid-gesture, caught at the most dramatic moment of the old story of Andoy and the golden sea turtle. Ingay had broken the legend — beginning missing from middle, middle detached from end — but Dagat sat down on the stone steps nearby and listened until the whole thing assembled itself in her mind. Deep in the waters of Tanaw Bay, an old fisherman named Andoy once pulled up his net and found, tangled inside, a golden sea turtle. 'Release me,' said the turtle, 'and I will grant you one wish.' Andoy wished for enough fish for his family. The wish was granted. But that night he returned to the water. 'One more,' he begged. The turtle gave him a second wish. A third. A fourth. Each time, Andoy asked for more. On his tenth return, the turtle looked at him with ancient eyes. 'I warned you,' it said — and everything Andoy had was taken by the tide. The story's lesson arrived clear as the day Dagat had earned her first shard.",
               "question": "What lesson does the folktale teach?",
@@ -1878,6 +1964,7 @@
             },
             {
               "id": "cmnvelfic0038vuuoqpa60z7g",
+              "pinId": "cmmzrc4tv001sworsqk593cmk",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhi680038woq0z4xiib6h.mp3",
               "audioScript": "Ingay had broken this story in multiple places — the storm scene floating loose from the children's scene, the ending detached from the chain of events that led to it. Dagat's job was to hold every moment in sequence, from first event to last, and find what came at the very end. She listened carefully from the beginning and held the order tight. A fierce storm hit Port Masipag without warning one August night, and by morning the fishing piers were underwater. The children, kept aboard the boats for safety, grew restless after three days. On the fourth day, the youngest child — a girl named Tala — found a sealed crate floating near the hull. Inside were seeds. Her older brothers laughed. 'What good are seeds now?' But Tala planted them in pots on the highest part of the boat. An old woman rowing past handed her a small wooden box. 'Open it when the storm passes.' When the waters receded, the box held a hundred more seeds. By December, Tala's garden fed not just her family, but every crew moored at the pier. Last. She was certain of the last.",
               "question": "Which event happened LAST in the story?",
@@ -1909,12 +1996,14 @@
         },
         {
           "id": "cmmzrc6j4001wwors9tmgzb0t",
+          "islandId": "cmmzrc26k001mworsjlh61q4o",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvelhb8003bvuuod7e409cf",
+              "pinId": "cmmzrc6j4001wwors9tmgzb0t",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068520/linguaquest/audio/challenge-cmnvelhb8003bvuuod7e409cf.mp3",
               "audioScript": "Five shards, and the storytellers of Isla ng Kwento were still frozen mid-memory. Dagat found a folktale fragment — the middle clear, the edges in pieces — and worked with what she had. A weaver needed to cross the river to reach the market. She tried first by following the stepping stones. The water was high and her basket tipped — she had to turn back. She tried again with a bamboo pole as a balance rod. She made it three steps before the current shifted and she lost her footing. She stood on the bank a long while. Then she looked upriver, not across it, and found a place where a fallen tree had created a natural bridge. She crossed there — dry, basket balanced, one hand free. She never used the stepping stones again. Dagat followed the three attempts and held the third until the answer was clear.",
               "question": "What finally allowed the weaver to cross the river?",
@@ -1944,6 +2033,7 @@
             },
             {
               "id": "cmnvelhb8003cvuuowg5nua8a",
+              "pinId": "cmmzrc6j4001wwors9tmgzb0t",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068370/linguaquest/audio/challenge-cmnvelhb8003cvuuowg5nua8a.mp3",
               "audioScript": "Another broken memory on Isla ng Kwento — a sailor's account, the edges in fragments but the central decision intact. Dagat pieced together what she could. He had sailed under three captains and trusted all of them. The third one left the crew behind during a storm. After that, he stopped trusting easily. He took smaller ships with smaller crews. He learned to read weather himself instead of relying on officers. He started keeping his own logbook — every port, every current, every decision. Ten years later, someone asked him why he kept such detailed records. He said it was because the day he stopped trusting completely was the day he started paying attention completely. What he lost on one side, he decided to build on the other. Dagat found the decision in the center of the broken memory.",
               "question": "What did the sailor decide to do after losing trust in captains?",
@@ -1975,12 +2065,14 @@
         },
         {
           "id": "cmmzyz7cz0032wol0me9hyz11",
+          "islandId": "cmmzrc26k001mworsjlh61q4o",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvelj47003fvuuod8phtas5",
+              "pinId": "cmmzyz7cz0032wol0me9hyz11",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068291/linguaquest/audio/challenge-cmnvelj47003fvuuod8phtas5.mp3",
               "audioScript": "Pin 4 on Isla ng Kwento — and Ingay was fighting hardest here, pulling story fragments in opposite directions. Dagat caught a memory tale — a grandfather and grandson on a dock at evening — the middle of the story intact, the beginning and end broken away. What the middle revealed about the old man was what she needed. She gathered the fragments and held them still. Every evening, old Mang Celso and his grandson Danny practiced knot-tying on the dock behind their home. One evening, Danny's rope snapped mid-knot. He threw it down and slumped against the wall. Mang Celso sat beside him and said nothing. Then he reached into his coat and pulled out a fresh coil of rope and began tying. 'You knew it would break?' Danny said. 'I always carry a spare,' the old man replied. 'A sailor doesn't leave the dock without a backup line.' The old man had known. He had already prepared. That was the kind of person he was.",
               "question": "What does Mang Celso carrying a spare rope reveal about him?",
@@ -2010,6 +2102,7 @@
             },
             {
               "id": "cmnvelj47003gvuuopthsw609",
+              "pinId": "cmmzyz7cz0032wol0me9hyz11",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068195/linguaquest/audio/challenge-cmnvelj47003gvuuopthsw609.mp3",
               "audioScript": "Another broken story — a memory that carried something heavy in its center, the kind of symbolic weight that Ingay's shattering could not quite destroy. Dagat felt the story's gravity before she understood it, and she listened carefully for what the empty hammock meant — not what it was, but what it meant. Every year on their father's sailing anniversary, Elena and her brother Miguel would light the stern lantern and leave his hammock empty in the crew quarters. Other sailors thought it was strange. 'Why keep a hammock for someone not aboard?' a crewmate asked. Elena looked at the hammock and said, 'He is aboard.' Miguel nodded. Their crewmate didn't understand. But in that ship, the empty hammock was never really empty. The weight of the story rested in those last words. Dagat understood what the hammock held.",
               "question": "What does the empty hammock most likely symbolize?",
@@ -2041,12 +2134,14 @@
         },
         {
           "id": "cmmzyz9160036wol0dtztpb2p",
+          "islandId": "cmmzrc26k001mworsjlh61q4o",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnvelkx3003jvuuoggl6rbcq",
+              "pinId": "cmmzyz9160036wol0dtztpb2p",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776068112/linguaquest/audio/challenge-cmnvelkx3003jvuuoggl6rbcq.mp3",
               "audioScript": "The Story Shard was close — Dagat felt it pulsing with a warmth that moved like narrative, like a story finding its end. Ingay's shattering was almost complete here, the tale arriving in shards that only just held together. But Dagat could feel the shape of it — she had learned to follow stories on this island — and she held on to the thread all the way through. In the old port, there was one rule: never cross the reef passage during monsoon season. One afternoon, twelve-year-old Noel saw his dog stranded on the far sandbar. The passage was churning white. He crossed anyway — reached the dog, started back, then lost his footing on a submerged rock. His older sister, watching from the dock, threw a safety line she happened to be carrying. He grabbed it. Later, when the harbormaster asked why she had the line, she said simply: 'I always carry one during monsoon season.' The story's theme landed clean. She had followed it to the end.",
               "question": "What theme does this story most clearly explore?",
@@ -2076,6 +2171,7 @@
             },
             {
               "id": "cmnvelkx3003kvuuoz9406sl6",
+              "pinId": "cmmzyz9160036wol0dtztpb2p",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776067989/linguaquest/audio/challenge-cmnvelkx3003kvuuoz9406sl6.mp3",
               "audioScript": "The final challenge of Isla ng Kwento — and the most emotionally layered story on the island. Dagat felt the Story Shard pulse warm the moment the first words reached her, as if the shard already knew this tale was the one. Ingay had tried to shatter it — the reunion scene had been separated from the promise scene, the ending floating apart from everything that made it mean something. But Dagat held every piece in order and let the story find its shape. Before she departed for the eastern trade route, Ate Marina made her younger brother promise to complete his navigator training. 'One promise,' she said. 'Just finish.' He promised. Eight years later, Luis stood at the helm of the Baybayin at his certification ceremony, new navigator's chart in hand, and looked for her face among the docked ships. She wasn't there. But on the dock stood their mother — holding a long-range signal mirror reflecting Ate Marina's image, watching from a trading vessel far out on the horizon. Luis waved. She waved back. Neither signaled anything more. They didn't need to. The Story Shard glowed bright. And somewhere ahead, in the last island, Dagat understood that Ate Marina would matter again.",
               "question": "What does the ending reveal about Ate Marina's relationship with Luis?",
@@ -2113,6 +2209,7 @@
       "name": "Isla ng Alingawngaw",
       "skillFocus": "Full Integration Challenge",
       "description": "This is Ingay's stronghold — the final island. Every skill you have learned converges here: vocabulary, speed, main idea, emotion, detail, narrative. Assemble the six shards. Form the Crystal. Trust your ears.",
+      "isLocked": true,
       "npcName": "Captain Salita",
       "npcDialogueIntro": "Six shards. This is Ingay's heart — her last stronghold. Every skill you have built: words, speed, main ideas, feeling, precise detail, narrative — she will throw all of them at you at once. Trust what your ears have become.",
       "npcDialogueSuccess": "The Alingawngaw Crystal sings! Ingay is silent. The Listening Sea is free. And Captain Salita — for the first time in one hundred years — speaks again. You have done it, Dagat. You are a sailor.",
@@ -2128,12 +2225,14 @@
       "pins": [
         {
           "id": "cmmzrc8m5001zworsnovridvd",
+          "islandId": "cmmzrc7nx001xworsi7hg87qm",
           "number": 1,
           "type": "CHALLENGE",
           "sortOrder": 1,
           "challenges": [
             {
               "id": "cmnveln4z003ovuuoooqrxbdn",
+              "pinId": "cmmzrc8m5001zworsnovridvd",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776076957/linguaquest/audio/challenge-cmnveln4z003ovuuoooqrxbdn.mp3",
               "audioScript": "Six shards, all six glowing in Dagat's satchel, and Isla ng Alingawngaw rose out of the sea ahead of the Baybayin like a wall of sound. This was Ingay's stronghold — and the moment Dagat stepped ashore, all six effects hit her at once. Words scrambled. Time blurring. Fog pressing in. Emotions stripped away. Facts scattering. Stories breaking mid-sentence. The chaos was total. Dagat closed her eyes and decided what to reach for first: the main idea. She applied everything she'd learned on Isla ng Diwa and pulled the thread from the noise. The waters of the Coral Triangle — home to the most diverse sea life known to sailors — are changing. Navigators have reported rising water temperatures, dying coral reefs, and shifting fish patterns. But what is causing the most visible damage is something far simpler: ship waste dumped at sea. Every season, thousands of barrels of bilge oil and refuse enter the ocean from passing vessels. Sea turtles swallow tar balls. Seabirds ingest rope shreds. Even at three thousand fathoms deep, diving bells have retrieved cloth and metal scraps. The sea is not a dump — but we treat it like one. The question is no longer whether this is a problem. It is whether we will act before it cannot be undone. One thread, through all the chaos. She had it.",
               "question": "What is the main idea of this passage?",
@@ -2163,6 +2262,7 @@
             },
             {
               "id": "cmnveln4z003pvuuoswiqr4i8",
+              "pinId": "cmmzrc8m5001zworsnovridvd",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077856/linguaquest/audio/challenge-cmnveln4z003pvuuoswiqr4i8.mp3",
               "audioScript": "Still on Isla ng Alingawngaw, the chaos unchanged — scrambled words, blurred time, fog, stripped emotion, scattered facts, broken stories, all of Ingay's weapons deployed at once. Dagat shifted her approach and reached now for something she had learned on Isla ng Damdamin: emotional tone. The words meant something — but how did the speaker feel about them? She listened past the chaos for that. Thank you all for coming to tonight's port council meeting. I want to be very clear: I am not opposed to expanding the commercial docks. More docks mean more ships, more trade, more work for this port — and I understand that. But — hear this carefully — the expansion would be built directly over the freshwater cistern that supplies our entire harbor district. Two engineers reviewed the plan: one says it is safe, one says it is not. I believe we need a third, independent opinion before we break ground. Trade is important. But so is the water our sailors drink. I am not saying no. I am saying: not yet. Let us be certain. The tone — careful, worried, not refusing but not ready — cut through the chaos like a compass needle.",
               "question": "What is the speaker's attitude toward the dock expansion?",
@@ -2194,12 +2294,14 @@
         },
         {
           "id": "cmmzrcabg0023worsw5cztfcf",
+          "islandId": "cmmzrc7nx001xworsi7hg87qm",
           "number": 2,
           "type": "CHALLENGE",
           "sortOrder": 2,
           "challenges": [
             {
               "id": "cmnveloy1003svuuo4z3mxh7h",
+              "pinId": "cmmzrcabg0023worsw5cztfcf",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhqqj003swoq0d4jlhzt3.mp3",
               "audioScript": "Dagat pressed deeper into Isla ng Alingawngaw, the six-way chaos still battering at her ears. Now she deployed what she had learned on Isla ng Tanong: precision. One specific detail, held against the storm of wrong ones. An announcement about a new navigation program came through the noise, and Dagat reached past the distractions for the one precise action item buried inside it. Good tide, all crew members! The fleet has been selected to pilot a new Regional Navigation Program starting next month. Participation is voluntary but strongly encouraged. The program runs every Saturday morning from eight bells to ten bells, for twelve consecutive weeks. There is no cost. You will receive free sea charts and a navigation certificate upon completion. Here is the important part: to join, you must submit a signed permission note from your ship's captain — not the harbormaster, but your own captain — by this Thursday. No late submissions accepted. Captain. Thursday. That was the detail. She held it like a fixed star.",
               "question": "What specific requirement must sailors meet to join the program?",
@@ -2229,6 +2331,7 @@
             },
             {
               "id": "cmnveloy1003tvuuov2l5y6l5",
+              "pinId": "cmmzrcabg0023worsw5cztfcf",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndyhqqj003twoq0nrucxunh.mp3",
               "audioScript": "A voice reached Dagat through the chaos of Isla ng Alingawngaw — she could not see the speaker, could not locate the direction, could only hear the words arriving through Ingay's full storm of scrambled context, blurred time, foggy meaning, stripped emotion, scattered facts, and broken framing. She deployed the inference skills she had sharpened on Isla ng Damdamin: listen for what the speaker tracked, where they worked, how they spoke. I want to be honest with you. You have real potential — I see it in how you read the currents during drills. But your chart submissions this quarter are below fifty percent complete, and your last three navigation assessments have dropped significantly. I'm not here to punish you. I want to understand what's happening. Is something wrong aboard ship? Are you struggling with the coursework? My door at the chart room is always open. But I need you to take this seriously — because this is your record, and these marks follow you through your career. You are capable of far more than this. Chart submissions. Navigation assessments. The chart room. The role assembled itself from the evidence.",
               "question": "What can you infer about the speaker's role?",
@@ -2260,12 +2363,14 @@
         },
         {
           "id": "cmmzrcc0o0027worsebtshwlk",
+          "islandId": "cmmzrc7nx001xworsi7hg87qm",
           "number": 3,
           "type": "CHECKPOINT",
           "sortOrder": 3,
           "challenges": [
             {
               "id": "cmnvelqr1003wvuuo6cnstq4q",
+              "pinId": "cmmzrcc0o0027worsebtshwlk",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077330/linguaquest/audio/challenge-cmnvelqr1003wvuuo6cnstq4q.mp3",
               "audioScript": "Six shards glowing, and the chaos of Isla ng Alingawngaw pressed on Dagat from every side — vocabulary scrambled, speed accelerating, fog pressing in, emotion draining, facts scattering, stories fracturing — all at once, Ingay's full arsenal. A voice cut through it all: a fleet surgeon delivering an urgent medical report, her tone deliberately calm against the chaos, every word chosen with precision. This is Surgeon Mana. We have treated fourteen sailors in the last six hours. None are critical. The injuries are minor — rope burns, sprains, one case of sea fever caught early. The crew's response time was exceptional. Not one injury worsened because help was delayed. What I want the crew to understand is this: the speed with which you helped each other today was not ordinary. It was admirable. That word — admirable — means you acted with a quality worth praising. Remember it. You will need it again before this island is done. Dagat caught three things at once: the word, the count, and the calm courage beneath the surgeon's voice.",
               "question": "What does 'admirable' mean as used by the surgeon?",
@@ -2295,6 +2400,7 @@
             },
             {
               "id": "cmnvelqr1003xvuuoa1dha7uq",
+              "pinId": "cmmzrcc0o0027worsebtshwlk",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776077573/linguaquest/audio/challenge-cmnvelqr1003xvuuoa1dha7uq.mp3",
               "audioScript": "A story reached Dagat through the noise of Isla ng Alingawngaw — broken at its edges but clear at its center. It was told by a voice she didn't recognize, but one that carried the weight of someone who had been at sea a very long time. She followed the fragments from the first one she could catch. I don't remember the name of every port I've docked at. I don't remember the names of every sailor I've crewed with. But I remember the ones who listened. The ones who sat still while another sailor talked. The ones who asked a second question when they could have asked none. The ones who said 'tell me more' instead of 'I understand already.' Every good decision I've made at sea came from listening — not to charts, not to stars, but to the person beside me on the watch. If there's one thing I want you to carry off this island, it is that: listen to the person beside you. That is the whole of it. Dagat felt the words settle in her like a compass finding north.",
               "question": "What is the main message of the speaker?",
@@ -2326,12 +2432,14 @@
         },
         {
           "id": "cmmzrccyp0029worsyzww1dr1",
+          "islandId": "cmmzrc7nx001xworsi7hg87qm",
           "number": 4,
           "type": "CHALLENGE",
           "sortOrder": 4,
           "challenges": [
             {
               "id": "cmnvelsjz0040vuuo97m7edyx",
+              "pinId": "cmmzrccyp0029worsyzww1dr1",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1775976767/linguaquest/audio/challenge-cmnvelsjz0040vuuo97m7edyx.mp3",
               "audioScript": "And then Dagat heard a voice she recognized. Through all of Ingay's chaos — the scrambled words, the time-blur, the fog, the drained emotion, the scattered facts, the broken stories — a voice cut through that she had first heard frozen on Isla ng Salita. Old Mang Berto. He was here. They were all gathering here, she realized — the people she had encountered across every island, drawn to Ingay's stronghold like sailors to a lighthouse in a storm. Mang Berto was telling a story about a word — a word Dagat knew she was going to need. Let me tell you about a sailor I once knew. She failed her first navigation test. Failed her second. Her crewmates passed their certifications while she retook the course. People told her she wasn't cut out for the sea. She began to believe them. But one navigator — just one — said to her: 'Every time you fail and come back, you are doing what most people cannot. You are resilient.' She didn't know that word yet. But she felt it. She tried again. And again. Three years later, she stood at the helm of the fleet's lead vessel as its chief navigator. The word she learned in defeat — resilience — became the word she sailed by. Dagat listened without a word. She knew that word. She had been living it.",
               "question": "What word does the story define through the sailor's experience?",
@@ -2361,6 +2469,7 @@
             },
             {
               "id": "cmnvelsjz0041vuuom7kyz7dt",
+              "pinId": "cmmzrccyp0029worsyzww1dr1",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1775976797/linguaquest/audio/challenge-cmnvelsjz0041vuuom7kyz7dt.mp3",
               "audioScript": "From the very beginning, no one expected Dagat to make it past the first island. The Isla ng Salita seemed impossible — its words all scrambled by Ingay's spell. The second island, with its rushing currents of rapid speech, nearly broke her. By the third, shrouded in fog, she almost turned back. But she pressed on through the island of feelings, the island of hidden details, the island of broken stories. And finally she stood before the last island — the Isla ng Alingawngaw. In her hands: six glowing shards. In her heart: everything she had learned. She placed the shards together, and the Alingawngaw Crystal sang — a sound like every voice that had ever spoken truth. Captain Salita stepped forward, and for the first time in one hundred years he said aloud: 'I have waited a long time for ears like yours.'",
               "question": "What is the MOST COMPLETE summary of everything you just heard?",
@@ -2392,12 +2501,14 @@
         },
         {
           "id": "cmmzyzguc003pwol0f1ifnccm",
+          "islandId": "cmmzrc7nx001xworsi7hg87qm",
           "number": 5,
           "type": "CHALLENGE",
           "sortOrder": 5,
           "challenges": [
             {
               "id": "cmnvelud70044vuuomc58u3yv",
+              "pinId": "cmmzyzguc003pwol0f1ifnccm",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1775976870/linguaquest/audio/challenge-cmnvelud70044vuuomc58u3yv.mp3",
               "audioScript": "In the heart of the last island, the noise was deafening. Ingay's storm filled the air — words overlapping, feelings stripped away, details scattered, stories torn apart. Dagat stood still and closed her eyes. She thought of every skill she had learned. She listened for the context around the strange words. She slowed her mind against the rushing current of speech. She reached for the thread of the main idea. She felt for the tone beneath the chaos. She held the precise detail like a compass in her hand. She followed the story all the way to its end. And then she heard it: one clear voice, cutting through everything. 'Well done, sailor,' it said. 'I hear you now.'",
               "question": "What is the most complete summary of what the passage describes?",
@@ -2427,6 +2538,7 @@
             },
             {
               "id": "cmnvelud70045vuuo3rv6v3lx",
+              "pinId": "cmmzyzguc003pwol0f1ifnccm",
               "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1775976908/linguaquest/audio/challenge-cmnvelud70045vuuo3rv6v3lx.mp3",
               "audioScript": "Captain Salita stepped forward. He had not spoken — truly spoken — in one hundred years. He opened his mouth, and what came out was not a whisper. It was a voice: warm, weathered, full of the sea. 'I have waited a hundred years for ears like yours,' he said. 'The Listening Sea is free. Ingay is silent. And you — you are no longer a student. You are a sailor.' He pressed the Alingawngaw Crystal into Dagat's hands. It sang. It was the sound of every word ever understood. Every feeling heard. Every story followed to its end. The sea was quiet. And it was beautiful.",
               "question": "When Captain Salita says Dagat is 'no longer a student' but 'a sailor,' what does he mean?",
