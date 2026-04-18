@@ -972,7 +972,7 @@
             {
               "id": "cmnvekr1a001ovuuof8hvajy9",
               "pinId": "cmmzyyjkn001hwol0zgj4hdss",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmnvekr1a001ovuuof8hvajy9.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776447844/linguaquest/audio/challenge-cmnvekr1a001ovuuof8hvajy9.mp3",
               "audioScript": "Pin 4 — the fog was at its thickest here, pressing in from all sides, Ingay working hardest to bury every clear thought under a flood of detail. Dagat could hear a port official somewhere ahead, speaking in long, careful sentences that piled fact upon fact. She slowed herself, breathed, and listened for the one thing the official kept returning to. Three years ago, a small group of island women began growing vegetables in an unused corner of Port Salita's eastern dock. What started as a side project became something larger. Today, the garden supplies fresh provisions to twelve vessels each week — reducing scurvy cases aboard ship by forty percent. Sailors from other ports have begun requesting seeds to bring home. What was once a corner of weeds has become one of the port's most valuable assets. The transformation. Start to finish. That was what the speech was really about.",
               "question": "What is the main idea of this passage?",
               "choices": [
@@ -996,13 +996,13 @@
               "answer": "B",
               "explanation": "The passage traces the garden from a side project to a resource other ports want to replicate. Its growth and impact is the main idea.",
               "hint": "Follow the story from start to finish. What did the garden become? That transformation is the main idea.",
-              "explanationAudioUrl": null,
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776462661/linguaquest/audio/challenge-explanation-cmnvekr1a001ovuuof8hvajy9.mp3",
               "sortOrder": 1
             },
             {
               "id": "cmnvekr1a001pvuuocerj19pc",
               "pinId": "cmmzyyjkn001hwol0zgj4hdss",
-              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-cmndygvg6001pwoq062w24bcv.mp3",
+              "audioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776447939/linguaquest/audio/challenge-cmnvekr1a001pvuuocerj19pc.mp3",
               "audioScript": "Still deep in the fog of Isla ng Diwa, a harbormaster's voice carried from somewhere near the water — a long historical account of Port Dagat's waterway, told with careful dates and species names and decade-by-decade statistics. Ingay's fog kept burying the most important point under the flood of facts. Dagat let the details wash past and listened only for the thread that connected them. The channel into Port Dagat once ran dark with bilge waste and dye from the dockside cloth works. Fish had vanished. Fishermen abandoned their boats. Then, in the 1990s, a gradual cleanup effort began. Waste controls were enforced. Industrial dumping was banned. Today, over thirty species of fish have returned to the channel. Sea birds nest along the banks once more. The channel is not fully restored — but it breathes again. Recovery — slow, real, incomplete — was the heart of it.",
               "question": "What is the main point of this passage?",
               "choices": [
@@ -1026,7 +1026,7 @@
               "answer": "C",
               "explanation": "The passage shows decline then recovery. 'Not fully restored — but breathing again' signals gradual, real but incomplete recovery. Option B overstates it.",
               "hint": "Did the passage say 'fully restored'? Listen for 'not' — it changes the main idea.",
-              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/linguaquest/audio/challenge-explanation-cmndygvg6001pwoq062w24bcv.mp3",
+              "explanationAudioUrl": "https://res.cloudinary.com/dudegsrs8/video/upload/v1776447962/linguaquest/audio/challenge-explanation-cmnvekr1a001pvuuocerj19pc.mp3",
               "sortOrder": 2
             }
           ]
