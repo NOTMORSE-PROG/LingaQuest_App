@@ -925,6 +925,7 @@ export default function QuestScreen() {
   const islandSkill = pin.island?.skillFocus ?? "";
   const npcIntro = pin.island?.npcDialogueIntro ?? "Listen carefully, young sailor. The audio plays once. Trust what you hear.";
   const npcFail = pin.island?.npcDialogueFail ?? "Even seasoned sailors mishear. The sea will test you again.";
+  const npcAudioIntro = (pin.island as any)?.npcAudioIntro ?? undefined;
   const npcAudioFail = (pin.island as any)?.npcAudioFail ?? undefined;
   const npcAudioSuccess = (pin.island as any)?.npcAudioSuccess ?? undefined;
   const pinSortOrder: number = pin.sortOrder;
@@ -1742,6 +1743,7 @@ const ISLAND_CARD_LABEL: Record<number, string> = {
               <CaptainSalita
                 state="talking"
                 dialogue={npcIntro}
+                audioUrl={npcAudioIntro}
                 size={160}
               />
               {islandNum <= 5 && (
