@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   String   @id @default(cuid())
+  username             String   @unique
+  email                String   @unique
+  passwordHash         String?
+  googleId             String?  @unique
+  isOnboarded          Boolean  @default(false)
+  role                 UserRole @default(STUDENT)
+  characterModeEnabled Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  progress         Progress[]
+  badges           Badge[]
+  hostedRooms      MultiplayerRoom[] @relation("HostedRooms")
+  roomMemberships  RoomPlayer[]
+  votes            VoteRecord[]
+  repairVotes      RepairVoteRecord[]
+  chatMessages     ChatMessage[]
+  ingaySeenIslands IngaySeen[]
+
+  @@index([username])
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+model Island {
+  id               String  @id @default(cuid())
+  number           Int     @unique
+  name             String
+  skillFocus       String
+  description      String
+  isLocked         Boolean @default(true)
+  npcName           String?
+  npcDialogueIntro  String?
+  npcDialogueSuccess String?
+  npcDialogueFail   String?
+  npcAudioIntro     String?  // Captain Salita intro voice clip URL
+  npcAudioSuccess   String?  // Captain Salita success voice clip URL
+  npcAudioFail      String?  // Captain Salita fail voice clip URL
+  ingayAudioUrl     String?  // Ingay warning voice clip URL
+  ingayDialogue     String?  // Ingay per-island taunting dialogue
+  bgMusicUrl        String?  // Custom background music MP3 (overrides default Mixkit track)
+  shardItemName     String?
+  shardDescription  String?
+
+  pins             Pin[]
+  ingaySeenByUsers IngaySeen[]
+
+  @@index([number])
+}
+
+model Pin {
+  id        String  @id @default(cuid())
+  islandId  String
+  number    Int
+  type      PinType
+  sortOrder Int
+
+  island     Island      @relation(fields: [islandId], references: [id])
+  challenges Challenge[]
+  progress   Progress[]
+
+  @@unique([islandId, number])
+  @@index([islandId])
+}
+
+enum PinType {
+  CHALLENGE
+  CHECKPOINT
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  pinId       String
+  audioUrl    String
+  audioScript String?  // Full text of the listening passage — used for voice recording / TTS
+  question    String
+  choices     Json     // [{ label: "A"|"B"|"C"|"D", text: string }]
+  answer      String   // "A" | "B" | "C" | "D"
+  explanation         String
+  hint                String
+  explanationAudioUrl String?  // Captain reads explanation aloud when student answers correctly
+  sortOrder           Int      @default(0)
+
+  pin Pin @relation(fields: [pinId], references: [id])
+
+  @@index([pinId])
+}
+
+model Progress {
+  id          String    @id @default(cuid())
+  userId      String
+  pinId       String
+  isCompleted Boolean   @default(false)
+  accuracy    Float     @default(0) // 0-100
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  pin  Pin  @relation(fields: [pinId], references: [id])
+
+  @@unique([userId, pinId])
+  @@index([userId])
+}
+
+model IngaySeen {
+  id       String   @id @default(cuid())
+  userId   String
+  islandId String
+  seenAt   DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  island Island @relation(fields: [islandId], references: [id])
+
+  @@unique([userId, islandId])
+  @@index([userId])
+}
+
+model Badge {
+  id        String    @id @default(cuid())
+  userId    String
+  badgeType String
+  earnedAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+}
+
+model MultiplayerRoom {
+  id                String     @id @default(cuid())
+  code              String     @unique
+  hostId            String
+  status            RoomStatus @default(WAITING)
+  roundCount        Int        @default(5)
+  currentRound      Int        @default(0)
+  currentQuestion   Int        @default(0)    // 0-4: which question within the current round
+  currentPartTarget String?                    // chosen ship part for the current round
+  roundChallenges   Json?                      // String[] — 5 challenge IDs for current round
+  shipHealth        Json       // { hull: 25, mast: 25, sails: 25, anchor: 25, rudder: 25 }
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  host         User                @relation("HostedRooms", fields: [hostId], references: [id])
+  players      RoomPlayer[]
+  rounds       RoundResult[]
+  votes        VoteRecord[]
+  repairVotes  RepairVoteRecord[]
+  chatMessages ChatMessage[]
+
+  @@index([code])
+  @@index([status])
+}
+
+enum RoomStatus {
+  WAITING
+  ACTIVE
+  FINISHED
+}
+
+model RoomPlayer {
+  id       String   @id @default(cuid())
+  roomId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+  user User            @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, userId])
+}
+
+model VoteRecord {
+  id            String   @id @default(cuid())
+  roomId        String
+  round         Int
+  questionIndex Int
+  userId        String
+  chosenAnswer  String
+  submittedAt   DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+  user User            @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, round, questionIndex, userId])
+}
+
+model RoundResult {
+  id            String   @id @default(cuid())
+  roomId        String
+  round         Int
+  questionIndex Int      @default(0)  // 0-4 within the round
+  crewAnswer    String
+  correctAnswer String
+  isCorrect     Boolean
+  healthDelta   Int      // +25 or -25
+  partTarget    String   // hull | mast | sails | anchor | rudder
+  createdAt     DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+
+  @@unique([roomId, round, questionIndex])
+}
+
+model RepairVoteRecord {
+  id          String   @id @default(cuid())
+  roomId      String
+  round       Int
+  userId      String
+  chosenPart  String   // hull | mast | sails | anchor | rudder
+  submittedAt DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id])
+  user User            @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, round, userId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  userName  String
+  text      String   @db.VarChar(300)
+  createdAt DateTime @default(now())
+
+  room MultiplayerRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User            @relation(fields: [userId], references: [id])
+
+  @@index([roomId, createdAt])
+}
+
+model MultiplayerChallenge {
+  id          String  @id @default(cuid())
+  audioUrl    String
+  audioScript String?
+  question    String
+  choices     Json    // [{ label: "A"|"B"|"C"|"D", text: string }]
+  answer      String  // original correct label in DB ("A"–"D")
+  explanation String
+  hint        String
+  sortOrder   Int     @default(0)
+}

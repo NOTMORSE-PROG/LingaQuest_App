@@ -1,0 +1,74 @@
+/* ── Button hover effects ─────────────────────────────────────────────────── */
+
+/* Solid fill buttons (yellow, amber, green, red) — darken on hover */
+.btn-hover {
+  transition: filter 0.15s ease;
+}
+.btn-hover:not(:disabled):hover {
+  filter: brightness(0.88);
+}
+
+/* Ghost / transparent / outline buttons — subtle fill on hover */
+.btn-hover-ghost {
+  transition: background-color 0.15s ease;
+}
+.btn-hover-ghost:not(:disabled):hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Red outline delete button — light red fill on hover */
+.btn-hover-danger {
+  transition: background-color 0.15s ease;
+}
+.btn-hover-danger:not(:disabled):hover {
+  background-color: #fee2e2 !important;
+}
+
+/* ── Responsive layout ────────────────────────────────────────────────────── */
+
+.page-content { padding: 2rem; }
+
+.nav-inner {
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.nav-links { display: flex; gap: 4px; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.audio-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.challenge-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .page-content { padding: 1rem; }
+
+  .nav-inner { padding: 0 0.75rem; }
+  .nav-links { gap: 2px; }
+  .nav-links a { padding: 6px 10px !important; font-size: 13px !important; }
+
+  .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  .audio-row { flex-direction: column; }
+  .audio-row-actions { align-items: flex-start !important; }
+
+  .challenge-header-row { flex-direction: column; }
+}
