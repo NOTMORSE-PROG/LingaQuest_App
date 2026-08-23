@@ -46,7 +46,7 @@ A gamified listening comprehension app for Grade 7 Filipino students. Students p
 ├── types/               # TypeScript interfaces
 └── assets/              # Images and audio
 
-backend/                 # Next.js API server (separate deployment)
+backend/                 # Independently runnable Next.js API server
 ├── app/api/             # API routes (auth, islands, progress, multiplayer, teacher, admin)
 ├── lib/                 # Auth, DB client, Pusher, ship logic
 ├── prisma/              # Schema and seed data
@@ -61,7 +61,14 @@ backend/                 # Next.js API server (separate deployment)
 
 - Node.js 20+
 - Expo CLI (`npm install -g expo-cli`)
-- A running instance of the backend (local or Vercel)
+- A running local backend or another explicitly configured backend URL
+
+Clone the canonical project before setting up either component:
+
+```bash
+git clone https://github.com/NOTMORSE-PROG/LinguaQuest.git
+cd LinguaQuest
+```
 
 ### Frontend Setup
 
@@ -97,7 +104,7 @@ npm run ios
 
 ### Backend Setup
 
-The backend lives in the `/backend` directory and is a standalone Next.js app. It is deployed separately on Vercel.
+The backend lives in the `/backend` directory and is an independently runnable Next.js app maintained in this same repository.
 
 1. Navigate to the backend:
 
@@ -166,3 +173,7 @@ npm run dev
 | STUDENT | Story mode, multiplayer, profile |
 | TEACHER | Student progress, performance analytics, mistake review |
 | ADMIN | Audio upload and management |
+
+## Deployment Status
+
+No active production deployment was found for LinguaQuest during the consolidation audit. The repository is ready for local development, but publishing the frontend or backend is a separate rollout task. A future backend deployment should use `backend/` as its root directory and should not claim an existing public URL unless that URL has been verified.
