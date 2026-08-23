@@ -106,6 +106,8 @@ npm run ios
 
 The backend lives in the `/backend` directory and is an independently runnable Next.js app maintained in this same repository.
 
+See the dedicated [`backend/README.md`](backend/README.md) for its API areas, environment-variable reference, database cautions, and complete command list.
+
 1. Navigate to the backend:
 
 ```bash
